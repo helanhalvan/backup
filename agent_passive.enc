@@ -1,43 +1,126 @@
 class Main {
     def main() : void {
-        let b = new Agent((1,1), [(1,-5)]); 
-        
+        let a = new Agent((1,1), [(1,-5)] );
+        let b = new Agent((2,2), [(-5,1)] );
+        let låda = new Box([a,b]);
+
+        {--
+        while(b != Nothing) {
+        match b with
+            Nothing => print("done\n")
+            Just w => {a.move(w[0]);
+                      print("{}\n",a.pos());
+                      b=a.next()}
+        };
+        print("{}\n",a.pos());
+        --}
     }
 }
+
+class Box {
+
+    agents : [Agent]
+    -- this data structure should probably be replaced by something else
+    -- currently, move() have time complexity O(N^2) as it iterates over an array, and compares 
+    -- the result to all indeices of the array
+    -- tree/hashtable would make it a lot faster
+    -- linked list would probably be good for memory complexity
+    -- keeping box small is probably a good idea
+    {--xmin : int
+    xmax : int
+    ymin : int
+    ymax : int
+--}
+    def init(in_agents:[Agent] {--, in_xmin:int, in_xmax:int, in_ymin:int, in_ymax:int --} ) : void {
+            this.agents=in_agents;
+            {--
+            this.xmin=in_xmin;
+            this.xmax=in_xmax;
+            this.ymin=in_ymin;
+            this.ymax=in_ymax;
+            --}
+    }
+    --moves all agents in the box once
+    def move(): bool {
+        if ( |this.agents| == 0 ) then
+            true
+        else {
+        let j=0;
+        for a in this.agents {
+            match a.next() with 
+                Nothing => ()
+                Just List => {
+                        let i = 0;
+                        let cond = true;
+                        while(i < |List| and cond){
+                            if( not(this.isin(List[i],this.agents)) ) then {
+                                (this.agents[j]).move(List[i]);
+                                cond=false;
+                            };
+                        }
+                        };
+            j=j+1
+        }
+            false
+        }
+    }
+    def isin(w:(int,int),l:[Agent]) : bool {
+        let ret = false;
+        for a in l
+        {
+            match a.pos() with 
+                w => ret=true
+                _ => ()
+        };
+        ret
+    }
+}
+
 passive class Agent {
     id : int                --unique ID for the agent
     pos : (int,int)         --current position
     targets : [(int,int)]   --waypoints, a list of positions to go to
     i : int                 --index of targets
-    def init(in_pos:(int,int), in_t:[(int,int)]) : void {
+
+    def init(in_pos:(int,int), list:[(int,int)] ) : void {
         this.pos=in_pos;
-        this.targets=in_t;
         this.i=0;
+        this.targets=list;
     }
     --returns places the agent can and want to go to
     --can => an agent can only go up, down, left or right
     --want => an agent only want to go closer to their next waypoint
-    def next() : [(int,int)] {
-        while this.targets[this.i]==this.pos {
-            this.i=this.i+1;
-        };
-        -- this is so much nicer then equivalent C!
-        match (this.pos,this.targets[this.i]) with
-              ( (x1,y1),(x2,y2) ) when (x1>x2 and y1>y2) => [(x1-1,y1),(x1,y1-1)]
-              ( (x1,y1),(x2,y2) ) when (x1<x2 and y1<y2) => [(x1+1,y1),(x1,y1+1)]
+    def next() : Maybe([(int,int)])    {
 
-              ( (x1,y1),(x2,y2) ) when (x1>x2 and y1<y2) => [(x1-1,y1),(x1,y1+1)]
-              ( (x1,y1),(x2,y2) ) when (x1<x2 and y1>y2) => [(x1+1,y1),(x1,y1-1)]
+        if ( |this.targets| == this.i) then {
+              Nothing : Maybe([(int,int)]);
+        } else { 
 
-              ( (x1,y1),(x2,y2) ) when (x1>x2) => [(x1-1,y1)]
-              ( (x1,y1),(x2,y2) ) when (y1>y2) => [(x1,y1-1)]
-              ( (x1,y1),(x2,y2) ) when (x1<x2) => [(x1+1,y1)]
-              ( (x1,y1),(x2,y2) ) when (y1<y2) => [(x1,y1+1)]
-    }
+        match (this.pos,this.targets[this.i]) with  
+
+              ( (x1,y1),(x2,y2) ) when (y1==y2 and (x1==x2) ) => {this.i=this.i+1;
+                                                                  this.next();}
+                                                                  
+              ( (x1,y1),(x2,y2) ) when (x1>x2 and y1>y2) => Just([(x1-1,y1),(x1,y1-1)])
+              ( (x1,y1),(x2,y2) ) when (x1<x2 and y1<y2) => Just([(x1+1,y1),(x1,y1+1)])
+
+              ( (x1,y1),(x2,y2) ) when (x1>x2 and y1<y2) => Just([(x1-1,y1),(x1,y1+1)])
+              ( (x1,y1),(x2,y2) ) when (x1<x2 and y1>y2) => Just([(x1+1,y1),(x1,y1-1)])
+
+              ( (x1,y1),(x2,y2) ) when (x1>x2) => Just([(x1-1,y1)])
+              ( (x1,y1),(x2,y2) ) when (y1>y2) => Just([(x1,y1-1)])
+              ( (x1,y1),(x2,y2) ) when (x1<x2) => Just([(x1+1,y1)])
+              ( (x1,y1),(x2,y2) ) when (y1<y2) => Just([(x1,y1+1)])
+        
+        }}
+            
     --updates the current position
     --agents have no agency and check nothing when it comes to their own position
     def move(in_pos:(int,int)) : void {
         this.pos=in_pos;
     }
+    --getter, everything is public, but I'll pretend that everything is private, as I think that's a better practice
+    def pos() : (int,int) {
+        this.pos
+    }
 }
-
