@@ -33,7 +33,7 @@ class Box {
                         
                           while(i < |List| and cond)
                             if ( this.isin(List[i]) ) then {
-                                print("NOT MOVING to {}\n", List[i]);
+                                print("NOT MOVING to {}\n", List[i])
                                 i=i+1
                             } else { 
                                 print("MOVING!\n");

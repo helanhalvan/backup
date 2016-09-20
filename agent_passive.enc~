@@ -1,6 +1,6 @@
 class Main {
    def main() : void {
-       let a = new Agent((1,1), [(5,5)] );
+       let a = new Agent((0,1), [(5,5)] );
        let b = new Agent((1,0), [(5,5)] );
        let lada = new Box([a,b]);
        let cond = true;
