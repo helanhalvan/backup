@@ -1,0 +1,89 @@
+import SDL.SDL_Main
+import SDL.SDL_Events
+
+
+class MouseFiddler
+  accept : bool
+  count: int
+  scale: real
+  draw: bool
+
+  def init() : void{
+    this.accept = true;
+    this.count = 0;
+    this.scale = 0.1;
+    this.draw = false;
+  }
+
+  def getCount() : int{
+    this.count;
+  }
+
+  def up(main: SDL_Main, event: SDL_Event) : void{
+    this.accept = true;
+  }
+
+  def key(tup :(SDL_Main, SDL_KeyboardEvent)) : bool{
+    let main = null : SDL_Main;
+    let event = null : SDL_KeyboardEvent;
+    match tup with
+      (main_,event_) => { main = main_;  event = event_};
+    if((event.state == embed uint SDL_PRESSED; end))then {
+      if((event.keycode == embed uint SDLK_UP; end)) then{
+        this.scale = this.scale +0.01;
+      }else if((event.keycode == embed uint SDLK_DOWN; end)) then{
+        this.scale = this.scale -0.01;
+      };
+    };
+    true
+  }
+
+  def draw(tup: (SDL_Main, SDL_MouseMotionEvent)) : bool{
+    let main = null : SDL_Main;
+    let event = null : SDL_MouseMotionEvent;
+    match tup with (main_,event_) => {main = main_; event = event_};
+
+    if(this.draw) then{
+      main!drawImage("tux.png",event.x,event.y,this.scale,this.scale);
+    };
+    true
+  }
+
+  def down(tup :(SDL_Main, SDL_MouseButtonEvent)) : bool{
+    let main = null : SDL_Main;
+    let event = null : SDL_MouseButtonEvent;
+    match tup with
+      (main_,event_) => { main = main_;  event = event_};
+    if(event.state == embed uint SDL_PRESSED; end) then {
+      this.draw = true;
+      main!drawImage("tux.png",event.x,event.y,this.scale,this.scale);
+    }else{
+      this.draw = false;
+    };
+    true
+  }
+
+class Main
+
+  def main() : void{
+    let sdl_main = new SDL_Main(500,500);
+    let sdl_handler = new SDL_Event_Handler();
+    let mauser = new MouseFiddler();
+    get sdl_main.clearAll();
+    get sdl_main.setRenderColor(new ColorRGBA(254,254,254,254));
+    get sdl_main.fillRectangle(new Rectangle(0,0,500,500));
+    get sdl_main.refresh();
+    sdl_handler.addMouseButtonCallback(
+      \(a : (SDL_Main,SDL_MouseButtonEvent)) -> {mauser!down(a);true} 
+    );
+    sdl_handler.addKeyboardCallback(
+      \(a : (SDL_Main,SDL_KeyboardEvent)) -> {mauser!key(a);true} 
+    );
+    sdl_handler.addMotionCallback(
+      \(a : (SDL_Main,SDL_MouseMotionEvent)) -> {mauser!draw(a);true} 
+    );
+    while(true){
+      get sdl_main.refresh();
+      sdl_main.waitForEvent(sdl_handler,50);
+    }
+  }

@@ -1,3 +1,5 @@
 #!/bin/bash
 
-encorec $1 -O 2 -o $1.run --run
+encorec $1 -O 2 -o $1.run --run --import ./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_image -ggdb" #-c -g #--run --ponythreads 1
+
+#gdb $1.run

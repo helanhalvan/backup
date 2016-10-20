@@ -1,0 +1,131 @@
+{-
+    Binary Search Tree
+-}
+
+typedef BSTCompFunc<t> = (t, t) -> int
+
+passive class BSTNode<a, b> {
+    key   : a
+    value : b
+    left  : Maybe BSTNode<a, b>
+    right : Maybe BSTNode<a, b>
+
+    def init(key : a, value : b) : void {
+        this.key   = key;
+        this.value = value;
+        this.left  = Nothing;
+        this.right = Nothing;
+    }
+}
+
+trait BSTAdd<a, b>
+    require root : Maybe BSTNode<a, b>
+    def add(key : a, value :  b, comp_f : BSTCompFunc<a>) : bool {
+        let
+            current  = this.root
+            new_node = Just new BSTNode<a, b>(key, value)
+            iterate  = true
+            retval   = true
+        in {
+            while iterate {
+                match current with
+                    Just node => {
+                        match comp_f(key, node.key) with
+                            -- Left
+                            x when x == -1 or x == 0 => {
+                                if node.left != Nothing then {
+                                    current = node.left;
+                                } else {
+                                    node.left = new_node;
+                                    iterate = false;
+                                };
+                            }
+                            -- Right
+                            1 => {
+                                if node.right != Nothing then {
+                                    current = node.right;
+                                } else {
+                                    node.right = new_node;
+                                    iterate = false;
+                                };
+                            }
+                            -- Error!
+                            _ => {
+                                --print("SEVERE ERROR! BSTAdd.add: comp_f returned integer other than -1, 0 or 1!");
+                                iterate = false;
+                                retval = false;
+                            }
+                    }
+                    Nothing => {
+                        -- This should only be reached if the root is "Nothing".
+                        this.root = new_node;
+                        iterate = false;
+                    }
+            };
+
+            -- Return
+            retval
+        }
+    }
+
+trait BSTRemove<a, b>
+    require root : Maybe BSTNode<a, b>
+    def remove(key : a, comp_f : BSTCompFunc<a>) : bool {
+        let
+            iterate = true
+            current = this.root
+            prev    = Nothing : Maybe BSTNode<a,b>
+            retval  = false
+        in {
+            while iterate {
+                match current with
+                    Just node => {
+                        match comp_f(key, node.key) with
+                            -- Matching
+                            0 => {
+                                -- Remove the current node & re-add all children.
+                                iterate = false;
+                            }
+                            -- Left
+                            (-1) => {
+                                prev = current;
+                                match current with
+                                    Just c => current = c.left;
+                            }
+                            -- Right
+                            1 => {
+                                prev = current;
+                                match current with
+                                    Just c => current = c.right;
+                            }
+                            -- Error!
+                            _ => {
+                                print("SEVERE ERROR! BSTRemove : comp_f returned non expected value!");
+                                retval  = false;
+                                iterate = false;
+                            }
+                    }
+                    Nothing => {
+                        -- Bottom has been reached without finding the node.
+                        retval  = false;
+                        iterate = false;
+                    }
+            };
+
+            -- Return
+            retval
+        }
+    }
+
+trait BSTGetValue<a, b>
+    require root : Maybe BSTNode<a, b>
+    --def get_value(key : a) : b {
+    --}
+
+passive class BSTree<a, b> : BSTAdd<a, b> + BSTRemove<a, b> + BSTGetValue<a, b> {
+    root : Maybe BSTNode<a, b>
+
+    def init() : void {
+        this.root = Nothing;
+    }
+}

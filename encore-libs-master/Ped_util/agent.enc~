@@ -1,0 +1,108 @@
+bundle Agent where
+--data structure for holding multiple agents
+--NOTE, current implementation is shit, but it's easy to change later
+passive class Agent_struct {
+    ss : [Agent]
+
+    def init(a:[Agent]) : void {
+        this.ss= new [Agent](0);
+        this.add(a)
+    }
+    def isin(pos:(int,int)) : bool {
+    let ret = false;
+     for a in this.ss
+
+       match a.pos() with
+         _ when equal(pos,a.pos()) =>{ --print(" {}=={}\n",qq,a.pos); 
+                                        ret=true }
+         _ => () ;
+       ret
+    }
+    def add(a:[Agent]) : void {
+        let sss = new [Agent]( |a| + |this.ss| );
+        let i=0;
+
+            for t in this.ss {
+                sss[i]=t;
+                i=i+1
+            };
+            for t in a {
+                sss[i]=t;
+                i=i+1
+            };
+        this.ss=sss
+    }
+    def remove(a:Agent) : void {
+        let sss = new [Agent]( |this.ss| - 1 );
+        let   i = 0;        
+            for t in this.ss {
+                if( not ( t == a ) ) then {
+                    sss[i]=t;
+                    i=i+1
+                }
+            };
+        this.ss=sss
+    }
+    def size() : int {
+        |this.ss|
+    }
+
+    def get_data() : [Agent] {
+        this.ss
+    }
+}
+--Abstraction for one Agent
+passive class Agent {
+   pos : (int,int)         --current position MUTABLE
+   targets : [(int,int)]   --waypoints, a list of positions to go to IMMUTABLE
+   i : int                 --index of targets MUTABLE
+
+   def init(in_pos:(int,int), list:[(int,int)]) : void {
+       this.pos=in_pos;
+       this.i=0;
+       this.targets=list;
+   }
+
+   -- --returns places the agent can and want to go to
+   -- --can => an agent can only go up, down, left or right
+   -- --want => an agent only want to go closer to their next waypoint
+   def next() : [(int,int)]
+     if |this.targets| == this.i then
+       new [(int,int)](0)
+     else {
+       match (this.pos, this.targets[this.i]) with  
+         ((x1,y1), (x2,y2)) when y1==y2 and x1==x2 => { this.i=this.i+1; this.next() }
+         ((x1,y1), (x2,y2)) when x1>x2 and y1>y2 => { [(x1-1,y1),(x1,y1-1)] }
+         ((x1,y1), (x2,y2)) when x1<x2 and y1<y2 => { [(x1+1,y1),(x1,y1+1)] }
+         ((x1,y1), (x2,y2)) when x1>x2 and y1<y2 => { [(x1-1,y1),(x1,y1+1)] }
+         ((x1,y1), (x2,y2)) when x1<x2 and y1>y2 => { [(x1+1,y1),(x1,y1-1)] }
+         ((x1,y1), (x2,y2)) when x1>x2           => { [(x1-1,y1)] }
+         ((x1,y1), (x2,y2)) when y1>y2           => { [(x1,y1-1)] }
+         ((x1,y1), (x2,y2)) when x1<x2           => { [(x1+1,y1)] }
+         ((x1,y1), (x2,y2)) when y1<y2           => { [(x1,y1+1)] }
+      }
+           
+   --updates the current position
+   --agents have no agency and check nothing when it comes to their own position
+   def move(in_pos:(int,int)) : void
+     this.pos=in_pos
+
+   --getter for position, used for collision detection
+   def pos() : (int,int)
+       this.pos
+
+   --copy constructor, hopefully I won't need that one in the finnal version
+   def copy() : Agent {
+    print("COPYING {}\n", |this.targets| - this.i);
+  embed void fflush(stdout); end;
+    let q = this.pos; --{match this.pos with (x,y) => (x,y)};
+    let qq = new [(int,int)](|this.targets| - this.i);
+    --let i = 0;
+    for i in [0..|qq|] {
+        qq[i]=this.targets[i];--(match this.targets[i] with (x,y) => (x,y));
+        --i=i+1
+    };
+    new Agent(q, qq)
+   } 
+  
+}
