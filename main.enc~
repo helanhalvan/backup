@@ -341,10 +341,10 @@ def move(): bool {
                     {i=i+1};
                 };
 
-            if (|a.next()| == 0) then
-                { print("dropped an agent\n"); 
+            match (|a.next()| == 0) with
+                true => { print("dropped an agent\n"); 
                           this.agents.remove(a)}
-            else { () }
+                false => { () }
             };
           true
          }

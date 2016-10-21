@@ -2,14 +2,17 @@ import FileIO.IO
 import XML.xml
 import Ped_util.agent_passive
 import SDL.SDL_Main
-
+--import SDL.SDL_Events
 class Main {
 --TODO
 --Add comments to explain what's going on
-
--- compile script
+--Fix compile script adding 
 --  -d for starting right into gdb
 --  -r for compile and run
+--  -t for piping errors to txt
+--Split stuff up into more files, at some point
+
+--Add a multi-threaded version of box, using many single threaded versions of box
 
 --Add some UI
    def main() : void {
@@ -19,16 +22,14 @@ class Main {
        let y_size=0;
        match (get(superbox.max()),get(superbox.min())) with 
                 ((xmax,ymax),(xmin,ymin)) => {x_size=(xmax-xmin); y_size=(ymax-ymin);};
-       {-- 
-       let sdl_main = new SDL_Main(x_size*4,y_size*4);
+       {-- let sdl_main = new SDL_Main(x_size*4,y_size*4);
        get sdl_main.clearAll();
        get sdl_main.setRenderColor(new ColorRGBA(1,1,1,0));    
        get sdl_main.fillRectangle(new Rectangle(0,0,x_size*4,y_size*4));
        get sdl_main.setRenderColor(new ColorRGBA(255,255,255,0));
        get sdl_main.refresh(); --}
        let cond = true;
-       let i=0;
-       while(cond and i<40000) {
+       while(cond) {
        {--
        get(sdl_main.clearAll()); 
        for a in get(superbox.agents())
@@ -38,8 +39,6 @@ class Main {
                   _ => print("AGENT GOT NO POS!?\n")
        };
        get(sdl_main.refresh()); --}
-       print("tick {}\n",i);
-       i=i+1;
        cond=get(superbox.move());
        }
    }
@@ -94,11 +93,9 @@ class Main {
             for derp in [0..max] {
                 --for this to be safe, agent_waypoints need to be copied for every agent
                 --in the future, I can make it immutable instead
-
                 --also distributes agents in a packed ball around (x,y) with some collisions
-                --this needs to be fixed in the future
                 match (derp % 4) with 
-                     0 => {agents[i]=new Agent((x+dx,y+dy),copy_tr(agent_waypoints),i);
+                     0 => {agents[i]=new Agent((x+dx,y+dy),copy_tr(agent_waypoints) );
                 if(dx==0) then {
                     dx=dy+1;
                     dy=0
@@ -106,9 +103,9 @@ class Main {
                     dx=dx-1;
                     dy=dy+1
                 };}
-                    1 => {agents[i]=new Agent((x+dx,y-dy),copy_tr(agent_waypoints),i);}
-                    2 => {agents[i]=new Agent((x-dx,y+dy),copy_tr(agent_waypoints),i);}
-                    3 => {agents[i]=new Agent((x-dx,y-dy),copy_tr(agent_waypoints),i);};
+                    1 => {agents[i]=new Agent((x+dx,y-dy),copy_tr(agent_waypoints));}
+                    2 => {agents[i]=new Agent((x-dx,y+dy),copy_tr(agent_waypoints));}
+                    3 => {agents[i]=new Agent((x-dx,y-dy),copy_tr(agent_waypoints));};
                     
                 --print( (agents[i]).pos() );
                 i=i+1;
@@ -181,11 +178,7 @@ class Multi_box {
         let dx=0;
         let dy=0;
         match this.find_extreme(agents) with
-            (xmax,ymax,xmin,ymin) => { --xmax=xmax*10;
-                                      --ymax=ymax*10;
-                                      --xmin=xmin-100;
-                                      --ymin=ymin-100;
-                                      this.max=(xmax,ymax); 
+            (xmax,ymax,xmin,ymin) => {this.max=(xmax,ymax); 
                                       this.min=(xmin,ymin); 
                                       dx=xmax-xmin; 
                                       dy=ymax-ymin;
@@ -312,7 +305,9 @@ def link(a:Box) : bool {
  --returns true if there are some agents to move
  --otherwise false 
 def move(): bool {
-   if (this.agents.size() == 0) then { false } else {
+   match (this.agents.size() == 0) with
+     true => { false }
+     false => {
        for a in this.agents.get_data() {
             let desired = a.next();
             let i = 0;
@@ -323,8 +318,8 @@ def move(): bool {
                     _ when this.agents.isin(desired[i])  => {i=i+1; embed void { continue; } end; ()} 
                     --local move
                     ((x,y),(x_max,y_max),(x_min,y_min)) when (x<=x_max and x>=x_min and y<=y_max and y>=y_min) => { a.move((x,y)); 
-                                                                                                                    --print("internal move {} {}\n",x,y); 
-                                                                                                                    embed void { break; } end 
+                                                                                                                    print("internal move {} {}\n",x,y); 
+                                                                                                                    embed void { return true; } end 
                                                                                                                   } 
                     ((x,y),(x_max,y_max),(x_min,y_min)) when (x>x_max and (y<y_min or y>y_max) ) or (x<x_min and (y<y_min or y>y_max) ) => { print("this should never happen, agent way off"); 1/0; () }
                     --external move
@@ -332,19 +327,18 @@ def move(): bool {
                     ((x,y),(x_max,y_max),(x_min,y_min)) when (x<x_min) => { nejbor=this.left.external_move(a.copy(),(x,y) ); () } 
                     ((x,y),(x_max,y_max),(x_min,y_min)) when (y>y_max) => { nejbor=this.up.external_move(a.copy(), (x,y) ); ()  } 
                     ((x,y),(x_max,y_max),(x_min,y_min)) when (y<y_min) => { nejbor=this.down.external_move(a.copy(), (x,y) ); () };
-                print("external move {}\n", a);
+
                 await(nejbor);
-                if get(nejbor) then 
-                    {this.agents.remove(a);
-                             embed void { break; } end}
-                else
-                    {i=i+1};
+                match get(nejbor) with 
+                    true => {this.agents.remove(a);
+                             embed void { return true; } end}
+                    false => {i=i+1};
                 };
 
-            if (|a.next()| == 0) then
-                { print("dropped an agent\n"); 
+            match (|a.next()| == 0) with
+                true => { print("dropped an agent\n"); 
                           this.agents.remove(a)}
-            else { () }
+                false => { () }
             };
           true
          }

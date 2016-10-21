@@ -19,6 +19,7 @@ passive class Agent_struct {
     def isin(pos:(int,int)) : bool {
     let ret = false;
      for a in this.ss
+
        match a.pos() with
          _ when equal(pos,a.pos()) =>{ --print(" {}=={}\n",qq,a.pos); 
                                         ret=true }
@@ -28,6 +29,7 @@ passive class Agent_struct {
     def add(a:[Agent]) : void {
         let sss = new [Agent]( |a| + |this.ss| );
         let i=0;
+
             for t in this.ss {
                 sss[i]=t;
                 i=i+1
@@ -59,16 +61,14 @@ passive class Agent_struct {
 }
 --Abstraction for one Agent
 passive class Agent {
-   id : int                --global unique id IMMUTABLE
    pos : (int,int)         --current position MUTABLE
    targets : [(int,int)]   --waypoints, a list of positions to go to IMMUTABLE
    i : int                 --index of targets MUTABLE
 
-   def init(in_pos:(int,int), list:[(int,int)], in_id:int) : void {
+   def init(in_pos:(int,int), list:[(int,int)]) : void {
        this.pos=in_pos;
        this.i=0;
        this.targets=list;
-       this.id=in_id;
    }
 
    -- --returns places the agent can and want to go to
@@ -110,7 +110,7 @@ passive class Agent {
         qq[i]=this.targets[i];--(match this.targets[i] with (x,y) => (x,y));
         --i=i+1
     };
-    new Agent(q, qq, this.id)
+    new Agent(q, qq)
    } 
   
 }

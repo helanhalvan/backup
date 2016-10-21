@@ -12,7 +12,6 @@ fi
 if [[ $2 == "-c" ]]; then 
 encorec $1 -o $1.run --import ./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_image -ggdb" -g -c --debug
 #cd ./main_src
-#make CONFIG=debug
 #gdb $1.run
 fi
 
