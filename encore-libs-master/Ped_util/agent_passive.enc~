@@ -54,7 +54,9 @@ passive class Agent_struct {
     }
 
     def get_data() : [Agent] {
-        this.ss
+        let sss = ss;
+        ss= new [Agent](0);
+        sss
     }
 }
 --Abstraction for one Agent
@@ -110,7 +112,7 @@ passive class Agent {
         qq[i]=this.targets[i];--(match this.targets[i] with (x,y) => (x,y));
         --i=i+1
     };
-    new Agent(q, qq)
+    new Agent(q, qq, this.id)
    } 
   
 }

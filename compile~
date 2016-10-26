@@ -4,6 +4,11 @@ if [[ $2 == "-r" ]]; then
 encorec $1 -o $1.run --import ./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_image -ggdb" -g --run
 fi
 
+if [[ $2 == "-s" ]]; then 
+encorec $1 -o $1.run --import ./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_image -ggdb" -g
+./run --ponythreads 1
+fi
+
 if [[ $2 == "-d" ]]; then 
 encorec $1 -o $1.run --import ./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_image -ggdb" -g
 gdb $1.run
@@ -12,6 +17,8 @@ fi
 if [[ $2 == "-c" ]]; then 
 encorec $1 -o $1.run --import ./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_image -ggdb" -g -c --debug
 #cd ./main_src
+#make CONFIG=debug
 #gdb $1.run
+#./main --ponythreads 1
 fi
 

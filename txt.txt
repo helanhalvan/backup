@@ -1,0 +1,476 @@
+ *** Error during typechecking *** 
+"main.enc" (line 326, column 117)
+Type 'Agent' does not match expected type '[Agent]'
+In expression: 
+  this.agents.add(a)
+In expression: 
+  {a.move((x, y));
+   this.agents.add(a);
+   embed void { break; } end}
+In expression: 
+  match (desired[i], this.max, this.min) with
+    _ when this.agents.isin(desired[i]) => {i = i + 1;
+                                            embed void { continue; } end;
+                                            ()}
+    ((x, y), 
+     (x_max, y_max), 
+     (x_min, 
+      y_min)) when x <= x_max and x >= x_min and y <= y_max and y >= y_min => {a.move((x, 
+                                                                                       y));
+                                                                               this.agents.add(a);
+                                                                               embed void { break; } end}
+    ((x, y), 
+     (x_max, y_max), 
+     (x_min, 
+      y_min)) when x > x_max and y < y_min or y > y_max or x < x_min and y < y_min or y > y_max => {print("this should never happen, agent way off");
+                                                                                                    1 / 0;
+                                                                                                    ()}
+    ((x, y), 
+     (x_max, y_max), 
+     (x_min, 
+      y_min)) when x > x_max => {nejbor = this.right.external_move(a.copy(), 
+                                                                   (x, y));
+                                 ()}
+    ((x, y), 
+     (x_max, y_max), 
+     (x_min, 
+      y_min)) when x < x_min => {nejbor = this.left.external_move(a.copy(), 
+                                                                  (x, y));
+                                 ()}
+    ((x, y), 
+     (x_max, y_max), 
+     (x_min, 
+      y_min)) when y > y_max => {nejbor = this.up.external_move(a.copy(), 
+                                                                (x, y));
+                                 ()}
+    ((x, y), 
+     (x_max, y_max), 
+     (x_min, 
+      y_min)) when y < y_min => {nejbor = this.down.external_move(a.copy(), 
+                                                                  (x, y));
+                                 ()}
+  
+In expression: 
+  {match (desired[i], this.max, this.min) with
+     _ when this.agents.isin(desired[i]) => {i = i + 1;
+                                             embed void { continue; } end;
+                                             ()}
+     ((x, y), 
+      (x_max, y_max), 
+      (x_min, 
+       y_min)) when x <= x_max and x >= x_min and y <= y_max and y >= y_min => {a.move((x, 
+                                                                                        y));
+                                                                                this.agents.add(a);
+                                                                                embed void { break; } end}
+     ((x, y), 
+      (x_max, y_max), 
+      (x_min, 
+       y_min)) when x > x_max and y < y_min or y > y_max or x < x_min and y < y_min or y > y_max => {print("this should never happen, agent way off");
+                                                                                                     1 / 0;
+                                                                                                     ()}
+     ((x, y), 
+      (x_max, y_max), 
+      (x_min, 
+       y_min)) when x > x_max => {nejbor = this.right.external_move(a.copy(), 
+                                                                    (x, y));
+                                  ()}
+     ((x, y), 
+      (x_max, y_max), 
+      (x_min, 
+       y_min)) when x < x_min => {nejbor = this.left.external_move(a.copy(), 
+                                                                   (x, y));
+                                  ()}
+     ((x, y), 
+      (x_max, y_max), 
+      (x_min, 
+       y_min)) when y > y_max => {nejbor = this.up.external_move(a.copy(), 
+                                                                 (x, y));
+                                  ()}
+     ((x, y), 
+      (x_max, y_max), 
+      (x_min, 
+       y_min)) when y < y_min => {nejbor = this.down.external_move(a.copy(), 
+                                                                   (x, y));
+                                  ()}
+   ;
+   print("external move {} xxx {}\n", a.id, a.pos());
+   await nejbor;
+   if get nejbor then
+     embed void { break; } end
+   else
+     {this.agents.add(a);
+      i = i + 1}}
+In expression: 
+  while i < |desired|
+    {match (desired[i], this.max, this.min) with
+       _ when this.agents.isin(desired[i]) => {i = i + 1;
+                                               embed void { continue; } end;
+                                               ()}
+       ((x, y), 
+        (x_max, y_max), 
+        (x_min, 
+         y_min)) when x <= x_max and x >= x_min and y <= y_max and y >= y_min => {a.move((x, 
+                                                                                          y));
+                                                                                  this.agents.add(a);
+                                                                                  embed void { break; } end}
+       ((x, y), 
+        (x_max, y_max), 
+        (x_min, 
+         y_min)) when x > x_max and y < y_min or y > y_max or x < x_min and y < y_min or y > y_max => {print("this should never happen, agent way off");
+                                                                                                       1 / 0;
+                                                                                                       ()}
+       ((x, y), 
+        (x_max, y_max), 
+        (x_min, 
+         y_min)) when x > x_max => {nejbor = this.right.external_move(a.copy(), 
+                                                                      (x, y));
+                                    ()}
+       ((x, y), 
+        (x_max, y_max), 
+        (x_min, 
+         y_min)) when x < x_min => {nejbor = this.left.external_move(a.copy(), 
+                                                                     (x, y));
+                                    ()}
+       ((x, y), 
+        (x_max, y_max), 
+        (x_min, 
+         y_min)) when y > y_max => {nejbor = this.up.external_move(a.copy(), 
+                                                                   (x, y));
+                                    ()}
+       ((x, y), 
+        (x_max, y_max), 
+        (x_min, 
+         y_min)) when y < y_min => {nejbor = this.down.external_move(a.copy(), 
+                                                                     (x, y));
+                                    ()}
+     ;
+     print("external move {} xxx {}\n", a.id, a.pos());
+     await nejbor;
+     if get nejbor then
+       embed void { break; } end
+     else
+       {this.agents.add(a);
+        i = i + 1}}
+In expression: 
+  let nejbor = null : Fut bool
+In expression: 
+  let nejbor = null : Fut bool
+In expression: 
+  let i = 0
+In expression: 
+  let i = 0
+In expression: 
+  let desired = a.next()
+In expression: 
+  let desired = a.next()
+In expression: 
+  {let desired = a.next();
+   let i = 0;
+   let nejbor = null : Fut bool;
+   while i < |desired|
+     {match (desired[i], this.max, this.min) with
+        _ when this.agents.isin(desired[i]) => {i = i + 1;
+                                                embed void { continue; } end;
+                                                ()}
+        ((x, y), 
+         (x_max, y_max), 
+         (x_min, 
+          y_min)) when x <= x_max and x >= x_min and y <= y_max and y >= y_min => {a.move((x, 
+                                                                                           y));
+                                                                                   this.agents.add(a);
+                                                                                   embed void { break; } end}
+        ((x, y), 
+         (x_max, y_max), 
+         (x_min, 
+          y_min)) when x > x_max and y < y_min or y > y_max or x < x_min and y < y_min or y > y_max => {print("this should never happen, agent way off");
+                                                                                                        1 / 0;
+                                                                                                        ()}
+        ((x, y), 
+         (x_max, y_max), 
+         (x_min, 
+          y_min)) when x > x_max => {nejbor = this.right.external_move(a.copy(), 
+                                                                       (x, y));
+                                     ()}
+        ((x, y), 
+         (x_max, y_max), 
+         (x_min, 
+          y_min)) when x < x_min => {nejbor = this.left.external_move(a.copy(), 
+                                                                      (x, y));
+                                     ()}
+        ((x, y), 
+         (x_max, y_max), 
+         (x_min, 
+          y_min)) when y > y_max => {nejbor = this.up.external_move(a.copy(), 
+                                                                    (x, y));
+                                     ()}
+        ((x, y), 
+         (x_max, y_max), 
+         (x_min, 
+          y_min)) when y < y_min => {nejbor = this.down.external_move(a.copy(), 
+                                                                      (x, y));
+                                     ()}
+      ;
+      print("external move {} xxx {}\n", a.id, a.pos());
+      await nejbor;
+      if get nejbor then
+        embed void { break; } end
+      else
+        {this.agents.add(a);
+         i = i + 1}};
+   if |a.next()| == 0 then
+     {print("dropped an agent\n");
+      this.agents.remove(a)}
+   else
+     ()}
+In expression: 
+  for a in this.agents.get_data()
+    {let desired = a.next();
+     let i = 0;
+     let nejbor = null : Fut bool;
+     while i < |desired|
+       {match (desired[i], this.max, this.min) with
+          _ when this.agents.isin(desired[i]) => {i = i + 1;
+                                                  embed void { continue; } end;
+                                                  ()}
+          ((x, y), 
+           (x_max, y_max), 
+           (x_min, 
+            y_min)) when x <= x_max and x >= x_min and y <= y_max and y >= y_min => {a.move((x, 
+                                                                                             y));
+                                                                                     this.agents.add(a);
+                                                                                     embed void { break; } end}
+          ((x, y), 
+           (x_max, y_max), 
+           (x_min, 
+            y_min)) when x > x_max and y < y_min or y > y_max or x < x_min and y < y_min or y > y_max => {print("this should never happen, agent way off");
+                                                                                                          1 / 0;
+                                                                                                          ()}
+          ((x, y), 
+           (x_max, y_max), 
+           (x_min, 
+            y_min)) when x > x_max => {nejbor = this.right.external_move(a.copy(), 
+                                                                         (x, y));
+                                       ()}
+          ((x, y), 
+           (x_max, y_max), 
+           (x_min, 
+            y_min)) when x < x_min => {nejbor = this.left.external_move(a.copy(), 
+                                                                        (x, y));
+                                       ()}
+          ((x, y), 
+           (x_max, y_max), 
+           (x_min, 
+            y_min)) when y > y_max => {nejbor = this.up.external_move(a.copy(), 
+                                                                      (x, y));
+                                       ()}
+          ((x, y), 
+           (x_max, y_max), 
+           (x_min, 
+            y_min)) when y < y_min => {nejbor = this.down.external_move(a.copy(), 
+                                                                        (x, y));
+                                       ()}
+        ;
+        print("external move {} xxx {}\n", a.id, a.pos());
+        await nejbor;
+        if get nejbor then
+          embed void { break; } end
+        else
+          {this.agents.add(a);
+           i = i + 1}};
+     if |a.next()| == 0 then
+       {print("dropped an agent\n");
+        this.agents.remove(a)}
+     else
+       ()}
+In expression: 
+  {for a in this.agents.get_data()
+     {let desired = a.next();
+      let i = 0;
+      let nejbor = null : Fut bool;
+      while i < |desired|
+        {match (desired[i], this.max, this.min) with
+           _ when this.agents.isin(desired[i]) => {i = i + 1;
+                                                   embed void { continue; } end;
+                                                   ()}
+           ((x, y), 
+            (x_max, y_max), 
+            (x_min, 
+             y_min)) when x <= x_max and x >= x_min and y <= y_max and y >= y_min => {a.move((x, 
+                                                                                              y));
+                                                                                      this.agents.add(a);
+                                                                                      embed void { break; } end}
+           ((x, y), 
+            (x_max, y_max), 
+            (x_min, 
+             y_min)) when x > x_max and y < y_min or y > y_max or x < x_min and y < y_min or y > y_max => {print("this should never happen, agent way off");
+                                                                                                           1 / 0;
+                                                                                                           ()}
+           ((x, y), 
+            (x_max, y_max), 
+            (x_min, 
+             y_min)) when x > x_max => {nejbor = this.right.external_move(a.copy(), 
+                                                                          (x, y));
+                                        ()}
+           ((x, y), 
+            (x_max, y_max), 
+            (x_min, 
+             y_min)) when x < x_min => {nejbor = this.left.external_move(a.copy(), 
+                                                                         (x, y));
+                                        ()}
+           ((x, y), 
+            (x_max, y_max), 
+            (x_min, 
+             y_min)) when y > y_max => {nejbor = this.up.external_move(a.copy(), 
+                                                                       (x, y));
+                                        ()}
+           ((x, y), 
+            (x_max, y_max), 
+            (x_min, 
+             y_min)) when y < y_min => {nejbor = this.down.external_move(a.copy(), 
+                                                                         (x, y));
+                                        ()}
+         ;
+         print("external move {} xxx {}\n", a.id, a.pos());
+         await nejbor;
+         if get nejbor then
+           embed void { break; } end
+         else
+           {this.agents.add(a);
+            i = i + 1}};
+      if |a.next()| == 0 then
+        {print("dropped an agent\n");
+         this.agents.remove(a)}
+      else
+        ()};
+   true}
+In expression: 
+  if this.agents.size() == 0 then
+    false
+  else
+    {for a in this.agents.get_data()
+       {let desired = a.next();
+        let i = 0;
+        let nejbor = null : Fut bool;
+        while i < |desired|
+          {match (desired[i], this.max, this.min) with
+             _ when this.agents.isin(desired[i]) => {i = i + 1;
+                                                     embed void { continue; } end;
+                                                     ()}
+             ((x, y), 
+              (x_max, y_max), 
+              (x_min, 
+               y_min)) when x <= x_max and x >= x_min and y <= y_max and y >= y_min => {a.move((x, 
+                                                                                                y));
+                                                                                        this.agents.add(a);
+                                                                                        embed void { break; } end}
+             ((x, y), 
+              (x_max, y_max), 
+              (x_min, 
+               y_min)) when x > x_max and y < y_min or y > y_max or x < x_min and y < y_min or y > y_max => {print("this should never happen, agent way off");
+                                                                                                             1 / 0;
+                                                                                                             ()}
+             ((x, y), 
+              (x_max, y_max), 
+              (x_min, 
+               y_min)) when x > x_max => {nejbor = this.right.external_move(a.copy(), 
+                                                                            (x, y));
+                                          ()}
+             ((x, y), 
+              (x_max, y_max), 
+              (x_min, 
+               y_min)) when x < x_min => {nejbor = this.left.external_move(a.copy(), 
+                                                                           (x, y));
+                                          ()}
+             ((x, y), 
+              (x_max, y_max), 
+              (x_min, 
+               y_min)) when y > y_max => {nejbor = this.up.external_move(a.copy(), 
+                                                                         (x, y));
+                                          ()}
+             ((x, y), 
+              (x_max, y_max), 
+              (x_min, 
+               y_min)) when y < y_min => {nejbor = this.down.external_move(a.copy(), 
+                                                                           (x, y));
+                                          ()}
+           ;
+           print("external move {} xxx {}\n", a.id, a.pos());
+           await nejbor;
+           if get nejbor then
+             embed void { break; } end
+           else
+             {this.agents.add(a);
+              i = i + 1}};
+        if |a.next()| == 0 then
+          {print("dropped an agent\n");
+           this.agents.remove(a)}
+        else
+          ()};
+     true}
+In expression: 
+  if this.agents.size() == 0 then
+    false
+  else
+    {for a in this.agents.get_data()
+       {let desired = a.next();
+        let i = 0;
+        let nejbor = null : Fut bool;
+        while i < |desired|
+          {match (desired[i], this.max, this.min) with
+             _ when this.agents.isin(desired[i]) => {i = i + 1;
+                                                     embed void { continue; } end;
+                                                     ()}
+             ((x, y), 
+              (x_max, y_max), 
+              (x_min, 
+               y_min)) when x <= x_max and x >= x_min and y <= y_max and y >= y_min => {a.move((x, 
+                                                                                                y));
+                                                                                        this.agents.add(a);
+                                                                                        embed void { break; } end}
+             ((x, y), 
+              (x_max, y_max), 
+              (x_min, 
+               y_min)) when x > x_max and y < y_min or y > y_max or x < x_min and y < y_min or y > y_max => {print("this should never happen, agent way off");
+                                                                                                             1 / 0;
+                                                                                                             ()}
+             ((x, y), 
+              (x_max, y_max), 
+              (x_min, 
+               y_min)) when x > x_max => {nejbor = this.right.external_move(a.copy(), 
+                                                                            (x, y));
+                                          ()}
+             ((x, y), 
+              (x_max, y_max), 
+              (x_min, 
+               y_min)) when x < x_min => {nejbor = this.left.external_move(a.copy(), 
+                                                                           (x, y));
+                                          ()}
+             ((x, y), 
+              (x_max, y_max), 
+              (x_min, 
+               y_min)) when y > y_max => {nejbor = this.up.external_move(a.copy(), 
+                                                                         (x, y));
+                                          ()}
+             ((x, y), 
+              (x_max, y_max), 
+              (x_min, 
+               y_min)) when y < y_min => {nejbor = this.down.external_move(a.copy(), 
+                                                                           (x, y));
+                                          ()}
+           ;
+           print("external move {} xxx {}\n", a.id, a.pos());
+           await nejbor;
+           if get nejbor then
+             embed void { break; } end
+           else
+             {this.agents.add(a);
+              i = i + 1}};
+        if |a.next()| == 0 then
+          {print("dropped an agent\n");
+           this.agents.remove(a)}
+        else
+          ()};
+     true}
+In method 'move' of type 'bool'
+In class 'Box'
+

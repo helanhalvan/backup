@@ -323,6 +323,7 @@ def move(): bool {
                     _ when this.agents.isin(desired[i])  => {i=i+1; embed void { continue; } end; ()} 
                     --local move
                     ((x,y),(x_max,y_max),(x_min,y_min)) when (x<=x_max and x>=x_min and y<=y_max and y>=y_min) => { a.move((x,y)); 
+                                                                                                                    this.agents.add([a]);
                                                                                                                     --print("internal move {} {}\n",x,y); 
                                                                                                                     embed void { break; } end 
                                                                                                                   } 
@@ -332,19 +333,19 @@ def move(): bool {
                     ((x,y),(x_max,y_max),(x_min,y_min)) when (x<x_min) => { nejbor=this.left.external_move(a.copy(),(x,y) ); () } 
                     ((x,y),(x_max,y_max),(x_min,y_min)) when (y>y_max) => { nejbor=this.up.external_move(a.copy(), (x,y) ); ()  } 
                     ((x,y),(x_max,y_max),(x_min,y_min)) when (y<y_min) => { nejbor=this.down.external_move(a.copy(), (x,y) ); () };
-                print("external move {}\n", a);
+                print("external move {} xxx {}\n", a.id, a.pos());
                 await(nejbor);
                 if get(nejbor) then 
-                    {this.agents.remove(a);
+                    {
                              embed void { break; } end}
                 else
-                    {i=i+1};
+                    {this.agents.add([a]);i=i+1};
                 };
 
-            match (|a.next()| == 0) with
-                true => { print("dropped an agent\n"); 
+            if (|a.next()| == 0) then
+                { print("dropped an agent\n"); 
                           this.agents.remove(a)}
-                false => { () }
+            else { () }
             };
           true
          }
