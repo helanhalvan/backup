@@ -76,12 +76,16 @@ passive class Agent {
    -- --returns places the agent can and want to go to
    -- --can => an agent can only go up, down, left or right
    -- --want => an agent only want to go closer to their next waypoint
-   def next() : [(int,int)]
-     if |this.targets| == this.i then
-       new [(int,int)](0)
-     else {
+   def next() : [(int,int)] {
+     
+      if |this.targets| == this.i then this.i=0;
+      
+      match (this.pos, this.targets[this.i]) with  
+         ((x1,y1), (x2,y2)) when y1==y2 and x1==x2 => { this.i=this.i+1; ()}
+         _ => ();
+      if |this.targets| == this.i then this.i=0;
+       
        match (this.pos, this.targets[this.i]) with  
-         ((x1,y1), (x2,y2)) when y1==y2 and x1==x2 => { this.i=this.i+1; this.next() }
          ((x1,y1), (x2,y2)) when x1>x2 and y1>y2 => { [(x1-1,y1),(x1,y1-1)] }
          ((x1,y1), (x2,y2)) when x1<x2 and y1<y2 => { [(x1+1,y1),(x1,y1+1)] }
          ((x1,y1), (x2,y2)) when x1>x2 and y1<y2 => { [(x1-1,y1),(x1,y1+1)] }
@@ -90,6 +94,7 @@ passive class Agent {
          ((x1,y1), (x2,y2)) when y1>y2           => { [(x1,y1-1)] }
          ((x1,y1), (x2,y2)) when x1<x2           => { [(x1+1,y1)] }
          ((x1,y1), (x2,y2)) when y1<y2           => { [(x1,y1+1)] }
+         _ => { print("THIS SHOULD NEVER HAPPEN, |targets| = {} ", |this.targets|); new [(int,int)](0) }
       }
            
    --updates the current position

@@ -9,7 +9,7 @@
     <addwaypoint id="w1" />
   </agent>
 
-  <agent x="160" y="60" n="27" dx="50" dy="30">
+  <agent x="160" y="60" n="26" dx="50" dy="30">
     <addwaypoint id="w1" />
     <addwaypoint id="w2" />
   </agent>

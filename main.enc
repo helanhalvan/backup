@@ -88,6 +88,10 @@ class Main {
             for b in a.children_named("addway") {
                 agent_waypoints[j]=waypoints[int_or_0(string_or_empty(b.attribute_value("id").substring(1,2)).to_int())-1];
                 --print(agent_waypoints[i]);
+                unless |agent_waypoints|>1 then {
+                    print("THIS SHOULD NEVER HAPPEN |new_agent.waypoint|={}\n", |agent_waypoints|);
+                    max = 1/0
+                };
                 j=j+1;
             };
             
@@ -113,6 +117,12 @@ class Main {
                 --print( (agents[i]).pos() );
                 i=i+1;
             }    
+       };
+       for a in agents {
+            if (|a.targets|==2) then  
+                print(".")
+            else  
+                print("AGENT HAVE {} WAYPOINTS\n",|a.targets|) 
        };
        agents
    }
@@ -224,11 +234,19 @@ class Multi_box {
     def min() : (int,int) {this.min}
     def move () : bool {
         --Moves all the boxes in parrallel, then awaits them being done moving
-        let a = this.top_right.move();
-        let b = this.top_left.move();
-        let c = this.bottom_right.move();
-        let d = this.bottom_left.move();
+        let 
+        a = this.top_right.alive()
+        b = this.top_left.alive()
+        c = this.bottom_right.move()
+        d = this.bottom_left.move()
+        in {
+        unless ( (get(a)) or (get(b)) or (get(c)) or (get(d)) ) then print("SOMEONE IS DEAD!\n");
+        a = this.top_right.move();
+        b = this.top_left.move();
+        c = this.bottom_right.move();
+        d = this.bottom_left.move();
         (get(a)) or (get(b)) or (get(c)) or (get(d))
+        }
     }
     def agents() : [Agent] { flatten([get(this.top_right.agents()),
                              get(this.top_left.agents()),
@@ -308,6 +326,8 @@ def link(a:Box) : bool {
         ( (x_max_1,y_max_1),(x_min_1,y_min_1),(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_2+1) == y_min_1) => {this.down=a; print("down\n");true }
         _ => { false }
     }
+def alive(): bool { --print("{} is ALIVE\n",this.max); 
+                   true }
  --moves all agents in the box once 
  --returns true if there are some agents to move
  --otherwise false 
