@@ -6,11 +6,17 @@ Visualization requires SDL2 to work.
 Build instructions:
 
 Compile and run with:
+
 ./compile main.enc -r
+
 Compile and make C code with:
+
 ./compile main.enc -c
+
 If you want to do anything more fancy, use
+
 encorec main.enc
+
 with some options
 
 Credit:
