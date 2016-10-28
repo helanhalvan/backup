@@ -20,12 +20,21 @@ encorec main.enc
 with some options
 
 Credit:
+
 I have made the stuff in:
+
 encore-libs-master/Ped_util
+
 Some grandmother have made, altho I restructured it slightly:
+
 encore-libs-master/SDL
+
 All the other stuff in:
+
 encore-libs-master
+
 Is taken from:
+
 https://github.com/parapluu/encore-libs
+
 # backup
