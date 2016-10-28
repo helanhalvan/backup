@@ -1,7 +1,7 @@
 import FileIO.IO
 import XML.xml
 import Ped_util.agent_passive
-import SDL.SDL_Main
+--import SDL.SDL_Main
 
 class Main {
 --TODO

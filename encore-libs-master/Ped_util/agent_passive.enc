@@ -108,14 +108,11 @@ passive class Agent {
 
    --copy constructor, hopefully I won't need that one in the finnal version
    def copy() : Agent {
-   -- print("COPYING {}\n", |this.targets| - this.i);
-  embed void fflush(stdout); end;
-    let q = this.pos; --{match this.pos with (x,y) => (x,y)};
-    let qq = new [(int,int)](|this.targets| - this.i);
-    --let i = 0;
+
+    let q = this.pos;
+    let qq = new [(int,int)](|this.targets|);
     for i in [0..|qq|] {
-        qq[i]=this.targets[i];--(match this.targets[i] with (x,y) => (x,y));
-        --i=i+1
+        qq[i]=this.targets[i];
     };
     new Agent(q, qq, this.id)
    } 

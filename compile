@@ -5,7 +5,7 @@ encorec $1 -o $1.run --import ./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_
 fi
 
 if [[ $2 == "-s" ]]; then 
-encorec $1 -o $1.run --import ./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_image -ggdb" -g
+encorec $1 -o $1.run --import ./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_image -ggdb" -g --no-gc
 ./$1.run --ponythreads 1
 fi
 

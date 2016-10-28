@@ -1,7 +1,7 @@
 # backup
 Reuirments:
 Requires encore installed to work.
-Visualization requires SDL2 to work.
+Visualization requires SDL2 to work. To disable visualization remove the import of SDL files from main. (line 4 in main.enc)
 
 Build instructions:
 
