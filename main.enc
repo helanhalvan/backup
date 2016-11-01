@@ -1,7 +1,7 @@
 import FileIO.IO
 import XML.xml
 import Ped_util.agent_passive
-import SDL.SDL_Main
+--import SDL.SDL_Main
 
 class Main {
 --TODO
@@ -70,8 +70,9 @@ class Main {
                         _ => {print("BADINT2!\n"); 0}
             }
        };
-       
-       let agents= new [Agent](nr_agents);
+
+        let agents= new [Agent](nr_agents);
+            print("NAgents: {}\n", nr_agents);
        let i=0;
        for a in file.children_named("agent") {
             let 
@@ -113,8 +114,10 @@ class Main {
                     1 => {agents[i]=new Agent((x+dx,y-dy),copy_tr(agent_waypoints),i);}
                     2 => {agents[i]=new Agent((x-dx,y+dy),copy_tr(agent_waypoints),i);}
                     3 => {agents[i]=new Agent((x-dx,y-dy),copy_tr(agent_waypoints),i);};
-                i=i+1;
-            }    
+                    i=i+1;
+                    print("iteration i: {}\n", i);
+                };
+                print("Max i (n agents): {}\n", i);
             }
        };
        --this print checks if waypoints are added correctly
