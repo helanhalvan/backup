@@ -40,7 +40,7 @@ class Main {
                   _ => print("AGENT GOT NO POS!?\n")
        };
        get(sdl_main.refresh()); --}
-       if tick!=0 and get(superbox.move()) then this!loop(superbox,tick-1)
+       if tick>0 and get(superbox.move()) then this!loop(superbox,tick-1)
    }
    def parse_file(fname:String) : [Agent] {
        let sen = new XML_lib();
