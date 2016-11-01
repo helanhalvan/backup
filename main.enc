@@ -1,7 +1,7 @@
 import FileIO.IO
 import XML.xml
 import Ped_util.agent_passive
---import SDL.SDL_Main
+import SDL.SDL_Main
 
 class Main {
 --TODO
@@ -10,13 +10,12 @@ class Main {
 -- compile script
 --  -d for starting right into gdb
 --  -r for compile and run
-
---Add some UI
    def main() : void {
-
-       let superbox = new Multi_box(this.parse_file("scenario.xml"));
-       let x_size=0;
-       let y_size=0;
+       let 
+            superbox = new Multi_box(this.parse_file("scenario.xml"))
+            x_size=0
+            y_size=0
+       in {
        match (get(superbox.max()),get(superbox.min())) with 
                 ((xmax,ymax),(xmin,ymin)) => {x_size=(xmax-xmin); y_size=(ymax-ymin);};
        {-- 
@@ -26,9 +25,12 @@ class Main {
        get sdl_main.fillRectangle(new Rectangle(0,0,x_size*4,y_size*4));
        get sdl_main.setRenderColor(new ColorRGBA(255,255,255,0));
        get sdl_main.refresh(); --}
-       let cond = true;
-       let i=0;
-       while(cond and i<40000) {
+       this!loop(superbox,40000)
+       }
+   }
+   def loop(superbox:Multi_box, tick:int) : void {
+       tick=tick-1;
+       print("tick {}\n",tick);
        {--
        get(sdl_main.clearAll()); 
        for a in get(superbox.agents())
@@ -38,15 +40,13 @@ class Main {
                   _ => print("AGENT GOT NO POS!?\n")
        };
        get(sdl_main.refresh()); --}
-       print("tick {}\n",i);
-       i=i+1;
-       cond=get(superbox.move());
-       }
+       if tick!=0 and get(superbox.move()) then this!loop(superbox,tick-1)
    }
    def parse_file(fname:String) : [Agent] {
        let sen = new XML_lib();
        let file= new XML_node();
 
+       --PARSES file to XML, more 
        match sen.file_to_xml("scenario.xml") with 
             Just xml => {file=xml; print("\n\nWORKED!\n")}
             Nothing => print("\n\nBADXML!\n");
@@ -71,20 +71,21 @@ class Main {
                         _ => {print("BADINT2!\n"); 0}
             }
        };
+       
        let agents= new [Agent](nr_agents);
-       --TODO, extact x, y, dx, dy and n from <agent> and use to create values for [agent]
        let i=0;
        for a in file.children_named("agent") {
-            let max = int_or_0(a.attribute_value("n").to_int());
-            let x = int_or_0(a.attribute_value("x").to_int());
-            let y = int_or_0(a.attribute_value("y").to_int());
-            let dx_max = int_or_0(a.attribute_value("dx").to_int());
-            let dy_max = int_or_0(a.attribute_value("dy").to_int());
-            let dx=0;
-            let dy=0;
-            let agent_waypoints=new [(int,int)](|a.children_named("addway")|);
-            --print(|a.children_named("addway")|);
-            let j=0;
+            let 
+                max = int_or_0(a.attribute_value("n").to_int())
+                x = int_or_0(a.attribute_value("x").to_int())
+                y = int_or_0(a.attribute_value("y").to_int())
+                dx_max = int_or_0(a.attribute_value("dx").to_int())
+                dy_max = int_or_0(a.attribute_value("dy").to_int())
+                agent_waypoints=new [(int,int)](|a.children_named("addway")|)
+                dx=0
+                dy=0
+                j=0
+             in {
             for b in a.children_named("addway") {
                 agent_waypoints[j]=waypoints[int_or_0(string_or_empty(b.attribute_value("id").substring(1,2)).to_int())-1];
                 --print(agent_waypoints[i]);
@@ -94,13 +95,13 @@ class Main {
                 };
                 j=j+1;
             };
-            
+            --for each agent
             for derp in [0..max] {
                 --for this to be safe, agent_waypoints need to be copied for every agent
                 --in the future, I can make it immutable instead
 
                 --also distributes agents in a packed ball around (x,y) with some collisions
-                --this needs to be fixed in the future
+                --this should to be fixed in the future
                 match (derp % 4) with 
                      0 => {agents[i]=new Agent((x+dx,y+dy),copy_tr(agent_waypoints),i);
                 if(dx==0) then {
@@ -113,11 +114,11 @@ class Main {
                     1 => {agents[i]=new Agent((x+dx,y-dy),copy_tr(agent_waypoints),i);}
                     2 => {agents[i]=new Agent((x-dx,y+dy),copy_tr(agent_waypoints),i);}
                     3 => {agents[i]=new Agent((x-dx,y-dy),copy_tr(agent_waypoints),i);};
-                    
-                --print( (agents[i]).pos() );
                 i=i+1;
             }    
+            }
        };
+       --this print checks if waypoints are added correctly
        for a in agents {
             if (|a.targets|==2) then  
                 print(".")
@@ -130,15 +131,15 @@ class Main {
 def flatten(listlist:[[Agent]]) : [Agent] {
         let len=0;
         for a in listlist {
-            len=len+ |a| ;        
+            len=len+ |a| ;
         };
-        let list= new[Agent](len);
+        let list=new[Agent](len);
         let i=0;
         for a in listlist {
             for b in a {
                 list[i]=b;
                 i=i+1;
-            }        
+            }     
         };
         list
     }
@@ -160,7 +161,7 @@ def min(a:int,b:int) : int {
     else b
     }
 def int_or_0 (i:Maybe int ) : int {
-        match i with 
+        match i with
             Just nr => nr
             _ => {print("or0\n"); 0}
    }
@@ -181,21 +182,39 @@ trait Box {
 
 --multi threaded 2D space container
 class Multi_box {
+    --max x and y cords
     max : (int,int)
+    --min x and y cords
     min : (int,int)
+    
+    --4 sub-boxes, together covering all the space in Multi_box
+    {--
+    -----------------
+    |toplevel       |
+    |    |tl|tr|    |
+    |    -------    |
+    |    |bl|br|    |
+    |               |
+    -----------------
+    --}
     top_right : Box
     bottom_right : Box
     top_left : Box
     bottom_left : Box
+
+    --TODO, adding a toplevel field where I can send agents that go out of bounds
+    --currently I just create a massive box, and have agents in it neve move
+    toplevel : Box
+    
     def init(agents:[Agent]) : void {
-        let dx=0;
-        let dy=0;
+        let
+            dx=0
+            dy=0
+        in {
+        --find global xmax, xmin, and ymin, use to create boundries for the 2D space.
+        --looks at both starting positions and waypoints
         match this.find_extreme(agents) with
-            (xmax,ymax,xmin,ymin) => { --xmax=xmax*10;
-                                      --ymax=ymax*10;
-                                      --xmin=xmin-100;
-                                      --ymin=ymin-100;
-                                      this.max=(xmax,ymax); 
+            (xmax,ymax,xmin,ymin) => {this.max=(xmax,ymax); 
                                       this.min=(xmin,ymin); 
                                       dx=xmax-xmin; 
                                       dy=ymax-ymin;
@@ -204,11 +223,13 @@ class Multi_box {
                                       this.bottom_left=new Box( (xmax-(dx/2),ymax-(dy/2)),this.min);
                                       this.top_left= new Box( (xmax-(dx/2),ymax),(xmin,ymax-(dy/2)+1) );
                                       this.bottom_right=new Box( (xmax,ymax-(dy/2)),(xmax-(dx/2)+1,ymin) );
+                                      this.toplevel=new Box( (100000,100000), (-100000,-100000) );
                                       print("tr {} {}\n",get(this.top_right.max()),get(this.top_right.min()) );
                                       print("bl {} {}\n",get(this.bottom_left.max()),get(this.bottom_left.min()) );
                                       print("tl {} {}\n",get(this.top_left.max()),get(this.top_left.min()) );
                                       print("br {} {}\n",get(this.bottom_right.max()),get(this.bottom_right.min()) );
                                       };
+        --put each agent into exactly one box
         for a in agents {
             -- adding agents into boxes
             if( not get(this.top_right.add(a))) then {
@@ -218,7 +239,6 @@ class Multi_box {
             } else {print("SOMEONE GOT NO BOX!\n");}  
         };
         let win=true;
-
         --LINKING BOXES, to allow them to pass agents between eachother
         win=win and get (this.top_right.link(this.top_left));
         win=win and get (this.top_right.link(this.bottom_right));     
@@ -228,19 +248,31 @@ class Multi_box {
         win=win and get (this.bottom_left.link(this.top_left));
         win=win and get (this.bottom_right.link(this.top_right));
         win=win and get (this.bottom_right.link(this.bottom_left));
+        
+        --LINK to toplevel
+        this.top_right.default_link(this.toplevel);
+        this.top_left.default_link(this.toplevel);
+        this.bottom_right.default_link(this.toplevel);
+        this.bottom_left.default_link(this.toplevel);
         print("WIN={}\n",win);
+        }
     }
+    --get corners of box
     def max() : (int,int) {this.max}
     def min() : (int,int) {this.min}
+    
+    --moves all internal agents on step, returns true if any agents tried to move
     def move () : bool {
-        --Moves all the boxes in parrallel, then awaits them being done moving
-        let 
+        --debug check
+        let
         a = this.top_right.alive()
         b = this.top_left.alive()
-        c = this.bottom_right.move()
-        d = this.bottom_left.move()
+        c = this.bottom_right.alive()
+        d = this.bottom_left.alive()
         in {
         unless ( (get(a)) or (get(b)) or (get(c)) or (get(d)) ) then print("SOMEONE IS DEAD!\n");
+        
+        --Moves all the boxes in parrallel, then awaits them being done moving
         a = this.top_right.move();
         b = this.top_left.move();
         c = this.bottom_right.move();
@@ -294,20 +326,21 @@ def init(in_max:(int,int), in_min:(int,int) ) : void {
 def min() : (int,int) {this.min}
 def max() : (int,int) {this.max}
 def agents() : [Agent] {
-
-    let a=this.agents.get_data();
-    let b = new [Agent](|a|);
-    let i=0;
+    let 
+     a=this.agents.get_data()
+     b = new [Agent](|a|)
+     i=0
+    in {
     for c in a {
         b[i]=c.copy();
         i=i+1
     };
     b
-    }
+    }}
 
 --returns true if a is inside the box, and stores it. Otherwise returns false
 --TODO, check if legal, not needed currently
-def add(a:Agent) : bool{
+def add(a:Agent) : bool {
     match (a.pos(),this.max,this.min) with 
         ((x,y),(xmax,ymax),(xmin,ymin)) when x>xmax or x<xmin or y>ymax or y<ymin => false
         _ => {this.agents.add([a]); true}
@@ -326,17 +359,25 @@ def link(a:Box) : bool {
         ( (x_max_1,y_max_1),(x_min_1,y_min_1),(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_2+1) == y_min_1) => {this.down=a; print("down\n");true }
         _ => { false }
     }
-def alive(): bool { --print("{} is ALIVE\n",this.max); 
-                   true }
+def default_link(a:Box) : void {
+        this.up=a;
+        this.down=a;
+        this.left=a;
+        this.right=a;
+    }
+def alive(): bool { true }
+
  --moves all agents in the box once 
  --returns true if there are some agents to move
  --otherwise false 
 def move(): bool {
    if (this.agents.size() == 0) then { false } else {
        for a in this.agents.get_data() {
-            let desired = a.next();
-            let i = 0;
-            let nejbor = null:Fut bool;
+            let 
+                desired = a.next()
+                i = 0
+                nejbor = null:Fut bool
+            in {
             while( i < |desired| ) {
                 match (desired[i],this.max,this.min) with
                     --local collision
@@ -366,7 +407,7 @@ def move(): bool {
                 { print("dropped an agent\n"); 
                           this.agents.remove(a)}
             else { () }
-            };
+            }};
           true
          }
       }
@@ -379,5 +420,4 @@ def external_move(a:Agent, pos:(int,int) ) : bool {
         true   
     }
     }
-
 }

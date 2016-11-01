@@ -26,8 +26,10 @@ passive class Agent_struct {
        ret
     }
     def add(a:[Agent]) : void {
-        let sss = new [Agent]( |a| + |this.ss| );
-        let i=0;
+        let 
+            sss = new [Agent]( |a| + |this.ss| )
+            i=0
+        in {
             for t in this.ss {
                 sss[i]=t;
                 i=i+1
@@ -37,10 +39,11 @@ passive class Agent_struct {
                 i=i+1
             };
         this.ss=sss
-    }
+    }}
     def remove(a:Agent) : void {
-        let sss = new [Agent]( |this.ss| - 1 );
-        let   i = 0;        
+        let sss = new [Agent]( |this.ss| - 1 )
+            i = 0 
+        in{
             for t in this.ss {
                 if( not ( t == a ) ) then {
                     sss[i]=t;
@@ -48,11 +51,11 @@ passive class Agent_struct {
                 }
             };
         this.ss=sss
-    }
+    }}
     def size() : int {
         |this.ss|
     }
-
+    --empties the data structure 
     def get_data() : [Agent] {
         let sss = this.ss;
         this.ss= new [Agent](0);
@@ -77,7 +80,6 @@ passive class Agent {
    -- --can => an agent can only go up, down, left or right
    -- --want => an agent only want to go closer to their next waypoint
    def next() : [(int,int)] {
-     
       if |this.targets| == this.i then this.i=0;
       
       match (this.pos, this.targets[this.i]) with  
