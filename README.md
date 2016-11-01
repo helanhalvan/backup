@@ -3,7 +3,7 @@ Current state of code:
 
 It runs to completion if `
 
-* --no-gc` is used as a compiler option
+* the `--no-gc` is used as a compiler option
 
 * the code is run using `--ponythreads 1`
 
