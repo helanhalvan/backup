@@ -108,7 +108,7 @@ in
    b} */;
   /* a = this.agents.get_data() */;
   _enc__passive_Agent_struct_t* _fieldacc_1 = (*_this)._enc__field_agents;
-  check_receiver(_fieldacc_1, ".", "this.agents", "get_data", "\"main.enc\" (line 330, column 8)");
+  check_receiver(_fieldacc_1, ".", "this.agents", "get_data", "\"main.enc\" (line 329, column 8)");
   array_t* _sync_method_call_0 = _enc__method_Agent_struct_get_data(_ctx, _fieldacc_1);
   array_t* _a_2 = _sync_method_call_0;
   /* b = new [Agent](|a|) */;
@@ -141,7 +141,7 @@ in
   {
     _enc__passive_Agent_t* _c_10 = array_get(_a_2, _index_9).p;
     /* b[i] = c.copy() */;
-    check_receiver(_c_10, ".", "c", "copy", "\"main.enc\" (line 335, column 14)");
+    check_receiver(_c_10, ".", "c", "copy", "\"main.enc\" (line 334, column 14)");
     _enc__passive_Agent_t* _sync_method_call_16 = _enc__method_Agent_copy(_ctx, _c_10);
     array_set(_b_5, _i_7, ((encore_arg_t) {.p = _sync_method_call_16}));
     /* i = i + 1 */;
@@ -169,7 +169,7 @@ int64_t _enc__method_Box_add(pony_ctx_t** _ctx, _enc__active_Box_t* _this, _enc_
   tuple_set_type(_tuple_1, 0, (&(tuple_type)));
   tuple_set_type(_tuple_1, 1, (&(tuple_type)));
   tuple_set_type(_tuple_1, 2, (&(tuple_type)));
-  check_receiver(_enc__arg_a, ".", "a", "pos", "\"main.enc\" (line 344, column 12)");
+  check_receiver(_enc__arg_a, ".", "a", "pos", "\"main.enc\" (line 343, column 12)");
   tuple_t* _sync_method_call_2 = _enc__method_Agent_pos(_ctx, _enc__arg_a);
   tuple_t* _fieldacc_3 = (*_this)._enc__field_max;
   tuple_t* _fieldacc_4 = (*_this)._enc__field_min;
@@ -239,7 +239,7 @@ int64_t _enc__method_Box_add(pony_ctx_t** _ctx, _enc__active_Box_t* _this, _enc_
     {
       _match_0 = ((int64_t) ({/* this.agents.add([a]) */;
                               _enc__passive_Agent_struct_t* _fieldacc_14 = (*_this)._enc__field_agents;
-                              check_receiver(_fieldacc_14, ".", "this.agents", "add", "\"main.enc\" (line 346, column 15)");
+                              check_receiver(_fieldacc_14, ".", "this.agents", "add", "\"main.enc\" (line 345, column 15)");
                               array_t* _array_15 = array_mk(_ctx, 1, (&(_enc__passive_Agent_type)));
                               array_set(_array_15, 0, ((encore_arg_t) {.p = _enc__arg_a}));
                               void* _sync_method_call_13 = _enc__method_Agent_struct_add(_ctx, _fieldacc_14, _array_15);
@@ -260,12 +260,12 @@ int64_t _enc__method_Box_link(pony_ctx_t** _ctx, _enc__active_Box_t* _this, _enc
 {
   /* let c = a.max() */;
   /* c = a.max() */;
-  check_receiver(_enc__arg_a, ".", "a", "max", "\"main.enc\" (line 351, column 11)");
+  check_receiver(_enc__arg_a, ".", "a", "max", "\"main.enc\" (line 350, column 11)");
   future_t* _fut_0 = _enc__method_Box_max_future(_ctx, _enc__arg_a);
   future_t* _c_1 = _fut_0;
   /* let d = a.min() */;
   /* d = a.min() */;
-  check_receiver(_enc__arg_a, ".", "a", "min", "\"main.enc\" (line 352, column 11)");
+  check_receiver(_enc__arg_a, ".", "a", "min", "\"main.enc\" (line 351, column 11)");
   future_t* _fut_2 = _enc__method_Box_min_future(_ctx, _enc__arg_a);
   future_t* _d_3 = _fut_2;
   /* await c */;
@@ -732,7 +732,7 @@ else
    true} */;
   int64_t _ite_0;
   if (({int64_t _binop_4 = (({_enc__passive_Agent_struct_t* _fieldacc_2 = (*_this)._enc__field_agents;
-                              check_receiver(_fieldacc_2, ".", "this.agents", "size", "\"main.enc\" (line 374, column 8)");
+                              check_receiver(_fieldacc_2, ".", "this.agents", "size", "\"main.enc\" (line 373, column 8)");
                               int64_t _sync_method_call_1 = _enc__method_Agent_struct_size(_ctx, _fieldacc_2); _sync_method_call_1;}) == ({int64_t _literal_3 = 0; _literal_3;})); _binop_4;}))
   {
     /* false */;
@@ -803,7 +803,7 @@ else
        ()} */;
     void* _for_6;
     _enc__passive_Agent_struct_t* _fieldacc_14 = (*_this)._enc__field_agents;
-    check_receiver(_fieldacc_14, ".", "this.agents", "get_data", "\"main.enc\" (line 375, column 17)");
+    check_receiver(_fieldacc_14, ".", "this.agents", "get_data", "\"main.enc\" (line 374, column 17)");
     array_t* _sync_method_call_13 = _enc__method_Agent_struct_get_data(_ctx, _fieldacc_14);
     int64_t _start_9 = 0;
     int64_t _stop_10 = (array_size(_sync_method_call_13) - 1);
@@ -883,7 +883,7 @@ in
    else
      ()} */;
       /* desired = a.next() */;
-      check_receiver(_a_8, ".", "a", "next", "\"main.enc\" (line 377, column 27)");
+      check_receiver(_a_8, ".", "a", "next", "\"main.enc\" (line 376, column 27)");
       array_t* _sync_method_call_16 = _enc__method_Agent_next(_ctx, _a_8);
       array_t* _desired_17 = _sync_method_call_16;
       /* i = 0 */;
@@ -1003,7 +1003,7 @@ in
         if ((({int64_t _varBinding_230;
                ___30 = _tuple_26;
                _varBinding_230 = 1; _varBinding_230;}) && ({_enc__passive_Agent_struct_t* _fieldacc_232 = (*_this)._enc__field_agents;
-                                                            check_receiver(_fieldacc_232, ".", "this.agents", "isin", "\"main.enc\" (line 384, column 28)");
+                                                            check_receiver(_fieldacc_232, ".", "this.agents", "isin", "\"main.enc\" (line 383, column 28)");
                                                             tuple_t* _access_233 = array_get(_desired_17, _i_19).p;
                                                             int64_t _sync_method_call_231 = _enc__method_Agent_struct_isin(_ctx, _fieldacc_232, _access_233); _sync_method_call_231;})))
         {
@@ -1069,7 +1069,7 @@ in
                  _tupleCheck_204 = (_tupleCheck_204 && _tupleCheck_218); _tupleCheck_204;}) && ({int64_t _binop_229 = (({int64_t _binop_227 = (({int64_t _binop_225 = (({int64_t _binop_223 = (({ _x_33;}) <= ({ _x_max_35;})); _binop_223;}) && ({int64_t _binop_224 = (({ _x_33;}) >= ({ _x_min_37;})); _binop_224;})); _binop_225;}) && ({int64_t _binop_226 = (({ _y_34;}) <= ({ _y_max_36;})); _binop_226;})); _binop_227;}) && ({int64_t _binop_228 = (({ _y_34;}) >= ({ _y_min_38;})); _binop_228;})); _binop_229;})))
           {
             _match_25 = ((void*) ({/* a.move((x, y)) */;
-                                   check_receiver(_a_8, ".", "a", "move", "\"main.enc\" (line 386, column 117)");
+                                   check_receiver(_a_8, ".", "a", "move", "\"main.enc\" (line 385, column 117)");
                                    tuple_t* _tuple_40 = tuple_mk(_ctx, 2);
                                    tuple_set_type(_tuple_40, 0, ENCORE_PRIMITIVE);
                                    tuple_set_type(_tuple_40, 1, ENCORE_PRIMITIVE);
@@ -1078,7 +1078,7 @@ in
                                    void* _sync_method_call_39 = _enc__method_Agent_move(_ctx, _a_8, _tuple_40);
                                    /* this.agents.add([a]) */;
                                    _enc__passive_Agent_struct_t* _fieldacc_42 = (*_this)._enc__field_agents;
-                                   check_receiver(_fieldacc_42, ".", "this.agents", "add", "\"main.enc\" (line 387, column 117)");
+                                   check_receiver(_fieldacc_42, ".", "this.agents", "add", "\"main.enc\" (line 386, column 117)");
                                    array_t* _array_43 = array_mk(_ctx, 1, (&(_enc__passive_Agent_type)));
                                    array_set(_array_43, 0, ((encore_arg_t) {.p = _a_8}));
                                    void* _sync_method_call_41 = _enc__method_Agent_struct_add(_ctx, _fieldacc_42, _array_43);
@@ -1201,8 +1201,8 @@ in
               {
                 _match_25 = ((void*) ({/* nejbor = this.right.external_move(a.copy(), (x, y)) */;
                                        _enc__active_Box_t* _fieldacc_61 = (*_this)._enc__field_right;
-                                       check_receiver(_fieldacc_61, ".", "this.right", "external_move", "\"main.enc\" (line 393, column 84)");
-                                       check_receiver(_a_8, ".", "a", "copy", "\"main.enc\" (line 393, column 109)");
+                                       check_receiver(_fieldacc_61, ".", "this.right", "external_move", "\"main.enc\" (line 392, column 84)");
+                                       check_receiver(_a_8, ".", "a", "copy", "\"main.enc\" (line 392, column 109)");
                                        _enc__passive_Agent_t* _sync_method_call_62 = _enc__method_Agent_copy(_ctx, _a_8);
                                        tuple_t* _tuple_63 = tuple_mk(_ctx, 2);
                                        tuple_set_type(_tuple_63, 0, ENCORE_PRIMITIVE);
@@ -1269,8 +1269,8 @@ in
                 {
                   _match_25 = ((void*) ({/* nejbor = this.left.external_move(a.copy(), (x, y)) */;
                                          _enc__active_Box_t* _fieldacc_71 = (*_this)._enc__field_left;
-                                         check_receiver(_fieldacc_71, ".", "this.left", "external_move", "\"main.enc\" (line 394, column 84)");
-                                         check_receiver(_a_8, ".", "a", "copy", "\"main.enc\" (line 394, column 108)");
+                                         check_receiver(_fieldacc_71, ".", "this.left", "external_move", "\"main.enc\" (line 393, column 84)");
+                                         check_receiver(_a_8, ".", "a", "copy", "\"main.enc\" (line 393, column 108)");
                                          _enc__passive_Agent_t* _sync_method_call_72 = _enc__method_Agent_copy(_ctx, _a_8);
                                          tuple_t* _tuple_73 = tuple_mk(_ctx, 2);
                                          tuple_set_type(_tuple_73, 0, ENCORE_PRIMITIVE);
@@ -1337,8 +1337,8 @@ in
                   {
                     _match_25 = ((void*) ({/* nejbor = this.up.external_move(a.copy(), (x, y)) */;
                                            _enc__active_Box_t* _fieldacc_81 = (*_this)._enc__field_up;
-                                           check_receiver(_fieldacc_81, ".", "this.up", "external_move", "\"main.enc\" (line 395, column 84)");
-                                           check_receiver(_a_8, ".", "a", "copy", "\"main.enc\" (line 395, column 106)");
+                                           check_receiver(_fieldacc_81, ".", "this.up", "external_move", "\"main.enc\" (line 394, column 84)");
+                                           check_receiver(_a_8, ".", "a", "copy", "\"main.enc\" (line 394, column 106)");
                                            _enc__passive_Agent_t* _sync_method_call_82 = _enc__method_Agent_copy(_ctx, _a_8);
                                            tuple_t* _tuple_83 = tuple_mk(_ctx, 2);
                                            tuple_set_type(_tuple_83, 0, ENCORE_PRIMITIVE);
@@ -1405,8 +1405,8 @@ in
                     {
                       _match_25 = ((void*) ({/* nejbor = this.down.external_move(a.copy(), (x, y)) */;
                                              _enc__active_Box_t* _fieldacc_91 = (*_this)._enc__field_down;
-                                             check_receiver(_fieldacc_91, ".", "this.down", "external_move", "\"main.enc\" (line 396, column 84)");
-                                             check_receiver(_a_8, ".", "a", "copy", "\"main.enc\" (line 396, column 108)");
+                                             check_receiver(_fieldacc_91, ".", "this.down", "external_move", "\"main.enc\" (line 395, column 84)");
+                                             check_receiver(_a_8, ".", "a", "copy", "\"main.enc\" (line 395, column 108)");
                                              _enc__passive_Agent_t* _sync_method_call_92 = _enc__method_Agent_copy(_ctx, _a_8);
                                              tuple_t* _tuple_93 = tuple_mk(_ctx, 2);
                                              tuple_set_type(_tuple_93, 0, ENCORE_PRIMITIVE);
@@ -1431,7 +1431,7 @@ in
         };
         /* print("external move {} {}\n", a.id, a.pos()) */;
         int64_t _fieldacc_234 = (*_a_8)._enc__field_id;
-        check_receiver(_a_8, ".", "a", "pos", "\"main.enc\" (line 397, column 54)");
+        check_receiver(_a_8, ".", "a", "pos", "\"main.enc\" (line 396, column 54)");
         tuple_t* _sync_method_call_235 = _enc__method_Agent_pos(_ctx, _a_8);
         printf("external move %lli (%lli, %lli)\n", _fieldacc_234, tuple_get(_sync_method_call_235, 0).i, tuple_get(_sync_method_call_235, 1).i);
         /* await nejbor */;
@@ -1452,7 +1452,7 @@ else
         {
           /* this.agents.add([a]) */;
           _enc__passive_Agent_struct_t* _fieldacc_239 = (*_this)._enc__field_agents;
-          check_receiver(_fieldacc_239, ".", "this.agents", "add", "\"main.enc\" (line 403, column 22)");
+          check_receiver(_fieldacc_239, ".", "this.agents", "add", "\"main.enc\" (line 402, column 22)");
           array_t* _array_240 = array_mk(_ctx, 1, (&(_enc__passive_Agent_type)));
           array_set(_array_240, 0, ((encore_arg_t) {.p = _a_8}));
           void* _sync_method_call_238 = _enc__method_Agent_struct_add(_ctx, _fieldacc_239, _array_240);
@@ -1469,7 +1469,7 @@ else
 else
   () */;
       void* _ite_244;
-      if (({int64_t _binop_248 = (({check_receiver(_a_8, ".", "a", "next", "\"main.enc\" (line 406, column 18)");
+      if (({int64_t _binop_248 = (({check_receiver(_a_8, ".", "a", "next", "\"main.enc\" (line 405, column 18)");
                                     array_t* _sync_method_call_245 = _enc__method_Agent_next(_ctx, _a_8);
                                     int64_t _size_246 = array_size(_sync_method_call_245); _size_246;}) == ({int64_t _literal_247 = 0; _literal_247;})); _binop_248;}))
       {
@@ -1478,7 +1478,7 @@ else
         printf("%s", _literal_249);
         /* this.agents.remove(a) */;
         _enc__passive_Agent_struct_t* _fieldacc_251 = (*_this)._enc__field_agents;
-        check_receiver(_fieldacc_251, ".", "this.agents", "remove", "\"main.enc\" (line 408, column 27)");
+        check_receiver(_fieldacc_251, ".", "this.agents", "remove", "\"main.enc\" (line 407, column 27)");
         void* _sync_method_call_250 = _enc__method_Agent_struct_remove(_ctx, _fieldacc_251, _a_8);
         _ite_244 = ((void*) _sync_method_call_250);
       }
@@ -1509,7 +1509,7 @@ else
    true} */;
   int64_t _ite_0;
   if (({_enc__passive_Agent_struct_t* _fieldacc_2 = (*_this)._enc__field_agents;
-        check_receiver(_fieldacc_2, ".", "this.agents", "isin", "\"main.enc\" (line 417, column 8)");
+        check_receiver(_fieldacc_2, ".", "this.agents", "isin", "\"main.enc\" (line 416, column 8)");
         int64_t _sync_method_call_1 = _enc__method_Agent_struct_isin(_ctx, _fieldacc_2, _enc__arg_pos); _sync_method_call_1;}))
   {
     /* false */;
@@ -1519,11 +1519,11 @@ else
   else
   {
     /* a.move(pos) */;
-    check_receiver(_enc__arg_a, ".", "a", "move", "\"main.enc\" (line 418, column 9)");
+    check_receiver(_enc__arg_a, ".", "a", "move", "\"main.enc\" (line 417, column 9)");
     void* _sync_method_call_4 = _enc__method_Agent_move(_ctx, _enc__arg_a, _enc__arg_pos);
     /* this.agents.add([a]) */;
     _enc__passive_Agent_struct_t* _fieldacc_6 = (*_this)._enc__field_agents;
-    check_receiver(_fieldacc_6, ".", "this.agents", "add", "\"main.enc\" (line 419, column 9)");
+    check_receiver(_fieldacc_6, ".", "this.agents", "add", "\"main.enc\" (line 418, column 9)");
     array_t* _array_7 = array_mk(_ctx, 1, (&(_enc__passive_Agent_type)));
     array_set(_array_7, 0, ((encore_arg_t) {.p = _enc__arg_a}));
     void* _sync_method_call_5 = _enc__method_Agent_struct_add(_ctx, _fieldacc_6, _array_7);

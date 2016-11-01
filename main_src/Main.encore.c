@@ -150,27 +150,24 @@ in
 
 void* _enc__method_Main_loop(pony_ctx_t** _ctx, _enc__active_Main_t* _this, _enc__active_Multi_box_t* _enc__arg_superbox, int64_t _enc__arg_tick)
 {
-  /* tick = tick - 1 */;
-  int64_t _binop_1 = (({ _enc__arg_tick;}) - ({int64_t _literal_0 = 1; _literal_0;}));
-  _enc__arg_tick = _binop_1;
   /* print("tick {}\n", tick) */;
   printf("tick %lli\n", _enc__arg_tick);
   /* if tick > 0 and get superbox.move() then
   this!loop(superbox, tick - 1) */;
-  void* _ite_2;
-  if (({int64_t _binop_7 = (({int64_t _binop_4 = (({ _enc__arg_tick;}) > ({int64_t _literal_3 = 0; _literal_3;})); _binop_4;}) && ({check_receiver(_enc__arg_superbox, ".", "superbox", "move", "\"main.enc\" (line 43, column 26)");
-                                                                                                                                    future_t* _fut_5 = _enc__method_Multi_box_move_future(_ctx, _enc__arg_superbox);
-                                                                                                                                    int64_t _tmp_6 = future_get_actor(_ctx, _fut_5).i; _tmp_6;})); _binop_7;}))
+  void* _ite_0;
+  if (({int64_t _binop_5 = (({int64_t _binop_2 = (({ _enc__arg_tick;}) > ({int64_t _literal_1 = 0; _literal_1;})); _binop_2;}) && ({check_receiver(_enc__arg_superbox, ".", "superbox", "move", "\"main.enc\" (line 42, column 26)");
+                                                                                                                                    future_t* _fut_3 = _enc__method_Multi_box_move_future(_ctx, _enc__arg_superbox);
+                                                                                                                                    int64_t _tmp_4 = future_get_actor(_ctx, _fut_3).i; _tmp_4;})); _binop_5;}))
   {
-    check_receiver(_this, " ! ", "this", "loop", "\"main.enc\" (line 43, column 52)");
-    int64_t _binop_9 = (({ _enc__arg_tick;}) - ({int64_t _literal_8 = 1; _literal_8;}));
-    _enc__method_Main_loop_one_way(_ctx, _this, _enc__arg_superbox, _binop_9);
-    _ite_2 = ((void*) UNIT);
+    check_receiver(_this, " ! ", "this", "loop", "\"main.enc\" (line 42, column 52)");
+    int64_t _binop_7 = (({ _enc__arg_tick;}) - ({int64_t _literal_6 = 1; _literal_6;}));
+    _enc__method_Main_loop_one_way(_ctx, _this, _enc__arg_superbox, _binop_7);
+    _ite_0 = ((void*) UNIT);
   }
   else
   {
     UNIT;
-    _ite_2 = ((void*) UNIT);
+    _ite_0 = ((void*) UNIT);
   };
   return UNIT;
 }
@@ -195,7 +192,7 @@ array_t* _enc__method_Main_parse_file(pony_ctx_t** _ctx, _enc__active_Main_t* _t
                print("\n\nWORKED!\n")}
   Nothing => print("\n\nBADXML!\n")
  */;
-  check_receiver(_sen_1, ".", "sen", "file_to_xml", "\"main.enc\" (line 50, column 14)");
+  check_receiver(_sen_1, ".", "sen", "file_to_xml", "\"main.enc\" (line 49, column 14)");
   _enc__passive_String_t* _new_6 = _enc__constructor_String(_ctx);
   char* _embed_7 = ({"scenario.xml";});
   _enc__type_init_String(_new_6);
@@ -231,7 +228,7 @@ array_t* _enc__method_Main_parse_file(pony_ctx_t** _ctx, _enc__active_Main_t* _t
   };
   /* let xml_way = file.children_named("waypoint") */;
   /* xml_way = file.children_named("waypoint") */;
-  check_receiver(_file_3, ".", "file", "children_named", "\"main.enc\" (line 54, column 22)");
+  check_receiver(_file_3, ".", "file", "children_named", "\"main.enc\" (line 53, column 22)");
   _enc__passive_String_t* _new_19 = _enc__constructor_String(_ctx);
   char* _embed_20 = ({"waypoint";});
   _enc__type_init_String(_new_19);
@@ -289,21 +286,21 @@ array_t* _enc__method_Main_parse_file(pony_ctx_t** _ctx, _enc__active_Main_t* _t
     tuple_t* _tuple_36 = tuple_mk(_ctx, 2);
     tuple_set_type(_tuple_36, 0, (&(option_type)));
     tuple_set_type(_tuple_36, 1, (&(option_type)));
-    check_receiver(_a_29, ".", "a", "attribute_value", "\"main.enc\" (line 59, column 19)");
+    check_receiver(_a_29, ".", "a", "attribute_value", "\"main.enc\" (line 58, column 19)");
     _enc__passive_String_t* _new_39 = _enc__constructor_String(_ctx);
     char* _embed_40 = ({"x";});
     _enc__type_init_String(_new_39);
     _enc__method_String__init(_ctx, _new_39, _embed_40);
     _enc__passive_String_t* _sync_method_call_38 = _enc__method_XML_node_attribute_value(_ctx, _a_29, _new_39);
-    check_receiver(_sync_method_call_38, ".", "a.attribute_value(new String(embed char* \"x\"; end))", "to_int", "\"main.enc\" (line 59, column 19)");
+    check_receiver(_sync_method_call_38, ".", "a.attribute_value(new String(embed char* \"x\"; end))", "to_int", "\"main.enc\" (line 58, column 19)");
     option_t* _sync_method_call_37 = _enc__method_String_to_int(_ctx, _sync_method_call_38);
-    check_receiver(_a_29, ".", "a", "attribute_value", "\"main.enc\" (line 59, column 51)");
+    check_receiver(_a_29, ".", "a", "attribute_value", "\"main.enc\" (line 58, column 51)");
     _enc__passive_String_t* _new_43 = _enc__constructor_String(_ctx);
     char* _embed_44 = ({"y";});
     _enc__type_init_String(_new_43);
     _enc__method_String__init(_ctx, _new_43, _embed_44);
     _enc__passive_String_t* _sync_method_call_42 = _enc__method_XML_node_attribute_value(_ctx, _a_29, _new_43);
-    check_receiver(_sync_method_call_42, ".", "a.attribute_value(new String(embed char* \"y\"; end))", "to_int", "\"main.enc\" (line 59, column 51)");
+    check_receiver(_sync_method_call_42, ".", "a.attribute_value(new String(embed char* \"y\"; end))", "to_int", "\"main.enc\" (line 58, column 51)");
     option_t* _sync_method_call_41 = _enc__method_String_to_int(_ctx, _sync_method_call_42);
     tuple_set(_tuple_36, 0, ((encore_arg_t) {.p = _sync_method_call_37}));
     tuple_set(_tuple_36, 1, ((encore_arg_t) {.p = _sync_method_call_41}));
@@ -376,7 +373,7 @@ array_t* _enc__method_Main_parse_file(pony_ctx_t** _ctx, _enc__active_Main_t* _t
                                   0}
                            */;
   void* _for_69;
-  check_receiver(_file_3, ".", "file", "children_named", "\"main.enc\" (line 67, column 17)");
+  check_receiver(_file_3, ".", "file", "children_named", "\"main.enc\" (line 66, column 17)");
   _enc__passive_String_t* _new_77 = _enc__constructor_String(_ctx);
   char* _embed_78 = ({"agent";});
   _enc__type_init_String(_new_77);
@@ -410,13 +407,13 @@ array_t* _enc__method_Main_parse_file(pony_ctx_t** _ctx, _enc__active_Main_t* _t
   _ => {print("BADINT2!\n");
         0}
  */;
-                                                 check_receiver(_a_71, ".", "a", "attribute_value", "\"main.enc\" (line 69, column 23)");
+                                                 check_receiver(_a_71, ".", "a", "attribute_value", "\"main.enc\" (line 68, column 23)");
                                                  _enc__passive_String_t* _new_83 = _enc__constructor_String(_ctx);
                                                  char* _embed_84 = ({"n";});
                                                  _enc__type_init_String(_new_83);
                                                  _enc__method_String__init(_ctx, _new_83, _embed_84);
                                                  _enc__passive_String_t* _sync_method_call_82 = _enc__method_XML_node_attribute_value(_ctx, _a_71, _new_83);
-                                                 check_receiver(_sync_method_call_82, ".", "a.attribute_value(new String(embed char* \"n\"; end))", "to_int", "\"main.enc\" (line 69, column 23)");
+                                                 check_receiver(_sync_method_call_82, ".", "a.attribute_value(new String(embed char* \"n\"; end))", "to_int", "\"main.enc\" (line 68, column 23)");
                                                  option_t* _sync_method_call_81 = _enc__method_String_to_int(_ctx, _sync_method_call_82);
                                                  int64_t _match_80;
                                                  int64_t _nr_85;
@@ -501,7 +498,7 @@ array_t* _enc__method_Main_parse_file(pony_ctx_t** _ctx, _enc__active_Main_t* _t
         ;
         i = i + 1}} */;
   void* _for_100;
-  check_receiver(_file_3, ".", "file", "children_named", "\"main.enc\" (line 77, column 17)");
+  check_receiver(_file_3, ".", "file", "children_named", "\"main.enc\" (line 76, column 17)");
   _enc__passive_String_t* _new_108 = _enc__constructor_String(_ctx);
   char* _embed_109 = ({"agent";});
   _enc__type_init_String(_new_108);
@@ -566,67 +563,67 @@ in
       ;
       i = i + 1}} */;
     /* max = int_or_0(a.attribute_value("n").to_int()) */;
-    check_receiver(_a_102, ".", "a", "attribute_value", "\"main.enc\" (line 79, column 32)");
+    check_receiver(_a_102, ".", "a", "attribute_value", "\"main.enc\" (line 78, column 32)");
     _enc__passive_String_t* _new_113 = _enc__constructor_String(_ctx);
     char* _embed_114 = ({"n";});
     _enc__type_init_String(_new_113);
     _enc__method_String__init(_ctx, _new_113, _embed_114);
     _enc__passive_String_t* _sync_method_call_112 = _enc__method_XML_node_attribute_value(_ctx, _a_102, _new_113);
-    check_receiver(_sync_method_call_112, ".", "a.attribute_value(new String(embed char* \"n\"; end))", "to_int", "\"main.enc\" (line 79, column 32)");
+    check_receiver(_sync_method_call_112, ".", "a.attribute_value(new String(embed char* \"n\"; end))", "to_int", "\"main.enc\" (line 78, column 32)");
     option_t* _sync_method_call_111 = _enc__method_String_to_int(_ctx, _sync_method_call_112);
     pony_type_t* _tmp_115[] = {};
     int64_t _global_f_116 = _enc__global_fun_int_or_0(_ctx, NULL, _sync_method_call_111);
     int64_t _max_117 = _global_f_116;
     /* x = int_or_0(a.attribute_value("x").to_int()) */;
-    check_receiver(_a_102, ".", "a", "attribute_value", "\"main.enc\" (line 80, column 30)");
+    check_receiver(_a_102, ".", "a", "attribute_value", "\"main.enc\" (line 79, column 30)");
     _enc__passive_String_t* _new_120 = _enc__constructor_String(_ctx);
     char* _embed_121 = ({"x";});
     _enc__type_init_String(_new_120);
     _enc__method_String__init(_ctx, _new_120, _embed_121);
     _enc__passive_String_t* _sync_method_call_119 = _enc__method_XML_node_attribute_value(_ctx, _a_102, _new_120);
-    check_receiver(_sync_method_call_119, ".", "a.attribute_value(new String(embed char* \"x\"; end))", "to_int", "\"main.enc\" (line 80, column 30)");
+    check_receiver(_sync_method_call_119, ".", "a.attribute_value(new String(embed char* \"x\"; end))", "to_int", "\"main.enc\" (line 79, column 30)");
     option_t* _sync_method_call_118 = _enc__method_String_to_int(_ctx, _sync_method_call_119);
     pony_type_t* _tmp_122[] = {};
     int64_t _global_f_123 = _enc__global_fun_int_or_0(_ctx, NULL, _sync_method_call_118);
     int64_t _x_124 = _global_f_123;
     /* y = int_or_0(a.attribute_value("y").to_int()) */;
-    check_receiver(_a_102, ".", "a", "attribute_value", "\"main.enc\" (line 81, column 30)");
+    check_receiver(_a_102, ".", "a", "attribute_value", "\"main.enc\" (line 80, column 30)");
     _enc__passive_String_t* _new_127 = _enc__constructor_String(_ctx);
     char* _embed_128 = ({"y";});
     _enc__type_init_String(_new_127);
     _enc__method_String__init(_ctx, _new_127, _embed_128);
     _enc__passive_String_t* _sync_method_call_126 = _enc__method_XML_node_attribute_value(_ctx, _a_102, _new_127);
-    check_receiver(_sync_method_call_126, ".", "a.attribute_value(new String(embed char* \"y\"; end))", "to_int", "\"main.enc\" (line 81, column 30)");
+    check_receiver(_sync_method_call_126, ".", "a.attribute_value(new String(embed char* \"y\"; end))", "to_int", "\"main.enc\" (line 80, column 30)");
     option_t* _sync_method_call_125 = _enc__method_String_to_int(_ctx, _sync_method_call_126);
     pony_type_t* _tmp_129[] = {};
     int64_t _global_f_130 = _enc__global_fun_int_or_0(_ctx, NULL, _sync_method_call_125);
     int64_t _y_131 = _global_f_130;
     /* dx_max = int_or_0(a.attribute_value("dx").to_int()) */;
-    check_receiver(_a_102, ".", "a", "attribute_value", "\"main.enc\" (line 82, column 35)");
+    check_receiver(_a_102, ".", "a", "attribute_value", "\"main.enc\" (line 81, column 35)");
     _enc__passive_String_t* _new_134 = _enc__constructor_String(_ctx);
     char* _embed_135 = ({"dx";});
     _enc__type_init_String(_new_134);
     _enc__method_String__init(_ctx, _new_134, _embed_135);
     _enc__passive_String_t* _sync_method_call_133 = _enc__method_XML_node_attribute_value(_ctx, _a_102, _new_134);
-    check_receiver(_sync_method_call_133, ".", "a.attribute_value(new String(embed char* \"dx\"; end))", "to_int", "\"main.enc\" (line 82, column 35)");
+    check_receiver(_sync_method_call_133, ".", "a.attribute_value(new String(embed char* \"dx\"; end))", "to_int", "\"main.enc\" (line 81, column 35)");
     option_t* _sync_method_call_132 = _enc__method_String_to_int(_ctx, _sync_method_call_133);
     pony_type_t* _tmp_136[] = {};
     int64_t _global_f_137 = _enc__global_fun_int_or_0(_ctx, NULL, _sync_method_call_132);
     int64_t _dx_max_138 = _global_f_137;
     /* dy_max = int_or_0(a.attribute_value("dy").to_int()) */;
-    check_receiver(_a_102, ".", "a", "attribute_value", "\"main.enc\" (line 83, column 35)");
+    check_receiver(_a_102, ".", "a", "attribute_value", "\"main.enc\" (line 82, column 35)");
     _enc__passive_String_t* _new_141 = _enc__constructor_String(_ctx);
     char* _embed_142 = ({"dy";});
     _enc__type_init_String(_new_141);
     _enc__method_String__init(_ctx, _new_141, _embed_142);
     _enc__passive_String_t* _sync_method_call_140 = _enc__method_XML_node_attribute_value(_ctx, _a_102, _new_141);
-    check_receiver(_sync_method_call_140, ".", "a.attribute_value(new String(embed char* \"dy\"; end))", "to_int", "\"main.enc\" (line 83, column 35)");
+    check_receiver(_sync_method_call_140, ".", "a.attribute_value(new String(embed char* \"dy\"; end))", "to_int", "\"main.enc\" (line 82, column 35)");
     option_t* _sync_method_call_139 = _enc__method_String_to_int(_ctx, _sync_method_call_140);
     pony_type_t* _tmp_143[] = {};
     int64_t _global_f_144 = _enc__global_fun_int_or_0(_ctx, NULL, _sync_method_call_139);
     int64_t _dy_max_145 = _global_f_144;
     /* agent_waypoints = new [(int, int)](|a.children_named("addway")|) */;
-    check_receiver(_a_102, ".", "a", "children_named", "\"main.enc\" (line 84, column 50)");
+    check_receiver(_a_102, ".", "a", "children_named", "\"main.enc\" (line 83, column 50)");
     _enc__passive_String_t* _new_148 = _enc__constructor_String(_ctx);
     char* _embed_149 = ({"addway";});
     _enc__type_init_String(_new_148);
@@ -653,7 +650,7 @@ in
       max = 1 / 0};
    j = j + 1} */;
     void* _for_158;
-    check_receiver(_a_102, ".", "a", "children_named", "\"main.enc\" (line 89, column 22)");
+    check_receiver(_a_102, ".", "a", "children_named", "\"main.enc\" (line 88, column 22)");
     _enc__passive_String_t* _new_166 = _enc__constructor_String(_ctx);
     char* _embed_167 = ({"addway";});
     _enc__type_init_String(_new_166);
@@ -679,19 +676,19 @@ in
       _enc__passive_XML_node_t* _b_160 = array_get(_sync_method_call_165, _index_159).p;
       /* agent_waypoints[j] = waypoints[int_or_0(string_or_empty(b.attribute_value("id").substring(1, 
                                                                                           2)).to_int()) - 1] */;
-      int64_t _binop_181 = (({check_receiver(_b_160, ".", "b", "attribute_value", "\"main.enc\" (line 90, column 71)");
+      int64_t _binop_181 = (({check_receiver(_b_160, ".", "b", "attribute_value", "\"main.enc\" (line 89, column 71)");
                               _enc__passive_String_t* _new_172 = _enc__constructor_String(_ctx);
                               char* _embed_173 = ({"id";});
                               _enc__type_init_String(_new_172);
                               _enc__method_String__init(_ctx, _new_172, _embed_173);
                               _enc__passive_String_t* _sync_method_call_171 = _enc__method_XML_node_attribute_value(_ctx, _b_160, _new_172);
-                              check_receiver(_sync_method_call_171, ".", "b.attribute_value(new String(embed char* \"id\"; end))", "substring", "\"main.enc\" (line 90, column 71)");
+                              check_receiver(_sync_method_call_171, ".", "b.attribute_value(new String(embed char* \"id\"; end))", "substring", "\"main.enc\" (line 89, column 71)");
                               int64_t _literal_174 = 1;
                               int64_t _literal_175 = 2;
                               option_t* _sync_method_call_170 = _enc__method_String_substring(_ctx, _sync_method_call_171, _literal_174, _literal_175);
                               pony_type_t* _tmp_176[] = {};
                               _enc__passive_String_t* _global_f_177 = _enc__global_fun_string_or_empty(_ctx, NULL, _sync_method_call_170);
-                              check_receiver(_global_f_177, ".", "string_or_empty(b.attribute_value(new String(embed char* \"id\"; end)).substring(1, \n                                                                               2))", "to_int", "\"main.enc\" (line 90, column 55)");
+                              check_receiver(_global_f_177, ".", "string_or_empty(b.attribute_value(new String(embed char* \"id\"; end)).substring(1, \n                                                                               2))", "to_int", "\"main.enc\" (line 89, column 55)");
                               option_t* _sync_method_call_169 = _enc__method_String_to_int(_ctx, _global_f_177);
                               pony_type_t* _tmp_178[] = {};
                               int64_t _global_f_179 = _enc__global_fun_int_or_0(_ctx, NULL, _sync_method_call_169); _global_f_179;}) - ({int64_t _literal_180 = 1; _literal_180;}));
