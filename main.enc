@@ -26,9 +26,7 @@ class Main {
        get sdl_main.fillRectangle(new Rectangle(0,0,500,500));
        get sdl_main.setRenderColor(new ColorRGBA(240,220,240,0));
        get sdl_main.refresh(); --}
-       this.loop(superbox,40000,sdl_main);
-          --print("\n");
-          --while(true) { () };
+       this!loop(superbox,40000,sdl_main);
        }
    }
    def loop(superbox:Multi_box, tick:int,sdl_main:SDL_Main) : void { -- ,sdl_main:SDL_Main) : void {
@@ -39,12 +37,14 @@ class Main {
        for a in get(superbox.agents())
        {
             match a.pos with
-                (x,y) => {print("{} {} \n",x,y);  get sdl_main.fillRectangle( new Rectangle(x*4,y*4,1,1) )}
+                (x,y) => { --print("{} {} \n",x,y);  
+                            get sdl_main.fillRectangle( new Rectangle(x*4,y*4,1,1) )}
                   _ => print("AGENT GOT NO POS!?\n")
        }; --}
        get(sdl_main.refresh());
        if tick>0 and get(superbox.move()) then this!loop(superbox,tick-1,sdl_main)
        }
+       
        def parse_file(fname:String) : [Agent] {
            let
                sen = new XML_lib()

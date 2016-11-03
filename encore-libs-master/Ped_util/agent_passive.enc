@@ -7,6 +7,14 @@ def equal(a:(int,int),b:(int,int)) : bool {
     ((a1,a2),(b1,b2)) when (a1==b1 and a2==b2) => true
     _ => false
 }
+def distance(a:(int,int),b:(int,int)) : int {
+    match (a,b) with
+        ((x1,y1),(x2,y2)) => 4--rot(((x1-x2)*(x1-x2))+((y1-y2)*(y1-y2)))
+}
+
+def rot(nr:int) : int {
+    embed int { sqrt(#{nr}) } end
+}
 --data structure for holding multiple agents
 --NOTE, current implementation is shit, but it's easy to change later
 passive class Agent_struct {
@@ -64,12 +72,12 @@ passive class Agent_struct {
 }
                 --Abstraction for one Agent
 passive class Agent {
-    id : int                --global unique id IMMUTABLE
+    id : int                --global unique id IMMUTABLE, will be used to differentiate agents, at some point
     pos : (int,int)         --current position MUTABLE
-    targets : [(int,int)]   --waypoints, a list of positions to go to IMMUTABLE
+    targets : [(int,int,int)]   --waypoints, a list of positions to go to IMMUTABLE, (X,Y,R), so X and Y cordinates, and R radius
     i : int                 --index of targets MUTABLE
 
-    def init(in_pos:(int,int), list:[(int,int)], in_id:int) : void {
+    def init(in_pos:(int,int), list:[(int,int,int)], in_id:int) : void {
         this.pos=in_pos;
         this.i=0;
         this.targets=list;
@@ -83,19 +91,19 @@ passive class Agent {
         if |this.targets| == this.i then this.i=0;
 
             match (this.pos, this.targets[this.i]) with
-            ((x1,y1), (x2,y2)) when y1==y2 and x1==x2 => { this.i=this.i+1; ()}
+            ((x1,y1), (x2,y2,r)) when y1==y2 and x1==x2 => { this.i=this.i+1; ()}
             _ => ();
             if |this.targets| == this.i then this.i=0;
 
                 match (this.pos, this.targets[this.i]) with
-                ((x1,y1), (x2,y2)) when x1>x2 and y1>y2 => { [(x1-1,y1),(x1,y1-1)] }
-                ((x1,y1), (x2,y2)) when x1<x2 and y1<y2 => { [(x1+1,y1),(x1,y1+1)] }
-                ((x1,y1), (x2,y2)) when x1>x2 and y1<y2 => { [(x1-1,y1),(x1,y1+1)] }
-                ((x1,y1), (x2,y2)) when x1<x2 and y1>y2 => { [(x1+1,y1),(x1,y1-1)] }
-                ((x1,y1), (x2,y2)) when x1>x2           => { [(x1-1,y1)] }
-                ((x1,y1), (x2,y2)) when y1>y2           => { [(x1,y1-1)] }
-                ((x1,y1), (x2,y2)) when x1<x2           => { [(x1+1,y1)] }
-                ((x1,y1), (x2,y2)) when y1<y2           => { [(x1,y1+1)] }
+                ((x1,y1), (x2,y2,r)) when x1>x2 and y1>y2 => { [(x1-1,y1),(x1,y1-1)] }
+                ((x1,y1), (x2,y2,r)) when x1<x2 and y1<y2 => { [(x1+1,y1),(x1,y1+1)] }
+                ((x1,y1), (x2,y2,r)) when x1>x2 and y1<y2 => { [(x1-1,y1),(x1,y1+1)] }
+                ((x1,y1), (x2,y2,r)) when x1<x2 and y1>y2 => { [(x1+1,y1),(x1,y1-1)] }
+                ((x1,y1), (x2,y2,r)) when x1>x2           => { [(x1-1,y1)] }
+                ((x1,y1), (x2,y2,r)) when y1>y2           => { [(x1,y1-1)] }
+                ((x1,y1), (x2,y2,r)) when x1<x2           => { [(x1+1,y1)] }
+                ((x1,y1), (x2,y2,r)) when y1<y2           => { [(x1,y1+1)] }
                 _ => { print("THIS SHOULD NEVER HAPPEN, |targets| = {} ", |this.targets|); new [(int,int)](0) }
             }
 
@@ -111,7 +119,7 @@ passive class Agent {
                                     --copy constructor, hopefully I won't need that one in the finnal version
     def copy() : Agent {
         let q = this.pos;
-            let qq = new [(int,int)](|this.targets|);
+            let qq = new [(int,int,int)](|this.targets|);
                 for i in [0..(|qq|-1)] {
                     --this change exposes that the tupple this.targets[i] get mangled somewhere
                     qq[i]=this.targets[i]
