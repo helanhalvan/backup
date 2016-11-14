@@ -18,6 +18,11 @@ def copy_ar(arr:[int]) : [int] {
     };
     a2}
 }
+def rand() : int {
+    let x=0;
+    embed void { #{x}=rand(); } end;
+    x
+}
 def copy_tr(arr:[(int,int)]) : [(int,int)] {
         let a2=new [(int,int)](|arr|);
         let i=0;
@@ -51,7 +56,7 @@ passive class Agent_struct {
             match a.pos() with
             _ when equal(pos,a.pos()) =>{ --print(" {}=={}\n",qq,a.pos);
             ret=true }
-            _ => () ;
+            _ => ();
             ret
         }
     def add(a:[Agent]) : void {
@@ -74,7 +79,7 @@ passive class Agent_struct {
             i = 0
             in{
                 for t in this.ss {
-                    if( not ( t == a ) ) then {
+                    if( not ( t.id == a.id ) ) then {
                         sss[i]=t;
                         i=i+1
                     }
@@ -110,14 +115,15 @@ passive class Agent {
     -- --can => an agent can only go up, down, left or right
     -- --want => an agent only want to go closer to their next waypoint
     def next() : [(int,int)] {
-        if |this.targets| == this.i then this.i=0;
+            if |this.targets| == this.i then this.i=0;
 
             match (this.pos, this.targets[this.i]) with
             ((x1,y1), (x2,y2)) when distance( (x1,y1),(x2,y2) )<this.targets_size[this.i] => { this.i=this.i+1; ()}
             --((x1,y1), (x2,y2)) => {print("{}{}{}\n",(x1,y1), (x2,y2), distance((x1,y1),(x2,y2))); ()};
             _ => ();
             if |this.targets| == this.i then this.i=0;
-                match (this.pos, this.targets[this.i]) with
+
+            match (this.pos, this.targets[this.i]) with
                 ((x1,y1), (x2,y2)) when x1>x2 and y1>y2 => { [(x1-1,y1),(x1,y1-1)] }
                 ((x1,y1), (x2,y2)) when x1<x2 and y1<y2 => { [(x1+1,y1),(x1,y1+1)] }
                 ((x1,y1), (x2,y2)) when x1>x2 and y1<y2 => { [(x1-1,y1),(x1,y1+1)] }

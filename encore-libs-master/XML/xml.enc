@@ -28,11 +28,12 @@ passive class XML_node {
         };
         cn2
     }
+    --SEVERLY IMPERFECT
     def attribute_value(name:String) : String {
         let ret = "";
         for a in this.atribs {
-            match a with 
-                (key,value) when key.contains(name) => { ret=value; () } 
+            match a with
+                (key,value) when key.contains(name) => { ret=value; () }
                 _ => ()
         };
         --print(ret);
@@ -52,8 +53,8 @@ passive class XML_lib {
 
     if(|cont|==1) then {
         let r= match (s.char_at(0),s.char_at( s.size()-2),s.char_at(s.size()-1)) with
-                -- <self-closing-tag /> 
-                (Just '<', Just '/', Just '>') => { node.name=s; this.ext_atribs(node,node.name); Just node } 
+                -- <self-closing-tag />
+                (Just '<', Just '/', Just '>') => { node.name=s; this.ext_atribs(node,node.name); Just node }
                 _ => Nothing;
         embed void return #{r}; end
     };
@@ -64,7 +65,7 @@ passive class XML_lib {
     for i in [0..|cont|-1] {
         finnish=s.find_from(">",start);
         cont[i]={match s.substring(start,finnish+1) with Just sub => sub Nothing => ""};
-        
+
         --print("${}$\n",cont[i]);
         start=s.find_from("<",finnish)
         };
@@ -78,7 +79,7 @@ passive class XML_lib {
     let j=0;
     let temp = "";
     let level=0;
-    for i in [1..|cont|-2] { 
+    for i in [1..|cont|-2] {
         --print("TEMP:{}\n",temp);
         match (level,this.tag_type(cont[i])) with
                 (0,'c') => { node.comments[ci]=cont[i]; ci=ci+1; () }
@@ -86,18 +87,18 @@ passive class XML_lib {
                 (1,'e') => { babies[j]=temp.concatenate(cont[i]); temp=""; j=j+1; level=0; () }
                 (X,'e') => { temp=temp.concatenate(cont[i]); level=X-1; () }
                 (X,'s') => { temp=temp.concatenate(cont[i]); level=X+1; ()}
-                _ => {temp=temp.concatenate(cont[i]); () }        
+                _ => {temp=temp.concatenate(cont[i]); () }
     };
     node.children=new [XML_node](j);
     for i in [0..j-1] {
         --print("$$ {} \n\n",babies[i]);
-        match this.new_XML_node(babies[i]) with 
+        match this.new_XML_node(babies[i]) with
                 Just xml => { node.children[i]=xml; () }
                 Nothing => { bad=true; () }
        };
-       
+
        if(bad==false) then {
-            Just node 
+            Just node
        }
        else
             Nothing
@@ -106,17 +107,17 @@ passive class XML_lib {
 
     def tag_type( s:String ) : char {
          match s.char_at(1) with
-            --print("COMMENT\n"); 
+            --print("COMMENT\n");
                 Just '!' => { 'c' }
-            --print("END-TAG\n"); 
+            --print("END-TAG\n");
                 Just '/' => { 'e' }
-                _ => { 
-                        match s.char_at( s.size()-2) with 
-                                Just '/' => { --print("Self-Closing\n"); 
-'t' 
+                _ => {
+                        match s.char_at( s.size()-2) with
+                                Just '/' => { --print("Self-Closing\n");
+'t'
 }
-                                _ => { --print("START-TAG\n"); 
-'s' 
+                                _ => { --print("START-TAG\n");
+'s'
 }
                      }
     }
@@ -130,10 +131,10 @@ passive class XML_lib {
         for i in [0..|node.atribs|-1] {
             space=s.find_from(" ",eqsign); --last space before next eqsign, TODO make work for all cases
             eqsign=s.find_from("=",eqsign+1);
-            value=match s.substring(eqsign+2,this.or_find_from(" ", ">",eqsign,s)-1) with 
+            value=match s.substring(eqsign+2,this.or_find_from(" ", ">",eqsign,s)-1) with
                             Just derp => derp
                             Nothing => "MISSFORMEDVALUE";
-            key=match s.substring(space,eqsign) with 
+            key=match s.substring(space,eqsign) with
                             Just derp => derp
                             Nothing => "MISSFORMEDKEY";
             node.atribs[i]=(key,value);
@@ -146,7 +147,7 @@ passive class XML_lib {
         --print("{} < {}\n", w, q);
         if(w<q and w>(-1) ) then { w } else { q }
     }
-    def pair(head:String, tail:String) : bool { 
+    def pair(head:String, tail:String) : bool {
         --TODO <x></x> => true else => false
         true
     }
@@ -164,4 +165,3 @@ passive class XML_lib {
        this.new_XML_node(s)
     }
 }
-
