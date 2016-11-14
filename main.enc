@@ -37,14 +37,14 @@ class Main {
        for a in get(superbox.agents())
        {
             match a.pos with
-                (x,y) => { --print("{} {} \n",x,y);  
+                (x,y) => { --print("{} {} \n",x,y);
                             get sdl_main.fillRectangle( new Rectangle(x*4,y*4,1,1) )}
                   _ => print("AGENT GOT NO POS!?\n")
        }; --}
        get(sdl_main.refresh());
        if tick>0 and get(superbox.move()) then this!loop(superbox,tick-1,sdl_main)
        }
-       
+
        def parse_file(fname:String) : [Agent] {
            let
                sen = new XML_lib()
@@ -56,15 +56,20 @@ class Main {
 
             let
                 xml_way = file.children_named("waypoint")
-                waypoints=new [(int,int)]( |xml_way| )
+                waypoints=new [(int,int)] ( |xml_way| )
+                waypoints_distance=new [int] ( |xml_way| )
                 i=0
             in {
+                --print(|xml_way|);
                 for a in xml_way {
                     waypoints[i]={
                     match (a.attribute_value("x").to_int(),a.attribute_value("y").to_int()) with
                         (Just x,Just y) => (x,y)
                         _ => { print("BADINT!\n"); (0,0)}};
-                    i=i+1;
+                    waypoints_distance[i]= int_or_0(a.attribute_value("r").to_int());
+                    --print("derp {}\n",waypoints_distance[i]);
+                    --print("derp {}\n", copy_ar(waypoints_distance)[i]);
+                    i=i+1
                 };
                                    --print("SO MANY WAYPOINTS {}\n",|waypoints|);
                let nr_agents=0;
@@ -103,11 +108,10 @@ class Main {
                                        for derp in [0..max] {
                                            --for this to be safe, agent_waypoints need to be copied for every agent
                                            --in the future, I can make it immutable instead
-
                                            --also distributes agents in a packed ball around (x,y) with some collisions
                                            --this should to be fixed in the future
                                            match (derp % 4) with
-                                           0 => {agents[i]=new Agent((x+dx,y+dy),copy_tr(agent_waypoints),i);
+                                           0 => {agents[i]=new Agent((x+dx,y+dy),copy_tr(agent_waypoints),copy_ar(waypoints_distance),i);
                                                if(dx==0) then {
                                                    dx=dy+1;
                                                    dy=0
@@ -115,17 +119,18 @@ class Main {
                                                    dx=dx-1;
                                                    dy=dy+1
                                                };}
-                                               1 => {agents[i]=new Agent((x+dx,y-dy),copy_tr(agent_waypoints),i);}
-                                               2 => {agents[i]=new Agent((x-dx,y+dy),copy_tr(agent_waypoints),i);}
-                                               3 => {agents[i]=new Agent((x-dx,y-dy),copy_tr(agent_waypoints),i);};
+                                               1 => {agents[i]=new Agent((x+dx,y-dy),copy_tr(agent_waypoints),copy_ar(waypoints_distance),i);}
+                                               2 => {agents[i]=new Agent((x-dx,y+dy),copy_tr(agent_waypoints),copy_ar(waypoints_distance),i);}
+                                               3 => {agents[i]=new Agent((x-dx,y-dy),copy_tr(agent_waypoints),copy_ar(waypoints_distance),i);};
                                                i=i+1;
                                            }
                                        }
 
                                    };
                                    --this print checks if waypoints are added correctly
+                                    print("checking\n");
                                    for a in agents {
-                                       if (|a.targets|==2) then
+                                       if (|a.targets|==2 and |a.targets_size|==2) then
                                            print(".")
                                            else
                                                print("AGENT HAVE {} WAYPOINTS\n",|a.targets|)
@@ -148,15 +153,6 @@ def flatten(listlist:[[Agent]]) : [Agent] {
         };
         list
     }
-def copy_tr(arr:[(int,int)]) : [(int,int)] {
-        let a2=new [(int,int)](|arr|);
-        let i=0;
-        for a in arr {
-            a2[i]=a;
-            i=i+1;
-        };
-        a2
-   }
 def max(a:int,b:int) : int {
     if(a>b) then a
     else b

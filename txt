@@ -1,0 +1,793 @@
+ *** Error during typechecking *** 
+"main.enc" (line 112, column 60)
+Type '[int]' does not match expected type '[(int, int)]'
+In expression: 
+  new Agent((x + dx, y + dy), 
+            copy_ar(waypoints_distance), 
+            copy_tr(agent_waypoints), 
+            i)
+In expression: 
+  agents[i] = new Agent((x + dx, y + dy), 
+                        copy_ar(waypoints_distance), 
+                        copy_tr(agent_waypoints), 
+                        i)
+In expression: 
+  {agents[i] = new Agent((x + dx, y + dy), 
+                         copy_ar(waypoints_distance), 
+                         copy_tr(agent_waypoints), 
+                         i);
+   if dx == 0 then
+     {dx = dy + 1;
+      dy = 0}
+   else
+     {dx = dx - 1;
+      dy = dy + 1}}
+In expression: 
+  match derp % 4 with
+    0 => {agents[i] = new Agent((x + dx, y + dy), 
+                                copy_ar(waypoints_distance), 
+                                copy_tr(agent_waypoints), 
+                                i);
+          if dx == 0 then
+            {dx = dy + 1;
+             dy = 0}
+          else
+            {dx = dx - 1;
+             dy = dy + 1}}
+    1 => agents[i] = new Agent((x + dx, y - dy), 
+                               copy_ar(waypoints_distance), 
+                               copy_tr(agent_waypoints), 
+                               i)
+    2 => agents[i] = new Agent((x - dx, y + dy), 
+                               copy_ar(waypoints_distance), 
+                               copy_tr(agent_waypoints), 
+                               i)
+    3 => agents[i] = new Agent((x - dx, y - dy), 
+                               copy_ar(waypoints_distance), 
+                               copy_tr(agent_waypoints), 
+                               i)
+  
+In expression: 
+  {match derp % 4 with
+     0 => {agents[i] = new Agent((x + dx, y + dy), 
+                                 copy_ar(waypoints_distance), 
+                                 copy_tr(agent_waypoints), 
+                                 i);
+           if dx == 0 then
+             {dx = dy + 1;
+              dy = 0}
+           else
+             {dx = dx - 1;
+              dy = dy + 1}}
+     1 => agents[i] = new Agent((x + dx, y - dy), 
+                                copy_ar(waypoints_distance), 
+                                copy_tr(agent_waypoints), 
+                                i)
+     2 => agents[i] = new Agent((x - dx, y + dy), 
+                                copy_ar(waypoints_distance), 
+                                copy_tr(agent_waypoints), 
+                                i)
+     3 => agents[i] = new Agent((x - dx, y - dy), 
+                                copy_ar(waypoints_distance), 
+                                copy_tr(agent_waypoints), 
+                                i)
+   ;
+   i = i + 1}
+In expression: 
+  for derp in [ 0 , max by 1 ]
+    {match derp % 4 with
+       0 => {agents[i] = new Agent((x + dx, y + dy), 
+                                   copy_ar(waypoints_distance), 
+                                   copy_tr(agent_waypoints), 
+                                   i);
+             if dx == 0 then
+               {dx = dy + 1;
+                dy = 0}
+             else
+               {dx = dx - 1;
+                dy = dy + 1}}
+       1 => agents[i] = new Agent((x + dx, y - dy), 
+                                  copy_ar(waypoints_distance), 
+                                  copy_tr(agent_waypoints), 
+                                  i)
+       2 => agents[i] = new Agent((x - dx, y + dy), 
+                                  copy_ar(waypoints_distance), 
+                                  copy_tr(agent_waypoints), 
+                                  i)
+       3 => agents[i] = new Agent((x - dx, y - dy), 
+                                  copy_ar(waypoints_distance), 
+                                  copy_tr(agent_waypoints), 
+                                  i)
+     ;
+     i = i + 1}
+In expression: 
+  {for b in a.children_named("addway")
+     {agent_waypoints[j] = waypoints[int_or_0(string_or_empty(b.attribute_value("id").substring(1, 
+                                                                                                2)).to_int()) - 1];
+      unless |agent_waypoints| > 1 then
+        {print("THIS SHOULD NEVER HAPPEN |new_agent.waypoint|={}\n", 
+               |agent_waypoints|);
+         max = 1 / 0};
+      j = j + 1};
+   for derp in [ 0 , max by 1 ]
+     {match derp % 4 with
+        0 => {agents[i] = new Agent((x + dx, y + dy), 
+                                    copy_ar(waypoints_distance), 
+                                    copy_tr(agent_waypoints), 
+                                    i);
+              if dx == 0 then
+                {dx = dy + 1;
+                 dy = 0}
+              else
+                {dx = dx - 1;
+                 dy = dy + 1}}
+        1 => agents[i] = new Agent((x + dx, y - dy), 
+                                   copy_ar(waypoints_distance), 
+                                   copy_tr(agent_waypoints), 
+                                   i)
+        2 => agents[i] = new Agent((x - dx, y + dy), 
+                                   copy_ar(waypoints_distance), 
+                                   copy_tr(agent_waypoints), 
+                                   i)
+        3 => agents[i] = new Agent((x - dx, y - dy), 
+                                   copy_ar(waypoints_distance), 
+                                   copy_tr(agent_waypoints), 
+                                   i)
+      ;
+      i = i + 1}}
+In expression: 
+  let max = int_or_0(a.attribute_value("n").to_int())
+      x = int_or_0(a.attribute_value("x").to_int())
+      y = int_or_0(a.attribute_value("y").to_int())
+      dx_max = int_or_0(a.attribute_value("dx").to_int())
+      dy_max = int_or_0(a.attribute_value("dy").to_int())
+      agent_waypoints = new [(int, int)](|a.children_named("addway")|)
+      dx = 0
+      dy = 0
+      j = 0
+  in
+    {for b in a.children_named("addway")
+       {agent_waypoints[j] = waypoints[int_or_0(string_or_empty(b.attribute_value("id").substring(1, 
+                                                                                                  2)).to_int()) - 1];
+        unless |agent_waypoints| > 1 then
+          {print("THIS SHOULD NEVER HAPPEN |new_agent.waypoint|={}\n", 
+                 |agent_waypoints|);
+           max = 1 / 0};
+        j = j + 1};
+     for derp in [ 0 , max by 1 ]
+       {match derp % 4 with
+          0 => {agents[i] = new Agent((x + dx, y + dy), 
+                                      copy_ar(waypoints_distance), 
+                                      copy_tr(agent_waypoints), 
+                                      i);
+                if dx == 0 then
+                  {dx = dy + 1;
+                   dy = 0}
+                else
+                  {dx = dx - 1;
+                   dy = dy + 1}}
+          1 => agents[i] = new Agent((x + dx, y - dy), 
+                                     copy_ar(waypoints_distance), 
+                                     copy_tr(agent_waypoints), 
+                                     i)
+          2 => agents[i] = new Agent((x - dx, y + dy), 
+                                     copy_ar(waypoints_distance), 
+                                     copy_tr(agent_waypoints), 
+                                     i)
+          3 => agents[i] = new Agent((x - dx, y - dy), 
+                                     copy_ar(waypoints_distance), 
+                                     copy_tr(agent_waypoints), 
+                                     i)
+        ;
+        i = i + 1}}
+In expression: 
+  let max = int_or_0(a.attribute_value("n").to_int())
+      x = int_or_0(a.attribute_value("x").to_int())
+      y = int_or_0(a.attribute_value("y").to_int())
+      dx_max = int_or_0(a.attribute_value("dx").to_int())
+      dy_max = int_or_0(a.attribute_value("dy").to_int())
+      agent_waypoints = new [(int, int)](|a.children_named("addway")|)
+      dx = 0
+      dy = 0
+      j = 0
+  in
+    {for b in a.children_named("addway")
+       {agent_waypoints[j] = waypoints[int_or_0(string_or_empty(b.attribute_value("id").substring(1, 
+                                                                                                  2)).to_int()) - 1];
+        unless |agent_waypoints| > 1 then
+          {print("THIS SHOULD NEVER HAPPEN |new_agent.waypoint|={}\n", 
+                 |agent_waypoints|);
+           max = 1 / 0};
+        j = j + 1};
+     for derp in [ 0 , max by 1 ]
+       {match derp % 4 with
+          0 => {agents[i] = new Agent((x + dx, y + dy), 
+                                      copy_ar(waypoints_distance), 
+                                      copy_tr(agent_waypoints), 
+                                      i);
+                if dx == 0 then
+                  {dx = dy + 1;
+                   dy = 0}
+                else
+                  {dx = dx - 1;
+                   dy = dy + 1}}
+          1 => agents[i] = new Agent((x + dx, y - dy), 
+                                     copy_ar(waypoints_distance), 
+                                     copy_tr(agent_waypoints), 
+                                     i)
+          2 => agents[i] = new Agent((x - dx, y + dy), 
+                                     copy_ar(waypoints_distance), 
+                                     copy_tr(agent_waypoints), 
+                                     i)
+          3 => agents[i] = new Agent((x - dx, y - dy), 
+                                     copy_ar(waypoints_distance), 
+                                     copy_tr(agent_waypoints), 
+                                     i)
+        ;
+        i = i + 1}}
+In expression: 
+  for a in file.children_named("agent")
+    let max = int_or_0(a.attribute_value("n").to_int())
+        x = int_or_0(a.attribute_value("x").to_int())
+        y = int_or_0(a.attribute_value("y").to_int())
+        dx_max = int_or_0(a.attribute_value("dx").to_int())
+        dy_max = int_or_0(a.attribute_value("dy").to_int())
+        agent_waypoints = new [(int, int)](|a.children_named("addway")|)
+        dx = 0
+        dy = 0
+        j = 0
+    in
+      {for b in a.children_named("addway")
+         {agent_waypoints[j] = waypoints[int_or_0(string_or_empty(b.attribute_value("id").substring(1, 
+                                                                                                    2)).to_int()) - 1];
+          unless |agent_waypoints| > 1 then
+            {print("THIS SHOULD NEVER HAPPEN |new_agent.waypoint|={}\n", 
+                   |agent_waypoints|);
+             max = 1 / 0};
+          j = j + 1};
+       for derp in [ 0 , max by 1 ]
+         {match derp % 4 with
+            0 => {agents[i] = new Agent((x + dx, y + dy), 
+                                        copy_ar(waypoints_distance), 
+                                        copy_tr(agent_waypoints), 
+                                        i);
+                  if dx == 0 then
+                    {dx = dy + 1;
+                     dy = 0}
+                  else
+                    {dx = dx - 1;
+                     dy = dy + 1}}
+            1 => agents[i] = new Agent((x + dx, y - dy), 
+                                       copy_ar(waypoints_distance), 
+                                       copy_tr(agent_waypoints), 
+                                       i)
+            2 => agents[i] = new Agent((x - dx, y + dy), 
+                                       copy_ar(waypoints_distance), 
+                                       copy_tr(agent_waypoints), 
+                                       i)
+            3 => agents[i] = new Agent((x - dx, y - dy), 
+                                       copy_ar(waypoints_distance), 
+                                       copy_tr(agent_waypoints), 
+                                       i)
+          ;
+          i = i + 1}}
+In expression: 
+  {for a in file.children_named("agent")
+     let max = int_or_0(a.attribute_value("n").to_int())
+         x = int_or_0(a.attribute_value("x").to_int())
+         y = int_or_0(a.attribute_value("y").to_int())
+         dx_max = int_or_0(a.attribute_value("dx").to_int())
+         dy_max = int_or_0(a.attribute_value("dy").to_int())
+         agent_waypoints = new [(int, int)](|a.children_named("addway")|)
+         dx = 0
+         dy = 0
+         j = 0
+     in
+       {for b in a.children_named("addway")
+          {agent_waypoints[j] = waypoints[int_or_0(string_or_empty(b.attribute_value("id").substring(1, 
+                                                                                                     2)).to_int()) - 1];
+           unless |agent_waypoints| > 1 then
+             {print("THIS SHOULD NEVER HAPPEN |new_agent.waypoint|={}\n", 
+                    |agent_waypoints|);
+              max = 1 / 0};
+           j = j + 1};
+        for derp in [ 0 , max by 1 ]
+          {match derp % 4 with
+             0 => {agents[i] = new Agent((x + dx, y + dy), 
+                                         copy_ar(waypoints_distance), 
+                                         copy_tr(agent_waypoints), 
+                                         i);
+                   if dx == 0 then
+                     {dx = dy + 1;
+                      dy = 0}
+                   else
+                     {dx = dx - 1;
+                      dy = dy + 1}}
+             1 => agents[i] = new Agent((x + dx, y - dy), 
+                                        copy_ar(waypoints_distance), 
+                                        copy_tr(agent_waypoints), 
+                                        i)
+             2 => agents[i] = new Agent((x - dx, y + dy), 
+                                        copy_ar(waypoints_distance), 
+                                        copy_tr(agent_waypoints), 
+                                        i)
+             3 => agents[i] = new Agent((x - dx, y - dy), 
+                                        copy_ar(waypoints_distance), 
+                                        copy_tr(agent_waypoints), 
+                                        i)
+           ;
+           i = i + 1}};
+   for a in agents
+     if |a.targets| == 2 then
+       print(".")
+     else
+       print("AGENT HAVE {} WAYPOINTS\n", |a.targets|);
+   agents}
+In expression: 
+  let agents = new [Agent](nr_agents)
+      i = 0
+  in
+    {for a in file.children_named("agent")
+       let max = int_or_0(a.attribute_value("n").to_int())
+           x = int_or_0(a.attribute_value("x").to_int())
+           y = int_or_0(a.attribute_value("y").to_int())
+           dx_max = int_or_0(a.attribute_value("dx").to_int())
+           dy_max = int_or_0(a.attribute_value("dy").to_int())
+           agent_waypoints = new [(int, int)](|a.children_named("addway")|)
+           dx = 0
+           dy = 0
+           j = 0
+       in
+         {for b in a.children_named("addway")
+            {agent_waypoints[j] = waypoints[int_or_0(string_or_empty(b.attribute_value("id").substring(1, 
+                                                                                                       2)).to_int()) - 1];
+             unless |agent_waypoints| > 1 then
+               {print("THIS SHOULD NEVER HAPPEN |new_agent.waypoint|={}\n", 
+                      |agent_waypoints|);
+                max = 1 / 0};
+             j = j + 1};
+          for derp in [ 0 , max by 1 ]
+            {match derp % 4 with
+               0 => {agents[i] = new Agent((x + dx, y + dy), 
+                                           copy_ar(waypoints_distance), 
+                                           copy_tr(agent_waypoints), 
+                                           i);
+                     if dx == 0 then
+                       {dx = dy + 1;
+                        dy = 0}
+                     else
+                       {dx = dx - 1;
+                        dy = dy + 1}}
+               1 => agents[i] = new Agent((x + dx, y - dy), 
+                                          copy_ar(waypoints_distance), 
+                                          copy_tr(agent_waypoints), 
+                                          i)
+               2 => agents[i] = new Agent((x - dx, y + dy), 
+                                          copy_ar(waypoints_distance), 
+                                          copy_tr(agent_waypoints), 
+                                          i)
+               3 => agents[i] = new Agent((x - dx, y - dy), 
+                                          copy_ar(waypoints_distance), 
+                                          copy_tr(agent_waypoints), 
+                                          i)
+             ;
+             i = i + 1}};
+     for a in agents
+       if |a.targets| == 2 then
+         print(".")
+       else
+         print("AGENT HAVE {} WAYPOINTS\n", |a.targets|);
+     agents}
+In expression: 
+  let nr_agents = 0
+In expression: 
+  let nr_agents = 0
+In expression: 
+  {for a in xml_way
+     {waypoints[i] = match (a.attribute_value("x").to_int(), 
+                            a.attribute_value("y").to_int()) with
+                       (Just x, Just y) => (x, y)
+                       _ => {print("BADINT!\n");
+                             (0, 0)}
+                     ;
+      waypoints_distance[i] = match a.attribute_value("r").to_int() with
+                                Just x => x
+                              ;
+      i = i + 1};
+   let nr_agents = 0;
+   for a in file.children_named("agent")
+     nr_agents = nr_agents + match a.attribute_value("n").to_int() with
+                               Just nr => nr
+                               _ => {print("BADINT2!\n");
+                                     0}
+                             ;
+   let agents = new [Agent](nr_agents)
+       i = 0
+   in
+     {for a in file.children_named("agent")
+        let max = int_or_0(a.attribute_value("n").to_int())
+            x = int_or_0(a.attribute_value("x").to_int())
+            y = int_or_0(a.attribute_value("y").to_int())
+            dx_max = int_or_0(a.attribute_value("dx").to_int())
+            dy_max = int_or_0(a.attribute_value("dy").to_int())
+            agent_waypoints = new [(int, int)](|a.children_named("addway")|)
+            dx = 0
+            dy = 0
+            j = 0
+        in
+          {for b in a.children_named("addway")
+             {agent_waypoints[j] = waypoints[int_or_0(string_or_empty(b.attribute_value("id").substring(1, 
+                                                                                                        2)).to_int()) - 1];
+              unless |agent_waypoints| > 1 then
+                {print("THIS SHOULD NEVER HAPPEN |new_agent.waypoint|={}\n", 
+                       |agent_waypoints|);
+                 max = 1 / 0};
+              j = j + 1};
+           for derp in [ 0 , max by 1 ]
+             {match derp % 4 with
+                0 => {agents[i] = new Agent((x + dx, y + dy), 
+                                            copy_ar(waypoints_distance), 
+                                            copy_tr(agent_waypoints), 
+                                            i);
+                      if dx == 0 then
+                        {dx = dy + 1;
+                         dy = 0}
+                      else
+                        {dx = dx - 1;
+                         dy = dy + 1}}
+                1 => agents[i] = new Agent((x + dx, y - dy), 
+                                           copy_ar(waypoints_distance), 
+                                           copy_tr(agent_waypoints), 
+                                           i)
+                2 => agents[i] = new Agent((x - dx, y + dy), 
+                                           copy_ar(waypoints_distance), 
+                                           copy_tr(agent_waypoints), 
+                                           i)
+                3 => agents[i] = new Agent((x - dx, y - dy), 
+                                           copy_ar(waypoints_distance), 
+                                           copy_tr(agent_waypoints), 
+                                           i)
+              ;
+              i = i + 1}};
+      for a in agents
+        if |a.targets| == 2 then
+          print(".")
+        else
+          print("AGENT HAVE {} WAYPOINTS\n", |a.targets|);
+      agents}}
+In expression: 
+  let xml_way = file.children_named("waypoint")
+      waypoints = new [(int, int)](|xml_way|)
+      waypoints_distance = new [int](|xml_way|)
+      i = 0
+  in
+    {for a in xml_way
+       {waypoints[i] = match (a.attribute_value("x").to_int(), 
+                              a.attribute_value("y").to_int()) with
+                         (Just x, Just y) => (x, y)
+                         _ => {print("BADINT!\n");
+                               (0, 0)}
+                       ;
+        waypoints_distance[i] = match a.attribute_value("r").to_int() with
+                                  Just x => x
+                                ;
+        i = i + 1};
+     let nr_agents = 0;
+     for a in file.children_named("agent")
+       nr_agents = nr_agents + match a.attribute_value("n").to_int() with
+                                 Just nr => nr
+                                 _ => {print("BADINT2!\n");
+                                       0}
+                               ;
+     let agents = new [Agent](nr_agents)
+         i = 0
+     in
+       {for a in file.children_named("agent")
+          let max = int_or_0(a.attribute_value("n").to_int())
+              x = int_or_0(a.attribute_value("x").to_int())
+              y = int_or_0(a.attribute_value("y").to_int())
+              dx_max = int_or_0(a.attribute_value("dx").to_int())
+              dy_max = int_or_0(a.attribute_value("dy").to_int())
+              agent_waypoints = new [(int, int)](|a.children_named("addway")|)
+              dx = 0
+              dy = 0
+              j = 0
+          in
+            {for b in a.children_named("addway")
+               {agent_waypoints[j] = waypoints[int_or_0(string_or_empty(b.attribute_value("id").substring(1, 
+                                                                                                          2)).to_int()) - 1];
+                unless |agent_waypoints| > 1 then
+                  {print("THIS SHOULD NEVER HAPPEN |new_agent.waypoint|={}\n", 
+                         |agent_waypoints|);
+                   max = 1 / 0};
+                j = j + 1};
+             for derp in [ 0 , max by 1 ]
+               {match derp % 4 with
+                  0 => {agents[i] = new Agent((x + dx, y + dy), 
+                                              copy_ar(waypoints_distance), 
+                                              copy_tr(agent_waypoints), 
+                                              i);
+                        if dx == 0 then
+                          {dx = dy + 1;
+                           dy = 0}
+                        else
+                          {dx = dx - 1;
+                           dy = dy + 1}}
+                  1 => agents[i] = new Agent((x + dx, y - dy), 
+                                             copy_ar(waypoints_distance), 
+                                             copy_tr(agent_waypoints), 
+                                             i)
+                  2 => agents[i] = new Agent((x - dx, y + dy), 
+                                             copy_ar(waypoints_distance), 
+                                             copy_tr(agent_waypoints), 
+                                             i)
+                  3 => agents[i] = new Agent((x - dx, y - dy), 
+                                             copy_ar(waypoints_distance), 
+                                             copy_tr(agent_waypoints), 
+                                             i)
+                ;
+                i = i + 1}};
+        for a in agents
+          if |a.targets| == 2 then
+            print(".")
+          else
+            print("AGENT HAVE {} WAYPOINTS\n", |a.targets|);
+        agents}}
+In expression: 
+  {match sen.file_to_xml("scenario.xml") with
+     Just xml => {file = xml;
+                  print("\n\nWORKED!\n")}
+     Nothing => print("\n\nBADXML!\n")
+   ;
+   let xml_way = file.children_named("waypoint")
+       waypoints = new [(int, int)](|xml_way|)
+       waypoints_distance = new [int](|xml_way|)
+       i = 0
+   in
+     {for a in xml_way
+        {waypoints[i] = match (a.attribute_value("x").to_int(), 
+                               a.attribute_value("y").to_int()) with
+                          (Just x, Just y) => (x, y)
+                          _ => {print("BADINT!\n");
+                                (0, 0)}
+                        ;
+         waypoints_distance[i] = match a.attribute_value("r").to_int() with
+                                   Just x => x
+                                 ;
+         i = i + 1};
+      let nr_agents = 0;
+      for a in file.children_named("agent")
+        nr_agents = nr_agents + match a.attribute_value("n").to_int() with
+                                  Just nr => nr
+                                  _ => {print("BADINT2!\n");
+                                        0}
+                                ;
+      let agents = new [Agent](nr_agents)
+          i = 0
+      in
+        {for a in file.children_named("agent")
+           let max = int_or_0(a.attribute_value("n").to_int())
+               x = int_or_0(a.attribute_value("x").to_int())
+               y = int_or_0(a.attribute_value("y").to_int())
+               dx_max = int_or_0(a.attribute_value("dx").to_int())
+               dy_max = int_or_0(a.attribute_value("dy").to_int())
+               agent_waypoints = new [(int, int)](|a.children_named("addway")|)
+               dx = 0
+               dy = 0
+               j = 0
+           in
+             {for b in a.children_named("addway")
+                {agent_waypoints[j] = waypoints[int_or_0(string_or_empty(b.attribute_value("id").substring(1, 
+                                                                                                           2)).to_int()) - 1];
+                 unless |agent_waypoints| > 1 then
+                   {print("THIS SHOULD NEVER HAPPEN |new_agent.waypoint|={}\n", 
+                          |agent_waypoints|);
+                    max = 1 / 0};
+                 j = j + 1};
+              for derp in [ 0 , max by 1 ]
+                {match derp % 4 with
+                   0 => {agents[i] = new Agent((x + dx, y + dy), 
+                                               copy_ar(waypoints_distance), 
+                                               copy_tr(agent_waypoints), 
+                                               i);
+                         if dx == 0 then
+                           {dx = dy + 1;
+                            dy = 0}
+                         else
+                           {dx = dx - 1;
+                            dy = dy + 1}}
+                   1 => agents[i] = new Agent((x + dx, y - dy), 
+                                              copy_ar(waypoints_distance), 
+                                              copy_tr(agent_waypoints), 
+                                              i)
+                   2 => agents[i] = new Agent((x - dx, y + dy), 
+                                              copy_ar(waypoints_distance), 
+                                              copy_tr(agent_waypoints), 
+                                              i)
+                   3 => agents[i] = new Agent((x - dx, y - dy), 
+                                              copy_ar(waypoints_distance), 
+                                              copy_tr(agent_waypoints), 
+                                              i)
+                 ;
+                 i = i + 1}};
+         for a in agents
+           if |a.targets| == 2 then
+             print(".")
+           else
+             print("AGENT HAVE {} WAYPOINTS\n", |a.targets|);
+         agents}}}
+In expression: 
+  let sen = new XML_lib()
+      file = new XML_node()
+  in
+    {match sen.file_to_xml("scenario.xml") with
+       Just xml => {file = xml;
+                    print("\n\nWORKED!\n")}
+       Nothing => print("\n\nBADXML!\n")
+     ;
+     let xml_way = file.children_named("waypoint")
+         waypoints = new [(int, int)](|xml_way|)
+         waypoints_distance = new [int](|xml_way|)
+         i = 0
+     in
+       {for a in xml_way
+          {waypoints[i] = match (a.attribute_value("x").to_int(), 
+                                 a.attribute_value("y").to_int()) with
+                            (Just x, Just y) => (x, y)
+                            _ => {print("BADINT!\n");
+                                  (0, 0)}
+                          ;
+           waypoints_distance[i] = match a.attribute_value("r").to_int() with
+                                     Just x => x
+                                   ;
+           i = i + 1};
+        let nr_agents = 0;
+        for a in file.children_named("agent")
+          nr_agents = nr_agents + match a.attribute_value("n").to_int() with
+                                    Just nr => nr
+                                    _ => {print("BADINT2!\n");
+                                          0}
+                                  ;
+        let agents = new [Agent](nr_agents)
+            i = 0
+        in
+          {for a in file.children_named("agent")
+             let max = int_or_0(a.attribute_value("n").to_int())
+                 x = int_or_0(a.attribute_value("x").to_int())
+                 y = int_or_0(a.attribute_value("y").to_int())
+                 dx_max = int_or_0(a.attribute_value("dx").to_int())
+                 dy_max = int_or_0(a.attribute_value("dy").to_int())
+                 agent_waypoints = new [(int, int)](|a.children_named("addway")|)
+                 dx = 0
+                 dy = 0
+                 j = 0
+             in
+               {for b in a.children_named("addway")
+                  {agent_waypoints[j] = waypoints[int_or_0(string_or_empty(b.attribute_value("id").substring(1, 
+                                                                                                             2)).to_int()) - 1];
+                   unless |agent_waypoints| > 1 then
+                     {print("THIS SHOULD NEVER HAPPEN |new_agent.waypoint|={}\n", 
+                            |agent_waypoints|);
+                      max = 1 / 0};
+                   j = j + 1};
+                for derp in [ 0 , max by 1 ]
+                  {match derp % 4 with
+                     0 => {agents[i] = new Agent((x + dx, y + dy), 
+                                                 copy_ar(waypoints_distance), 
+                                                 copy_tr(agent_waypoints), 
+                                                 i);
+                           if dx == 0 then
+                             {dx = dy + 1;
+                              dy = 0}
+                           else
+                             {dx = dx - 1;
+                              dy = dy + 1}}
+                     1 => agents[i] = new Agent((x + dx, y - dy), 
+                                                copy_ar(waypoints_distance), 
+                                                copy_tr(agent_waypoints), 
+                                                i)
+                     2 => agents[i] = new Agent((x - dx, y + dy), 
+                                                copy_ar(waypoints_distance), 
+                                                copy_tr(agent_waypoints), 
+                                                i)
+                     3 => agents[i] = new Agent((x - dx, y - dy), 
+                                                copy_ar(waypoints_distance), 
+                                                copy_tr(agent_waypoints), 
+                                                i)
+                   ;
+                   i = i + 1}};
+           for a in agents
+             if |a.targets| == 2 then
+               print(".")
+             else
+               print("AGENT HAVE {} WAYPOINTS\n", |a.targets|);
+           agents}}}
+In expression: 
+  let sen = new XML_lib()
+      file = new XML_node()
+  in
+    {match sen.file_to_xml("scenario.xml") with
+       Just xml => {file = xml;
+                    print("\n\nWORKED!\n")}
+       Nothing => print("\n\nBADXML!\n")
+     ;
+     let xml_way = file.children_named("waypoint")
+         waypoints = new [(int, int)](|xml_way|)
+         waypoints_distance = new [int](|xml_way|)
+         i = 0
+     in
+       {for a in xml_way
+          {waypoints[i] = match (a.attribute_value("x").to_int(), 
+                                 a.attribute_value("y").to_int()) with
+                            (Just x, Just y) => (x, y)
+                            _ => {print("BADINT!\n");
+                                  (0, 0)}
+                          ;
+           waypoints_distance[i] = match a.attribute_value("r").to_int() with
+                                     Just x => x
+                                   ;
+           i = i + 1};
+        let nr_agents = 0;
+        for a in file.children_named("agent")
+          nr_agents = nr_agents + match a.attribute_value("n").to_int() with
+                                    Just nr => nr
+                                    _ => {print("BADINT2!\n");
+                                          0}
+                                  ;
+        let agents = new [Agent](nr_agents)
+            i = 0
+        in
+          {for a in file.children_named("agent")
+             let max = int_or_0(a.attribute_value("n").to_int())
+                 x = int_or_0(a.attribute_value("x").to_int())
+                 y = int_or_0(a.attribute_value("y").to_int())
+                 dx_max = int_or_0(a.attribute_value("dx").to_int())
+                 dy_max = int_or_0(a.attribute_value("dy").to_int())
+                 agent_waypoints = new [(int, int)](|a.children_named("addway")|)
+                 dx = 0
+                 dy = 0
+                 j = 0
+             in
+               {for b in a.children_named("addway")
+                  {agent_waypoints[j] = waypoints[int_or_0(string_or_empty(b.attribute_value("id").substring(1, 
+                                                                                                             2)).to_int()) - 1];
+                   unless |agent_waypoints| > 1 then
+                     {print("THIS SHOULD NEVER HAPPEN |new_agent.waypoint|={}\n", 
+                            |agent_waypoints|);
+                      max = 1 / 0};
+                   j = j + 1};
+                for derp in [ 0 , max by 1 ]
+                  {match derp % 4 with
+                     0 => {agents[i] = new Agent((x + dx, y + dy), 
+                                                 copy_ar(waypoints_distance), 
+                                                 copy_tr(agent_waypoints), 
+                                                 i);
+                           if dx == 0 then
+                             {dx = dy + 1;
+                              dy = 0}
+                           else
+                             {dx = dx - 1;
+                              dy = dy + 1}}
+                     1 => agents[i] = new Agent((x + dx, y - dy), 
+                                                copy_ar(waypoints_distance), 
+                                                copy_tr(agent_waypoints), 
+                                                i)
+                     2 => agents[i] = new Agent((x - dx, y + dy), 
+                                                copy_ar(waypoints_distance), 
+                                                copy_tr(agent_waypoints), 
+                                                i)
+                     3 => agents[i] = new Agent((x - dx, y - dy), 
+                                                copy_ar(waypoints_distance), 
+                                                copy_tr(agent_waypoints), 
+                                                i)
+                   ;
+                   i = i + 1}};
+           for a in agents
+             if |a.targets| == 2 then
+               print(".")
+             else
+               print("AGENT HAVE {} WAYPOINTS\n", |a.targets|);
+           agents}}}
+In method 'parse_file' of type '[Agent]'
+In class 'Main'
+
