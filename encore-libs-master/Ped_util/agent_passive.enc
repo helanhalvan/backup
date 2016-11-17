@@ -1,12 +1,7 @@
 bundle Agent where
---data structure for holding multiple agents
---NOTE, current implementation is shit, but it's easy to change later
---equals metod for (int,int), while I wait for better equals
-def equal(a:(int,int),b:(int,int)) : bool {
-    match (a,b) with
-    ((a1,a2),(b1,b2)) when (a1==b1 and a2==b2) => true
-    _ => false
-}
+import Collections.HashMap
+import HashCode
+import Ped_util.global_funs
 def copy_ar(arr:[int]) : [int] {
     let a2=new[int](|arr|)
         i=0
@@ -18,11 +13,6 @@ def copy_ar(arr:[int]) : [int] {
     };
     a2}
 }
-def rand() : int {
-    let x=0;
-    embed void { #{x}=rand(); } end;
-    x
-}
 def copy_tr(arr:[(int,int)]) : [(int,int)] {
         let a2=new [(int,int)](|arr|);
         let i=0;
@@ -32,73 +22,49 @@ def copy_tr(arr:[(int,int)]) : [(int,int)] {
         };
         a2
 }
-def distance(a:(int,int),b:(int,int)) : int {
-    match (a,b) with
-        ((x1,y1),(x2,y2)) => rot(((x1-x2)*(x1-x2))+((y1-y2)*(y1-y2)))
-         _ => { print("THIS WILL NEVER HAPPEN!"); 1/0 }
-}
-def rot(nr:int) : int {
-    embed void { #{nr}=sqrt(#{nr}); } end;
-    nr
-}
+
 --data structure for holding multiple agents
 --NOTE, current implementation is shit, but it's easy to change later
 passive class Agent_struct {
-    ss : [Agent]
-
-    def init(a:[Agent]) : void {
-        this.ss= new [Agent](0);
-        this.add(a)
+    ss2 : HashMap<Agent>
+    size : int
+    def init() : void {
+        this.ss2= new HashMap<Agent>();
+        this.size=0
     }
     def isin(pos:(int,int)) : bool {
-        let ret = false;
-            for a in this.ss
-            match a.pos() with
-            _ when equal(pos,a.pos()) =>{ --print(" {}=={}\n",qq,a.pos);
-            ret=true }
-            _ => ();
-            ret
+            let
+                iterator= new HashMapIterator<Agent>(this.ss2)
+                found = false
+            in
+            {
+                while(found==false and iterator.has_next()) {
+                    found = {match iterator.next() with
+                                    Just item => { match (pos,item.value.pos()) with
+                                                        ((x1,y1),(x2,y2)) when x1==x2 and y1==y2 => true
+                                                            _ => false }}
+                };
+                found
+            }
         }
-    def add(a:[Agent]) : void {
-        let
-            sss = new [Agent]( |a| + |this.ss| )
-            i=0
-            in {
-                for t in this.ss {
-                    sss[i]=t;
-                    i=i+1
-                };
-                for t in a {
-                    sss[i]=t;
-                    i=i+1
-                };
-                this.ss=sss
-            }}
+    def add(a:Agent) : void {
+            this.size=1+this.size;
+            this.ss2.set(a,a)
+        }
     def remove(a:Agent) : void {
-        let sss = new [Agent]( |this.ss| - 1 )
-            i = 0
-            in{
-                for t in this.ss {
-                    if( not ( t.id == a.id ) ) then {
-                        sss[i]=t;
-                        i=i+1
-                    }
-                };
-                this.ss=sss
-            }}
-    def size() : int {
-        |this.ss|
-    }
-    --empties the data structure
-    def get_data() : [Agent] {
-        let sss = this.ss;
-            this.ss= new [Agent](0);
-            sss
+            this.ss2.remove(a);
+            this.size=this.size-1
         }
+    def size() : int {
+        this.size
+    }
+    def get_data() : HashMap<Agent> {
+        this.ss2
+    }
 }
                 --Abstraction for one Agent
-passive class Agent {
-    id : int                --global unique id IMMUTABLE
+passive class Agent : HashCode{
+    hash_code : uint                --global unique id IMMUTABLE
     pos : (int,int)         --current position MUTABLE
     targets : [(int,int)]   --waypoints, a list of positions to go to IMMUTABLE
     targets_size : [int]    -- --||-- redundant, workaround var
@@ -109,12 +75,13 @@ passive class Agent {
         this.i=0;
         this.targets=list;
         this.targets_size=targets_size;
-        this.id=in_id;
+        this.hash_code=in_id;
     }
     -- --returns places the agent can and want to go to
     -- --can => an agent can only go up, down, left or right
     -- --want => an agent only want to go closer to their next waypoint
     def next() : [(int,int)] {
+
             if |this.targets| == this.i then this.i=0;
 
             match (this.pos, this.targets[this.i]) with
@@ -153,7 +120,9 @@ passive class Agent {
                     qq[i]=this.targets[i];
                     --qq[i]={match this.targets[i] with (x,y) => (x,y)};
                 };
-                new Agent(q, qq, copy_ar(this.targets_size),this.id)
+            let w = new Agent(q, qq, copy_ar(this.targets_size),this.hash_code);
+                w.i=this.i;
+                w
             }
 
         }

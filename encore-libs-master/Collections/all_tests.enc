@@ -2,6 +2,8 @@ import EUnit
 import HashMap_tests
 import Linked_List_tests
 import BST_tests
+import Trie_tests
+import Wrappers_tests
 
 class Main {
     def main() : void {
@@ -13,6 +15,7 @@ class Main {
             tests.assert_true("push three ints and remove middle", push_three_and_remove_middle);
             tests.assert_true("length #1", length_1);
             tests.assert_true("length #2", length_2);
+            tests.assert_true("remove_all #1", remove_all_1);
 
             tests.run();
         };
@@ -40,8 +43,29 @@ class Main {
             tests.run();
         };
         let tests = new TestSuite("BST", 100) in {
-            tests.assert_true("Test add", bst_test_add);
-            tests.assert_true("Test add advanced", bst_test_add_adv);
+            tests.assert_true("Add", bst_test_add);
+            tests.assert_true("Add advanced", bst_test_add_adv);
+            tests.assert_true("Add Subtree #1", bst_add_subtree_1);
+            tests.assert_true("Pop leftmost #1", bst_pop_leftmost_1);
+            tests.assert_true("Pop leftmost #2", bst_pop_leftmost_2);
+            tests.assert_true("Remove #1", bst_remove_1);
+            tests.assert_true("Remove #2", bst_remove_2);
+            tests.assert_true("Remove root", bst_remove_root);
+            tests.assert_true("Remove leaf #1", bst_remove_leaf_1);
+            tests.assert_true("Remove leaf #2", bst_remove_leaf_2);
+            tests.assert_true("Get_value #1", bst_get_value_1);
+
+            tests.run();
+        };
+        let tests = new TestSuite("Wrappers", 100) in {
+            tests.assert_true("Integer #1", int_1);
+            tests.assert_true("Character #1", char_1);
+
+            tests.run();
+        };
+        let tests = new TestSuite("Trie", 100) in {
+            tests.assert_true("Basic #1", basic_1);
+            tests.assert_true("Add #1", add_1);
 
             tests.run();
         };

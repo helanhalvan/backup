@@ -1,6 +1,6 @@
 bundle List where
 
-passive class LinkedList<t>
+passive class Linked__List<t>
 	first : Node<t>
 	
 	def preppend(data : t) : void {

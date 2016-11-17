@@ -1,5 +1,0 @@
-bundle ArrayUtils where
-
-    def clone_array<t>(arr : [t]) : [t] {
-
-    }

@@ -1,0 +1,56 @@
+bundle global_funs where
+def flatten(listlist:[[(int,int)]]): [(int,int)] {
+        let len=0;
+        for a in listlist {
+            len=len+ |a| ;
+        };
+        let list=new[(int,int)](len);
+        let i=0;
+        for a in listlist {
+            for b in a {
+                list[i]=b;
+                i=i+1;
+            }
+        };
+        list
+    }
+def max(a:int,b:int) : int {
+    if(a>b) then a
+    else b
+    }
+def min(a:int,b:int) : int {
+    if(a<b) then a
+    else b
+    }
+def int_or_0 (i:Maybe int ) : int {
+        match i with
+            Just nr => nr
+            _ => {print("or0\n"); 0}
+   }
+def string_or_empty( i: Maybe String ) : String {
+        match i with
+            Just nr => {nr}
+            _ => {print("orEmpty\n");""}
+    }
+def rand() : int {
+    let x=0;
+    embed void { #{x}=rand(); } end;
+    x
+}
+def sleep(x:int) : void {
+    embed void { sleep( #{x} ); } end
+}
+def rot(nr:int) : int {
+    embed void { #{nr}=sqrt(#{nr}); } end;
+    nr
+}
+def distance(a:(int,int),b:(int,int)) : int {
+    match (a,b) with
+        ((x1,y1),(x2,y2)) => rot(((x1-x2)*(x1-x2))+((y1-y2)*(y1-y2)))
+         _ => { print("THIS WILL NEVER HAPPEN!"); 1/0 }
+}
+def equal(a:(int,int),b:(int,int)) : bool {
+    match (a,b) with
+    ((a1,a2),(b1,b2)) when (a1==b1 and a2==b2) => true
+    _ => false
+}

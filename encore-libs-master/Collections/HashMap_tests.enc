@@ -1,11 +1,11 @@
 import HashMap
-import Id
+import HashCode
+import Wrappers
 
-passive class Foo : Id {
-    id : int
-
+passive class Foo : HashCode {
+    hash_code : uint
     def init() : void {
-        this.id = this.generate_id();
+        this.hash_code = this.hash_adress();
     }
 }
 
@@ -416,190 +416,187 @@ def resize_1() : bool {
         );
 
         -- Are we still able to retrieve the values?
-        retval = retval and (match map.get_value(f0) with
+        retval and (match map.get_value(f0) with
                 Just v  => v == 0
                 Nothing => {
                     print("\tGet value check #0 failed!");
                     false
                 }
-            );
-        retval = retval and (match map.get_value(f1) with
+            ) and
+        (match map.get_value(f1) with
                 Just v  => v == 1
                 Nothing => {
                     print("\tGet value check #1 failed!");
                     false
                 }
-            );
-        retval = retval and (match map.get_value(f2) with
+            ) and
+        (match map.get_value(f2) with
                 Just v  => v == 2
                 Nothing => {
                     print("\tGet value check #2 failed!");
                     false
                 }
-            );
-        retval = retval and (match map.get_value(f3) with
+            ) and
+        (match map.get_value(f3) with
                 Just v  => v == 3
                 Nothing => {
                     print("\tGet value check #3 failed!");
                     false
                 }
-            );
-        retval = retval and (match map.get_value(f4) with
+            ) and
+        (match map.get_value(f4) with
                 Just v  => v == 4
                 Nothing => {
                     print("\tGet value check #4 failed!");
                     false
                 }
-            );
-        retval = retval and (match map.get_value(f5) with
+            ) and
+        (match map.get_value(f5) with
                 Just v  => v == 5
                 Nothing => {
                     print("\tGet value check #5 failed!");
                     false
                 }
-            );
-        retval = retval and (match map.get_value(f6) with
+            ) and
+        (match map.get_value(f6) with
                 Just v  => v == 6
                 Nothing => {
                     print("\tGet value check #6 failed!");
                     false
                 }
-            );
-        retval = retval and (match map.get_value(f7) with
+            ) and
+        (match map.get_value(f7) with
                 Just v  => v == 7
                 Nothing => {
                     print("\tGet value check #7 failed!");
                     false
                 }
-            );
-        retval = retval and (match map.get_value(f8) with
+            ) and
+        (match map.get_value(f8) with
                 Just v  => v == 8
                 Nothing => {
                     print("\tGet value check #8 failed!");
                     false
                 }
-            );
-        retval = retval and (match map.get_value(f9) with
+            ) and
+        (match map.get_value(f9) with
                 Just v  => v == 9
                 Nothing => {
                     print("\tGet value check #9 failed!");
                     false
                 }
-            );
-        retval = retval and (match map.get_value(f10) with
+            ) and
+        (match map.get_value(f10) with
                 Just v  => v == 10
                 Nothing => {
                     print("\tGet value check #10 failed!");
                     false
                 }
-            );
-        retval = retval and (match map.get_value(f11) with
+            ) and
+        (match map.get_value(f11) with
                 Just v  => v == 11
                 Nothing => {
                     print("\tGet value check #11 failed!");
                     false
                 }
-            );
-        retval = retval and (match map.get_value(f12) with
+            ) and
+        (match map.get_value(f12) with
                 Just v  => v == 12
                 Nothing => {
                     print("\tGet value check #12 failed!");
                     false
                 }
-            );
-        retval = retval and (match map.get_value(f13) with
+            ) and
+        (match map.get_value(f13) with
                 Just v  => v == 13
                 Nothing => {
                     print("\tGet value check #13 failed!");
                     false
                 }
-            );
-        retval = retval and (match map.get_value(f14) with
+            ) and
+        (match map.get_value(f14) with
                 Just v  => v == 14
                 Nothing => {
                     print("\tGet value check #14 failed!");
                     false
                 }
-            );
-        retval = retval and (match map.get_value(f15) with
+            ) and
+        (match map.get_value(f15) with
                 Just v  => v == 15
                 Nothing => {
                     print("\tGet value check #15 failed!");
                     false
                 }
-            );
-        retval = retval and (match map.get_value(f16) with
+            ) and
+        (match map.get_value(f16) with
                 Just v  => v == 16
                 Nothing => {
                     print("\tGet value check #16 failed!");
                     false
                 }
-            );
-        retval = retval and (match map.get_value(f17) with
+            ) and
+        (match map.get_value(f17) with
                 Just v  => v == 17
                 Nothing => {
                     print("\tGet value check #17 failed!");
                     false
                 }
-            );
-        retval = retval and (match map.get_value(f18) with
+            ) and
+        (match map.get_value(f18) with
                 Just v  => v == 18
                 Nothing => {
                     print("\tGet value check #18 failed!");
                     false
                 }
-            );
-        retval = retval and (match map.get_value(f19) with
+            ) and
+        (match map.get_value(f19) with
                 Just v  => v == 19
                 Nothing => {
                     print("\tGet value check #19 failed!");
                     false
                 }
-            );
-        retval = retval and (match map.get_value(f20) with
+            ) and
+        (match map.get_value(f20) with
                 Just v  => v == 20
                 Nothing => {
                     print("\tGet value check #20 failed!");
                     false
                 }
-            );
-        retval = retval and (match map.get_value(f21) with
+            ) and
+        (match map.get_value(f21) with
                 Just v  => v == 21
                 Nothing => {
                     print("\tGet value check #21 failed!");
                     false
                 }
-            );
-        retval = retval and (match map.get_value(f22) with
+            ) and
+        (match map.get_value(f22) with
                 Just v  => v == 22
                 Nothing => {
                     print("\tGet value check #22 failed!");
                     false
                 }
-            );
-        retval = retval and (match map.get_value(f23) with
+            ) and
+        (match map.get_value(f23) with
                 Just v  => v == 23
                 Nothing => {
                     print("\tGet value check #23 failed!");
                     false
                 }
-            );
-        retval = retval and (match map.get_value(f24) with
+            ) and
+        (match map.get_value(f24) with
                 Just v  => v == 24
                 Nothing => {
                     print("\tGet value check #24 failed!");
                     false
                 }
-            );
-        retval = retval and (match map.get_value(f25) with
+            ) and
+        (match map.get_value(f25) with
                 Just v  => v == 25
                 Nothing => {
                     print("\tGet value check #25 failed!");
                     false
                 }
-            );
-
-        -- Return
-        retval
+        )
     }
 }

@@ -7,18 +7,18 @@ typedef Post_Fail_action<t> = (Maybe t, t) -> bool
 
 class Vat<t>
   field : Maybe t
-  pre_actions : LinkedList<(Pre_action<t>)>
-  post_actions : LinkedList<(Post_Fail_action<t>)>
-  trans_actions : LinkedList<(Transformation_action<t>)>
-  fail_actions : LinkedList<(Post_Fail_action<t>)>
+  pre_actions : Linked__List<(Pre_action<t>)>
+  post_actions : Linked__List<(Post_Fail_action<t>)>
+  trans_actions : Linked__List<(Transformation_action<t>)>
+  fail_actions : Linked__List<(Post_Fail_action<t>)>
   open : bool
 
   def init() : void{
     this.field = Nothing;
-    this.pre_actions = new  LinkedList<(Pre_action<t>)>();
-    this.trans_actions = new  LinkedList<(Transformation_action<t>)>();
-    this.fail_actions = new  LinkedList<(Post_Fail_action<t>)>();
-    this.post_actions = new LinkedList<(Post_Fail_action<t>)>();
+    this.pre_actions = new  Linked__List<(Pre_action<t>)>();
+    this.trans_actions = new  Linked__List<(Transformation_action<t>)>();
+    this.fail_actions = new  Linked__List<(Post_Fail_action<t>)>();
+    this.post_actions = new Linked__List<(Post_Fail_action<t>)>();
     this.open = true;
   }  
 
@@ -174,7 +174,7 @@ class Vat<t>
     new_val
   }
 
-  def executePostOrFail(actions: LinkedList<(Post_Fail_action<t>)>, new_val: t): void{
+  def executePostOrFail(actions: Linked__List<(Post_Fail_action<t>)>, new_val: t): void{
     let current = actions.first;
     let old = null : Node<(Post_Fail_action<t>)> ;
 

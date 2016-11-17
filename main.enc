@@ -2,6 +2,7 @@ import FileIO.IO
 import XML.xml
 import Ped_util.agent_passive
 import SDL.SDL_Main
+import Ped_util.global_funs
 
 class Main {
 --TODO
@@ -36,7 +37,7 @@ class Main {
         -- {--
        for a in get(superbox.agents())
        {
-            match a.pos with
+            match a with
                 (x,y) => { --print("{} {} \n",x,y);
                             get sdl_main.fillRectangle( new Rectangle(x*4,y*4,1,1) )}
                   _ => print("AGENT GOT NO POS!?\n")
@@ -44,8 +45,11 @@ class Main {
        get sdl_main.setRenderColor(new ColorRGBA(0,240,0,0));
        get sdl_main.fillRectangle( new Rectangle(160*4,60*4,3,3) );
        get sdl_main.fillRectangle( new Rectangle(0*4,60*4,3,3) );
+       get sdl_main.setRenderColor(new ColorRGBA(0,0,240,0));
+       match get(superbox.center()) with (x,y) => {get sdl_main.fillRectangle( new Rectangle(x*4,y*4,3,3)) };
        get(sdl_main.refresh());
         --while (true) { () };
+        --sleep(1);
        if tick>0 and get(superbox.move()) then this!loop(superbox,tick-1,sdl_main)
        }
 
@@ -114,10 +118,10 @@ class Main {
                                            --in the future, I can make it immutable instead
                                            --also distributes agents in a packed ball around (x,y) with some collisions
                                            --this should to be fixed in the future
-                                            if(dx>x+dx_max) then {
+                                            if(dx>x+dx_max-3) then {
                                                 dx=x-dx_max
                                             }
-                                            else if(dy>y+dy_max) then {
+                                            else if(dy>y+dy_max-3) then {
                                                 dy=y-dy_max;
                                                 dx=dx+rand()%4
                                             }
@@ -140,39 +144,6 @@ class Main {
                                            agents
                                        }}}}
 }
-def flatten(listlist:[[Agent]]) : [Agent] {
-        let len=0;
-        for a in listlist {
-            len=len+ |a| ;
-        };
-        let list=new[Agent](len);
-        let i=0;
-        for a in listlist {
-            for b in a {
-                list[i]=b;
-                i=i+1;
-            }
-        };
-        list
-    }
-def max(a:int,b:int) : int {
-    if(a>b) then a
-    else b
-    }
-def min(a:int,b:int) : int {
-    if(a<b) then a
-    else b
-    }
-def int_or_0 (i:Maybe int ) : int {
-        match i with
-            Just nr => nr
-            _ => {print("or0\n"); 0}
-   }
-def string_or_empty( i: Maybe String ) : String {
-        match i with
-            Just nr => {nr}
-            _ => {print("orEmpty\n");""}
-    }
 {--
 trait Box {
     require min() : Fut (int,int)
@@ -269,7 +240,7 @@ class Multi_box {
     --get corners of box
     def max() : (int,int) {this.max}
     def min() : (int,int) {this.min}
-
+    def center() : (int,int) {get(this.bottom_left.max()) }
     --moves all internal agents on step, returns true if any agents tried to move
     def move () : bool {
         --debug check
@@ -289,7 +260,7 @@ class Multi_box {
         (get(a)) or (get(b)) or (get(c)) or (get(d))
         }
     }
-    def agents() : [Agent] { flatten([get(this.top_right.agents()),
+    def agents() : [(int,int)] { flatten([get(this.top_right.agents()),
                              get(this.top_left.agents()),
                              get(this.bottom_right.agents()),
                              get(this.bottom_left.agents())]) }
@@ -327,25 +298,24 @@ class Box {
  agents : Agent_struct
 
 def init(in_max:(int,int), in_min:(int,int) ) : void {
-    this.agents=new Agent_struct(new [Agent](0));
+    this.agents=new Agent_struct();
     this.max=in_max;
     this.min=in_min;
     }
 --getters for borders
 def min() : (int,int) {this.min}
 def max() : (int,int) {this.max}
-def agents() : [Agent] {
+def agents() : [(int,int)] {
     let
-     a=this.agents.get_data()
-     b = new [Agent](|a|)
-     i=0
+     b = new [(int,int)](this.agents.size())
+     a = new HashMapIterator<Agent>(this.agents.get_data())
+     i = 0
     in {
-    for c in a {
-        b[i]=c.copy();
+    while a.has_next() {
+        b[i]=match a.next() with Just entry => entry.value.pos();
         i=i+1
     };
-    this.agents.add(b);
-    a
+    b
     }}
 
 --returns true if a is inside the box, and stores it. Otherwise returns false
@@ -353,7 +323,7 @@ def agents() : [Agent] {
 def add(a:Agent) : bool {
     match (a.pos(),this.max,this.min) with
         ((x,y),(xmax,ymax),(xmin,ymin)) when x>xmax or x<xmin or y>ymax or y<ymin => false
-        _ => {this.agents.add([a]); true}
+        _ => {this.agents.add(a); true}
 }
 --if the arguements shares a border with this box, it's added to the apropriate edge and returns true
 --otherwise returns false
@@ -382,20 +352,22 @@ def alive(): bool { true }
  --otherwise false
 def move(): bool {
    if (this.agents.size() == 0) then { false } else {
-       for a in this.agents.get_data() {
+        let iterator = new HashMapIterator<Agent>(this.agents.get_data());
+       while iterator.has_next() {
             let
+                a = {match iterator.next() with Just entry => {entry.value}}
                 desired = a.next()
                 i = 0
                 nejbor = null:Fut bool
+                stillhere = true
             in {
-            while( i < |desired| ) {
+            while( i < |desired| and stillhere == true) {
+                --print(desired[i]);
                 match (desired[i],this.max,this.min) with
                     --local collision
                     _ when this.agents.isin(desired[i])  => {i=i+1; embed void { continue; } end; ()}
                     --local move
                     ((x,y),(x_max,y_max),(x_min,y_min)) when (x<=x_max and x>=x_min and y<=y_max and y>=y_min) => { a.move((x,y));
-                                                                                                                    this.agents.add([a]);
-                                                                                                                    --print("internal move {} {}\n",x,y);
                                                                                                                     embed void { break; } end
                                                                                                                   }
                     ((x,y),(x_max,y_max),(x_min,y_min)) when (x>x_max and (y<y_min or y>y_max) ) or (x<x_min and (y<y_min or y>y_max) ) => { print("this should never happen, agent way off"); 1/0; () }
@@ -404,14 +376,21 @@ def move(): bool {
                     ((x,y),(x_max,y_max),(x_min,y_min)) when (x<x_min) => { nejbor=this.left.external_move(a.copy(),(x,y) ); () }
                     ((x,y),(x_max,y_max),(x_min,y_min)) when (y>y_max) => { nejbor=this.up.external_move(a.copy(),(x,y) ); ()  }
                     ((x,y),(x_max,y_max),(x_min,y_min)) when (y<y_min) => { nejbor=this.down.external_move(a.copy(),(x,y) ); () };
-                --print("external move {} {}\n", a.id, a.pos());
+
                 await(nejbor);
-                if get(nejbor) then
-                    {
-                        embed void { break; } end}
-                else
-                    {this.agents.add([a]);i=i+1};
+                if get(nejbor) then {
+                    stillhere=false;
+                    --print("ACCESS DENIED {} ##########################\n", a.i);
+                    embed void { break; } end
+                }
+                else {
+                    stillhere=true;
+                    i=i+1
                 };
+                };
+            if (stillhere == false) then {
+                    this.agents.remove(a);
+                }
             }};
           true
          }
@@ -421,8 +400,8 @@ def move(): bool {
 def external_move(a:Agent, pos:(int,int) ) : bool {
     if(this.agents.isin(pos)) then { false } else {
         a.move(pos);
-        this.agents.add([a]);
+        this.agents.add(a);
         true
-    }
+        }
     }
 }
