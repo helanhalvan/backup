@@ -15,7 +15,7 @@ gdb $1.run
 fi
 
 if [[ $2 == "-c" ]]; then 
-encorec $1 -o $1.run --import ./encore-libs-master/Collections:./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_image -ggdb" -g -c --debug --no-gc
+encorec $1 -o $1.run --import ./encore-libs-master/Collections:./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_image -ggdb" -g -c --debug
 fi
 #cd ./main_src
 #make CONFIG=debug

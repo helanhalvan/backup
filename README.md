@@ -17,6 +17,8 @@ If you want to do anything more fancy, use
 
 encorec main.enc
 
+In order to turn of/on the UI change the variable named `aui`, true give a UI, false does not.
+
 with some options
 
 Credit:

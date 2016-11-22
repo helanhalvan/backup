@@ -6,7 +6,7 @@ import Ped_util.global_funs
 
 class Main {
 --TODO
---Add comments to explain what's going on
+--There is some Issue with the UI which makes main segfault
 
 -- compile script
 --  -d for starting right into gdb
@@ -17,7 +17,7 @@ class Main {
        superbox = new Multi_box(this.parse_file("scenario.xml"))
         x_size=0
         y_size=0
-        aui=false
+        aui=true
         sdl_main = null : SDL_Main
        in {
        --match (get(superbox.max()),get(superbox.min())) with
@@ -118,10 +118,10 @@ class Main {
                                            --in the future, I can make it immutable instead
                                            --also distributes agents in a packed ball around (x,y) with some collisions
                                            --this should to be fixed in the future
-                                            if(dx>x+dx_max-3) then {
+                                            if(dx>x+dx_max) then {
                                                 dx=x-dx_max
                                             }
-                                            else if(dy>y+dy_max-3) then {
+                                            else if(dy>y+dy_max) then {
                                                 dy=y-dy_max;
                                                 dx=dx+rand()%4
                                             }
@@ -315,7 +315,15 @@ def agents() : [(int,int)] {
         b[i]=match a.next() with Just entry => entry.value.pos();
         i=i+1
     };
-    b
+    if i < this.agents.size() then
+        {
+    let c = new [(int,int)](i);
+    for index in [0..i] {
+        c[index]=b[index];
+    };
+        c
+    }
+    else b
     }}
 
 --returns true if a is inside the box, and stores it. Otherwise returns false

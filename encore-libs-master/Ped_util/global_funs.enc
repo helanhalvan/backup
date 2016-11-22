@@ -37,7 +37,7 @@ def rand() : int {
     embed void { #{x}=rand(); } end;
     x
 }
-def sleep(x:int) : void {
+def sleep(x:real) : void {
     embed void { sleep( #{x} ); } end
 }
 def rot(nr:int) : int {
