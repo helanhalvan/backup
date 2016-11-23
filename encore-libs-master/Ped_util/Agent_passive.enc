@@ -86,7 +86,6 @@ passive class Agent : HashCode {
 
         }
 --data structure for holding multiple agents
---NOTE, current implementation is shit, but it's easy to change later
 passive class Agent_struct {
     ss2 : HashMap<Agent>
     size : int
@@ -95,7 +94,7 @@ passive class Agent_struct {
         this.size=0
     }
     def isin(pos:(int,int)) : bool {
-            let
+            {- let
                 iterator= new HashMapIterator<Agent>(this.ss2)
                 found = false
             in
@@ -108,6 +107,8 @@ passive class Agent_struct {
                 };
                 found
             }
+            -}
+            false
         }
     def add(a:Agent) : void {
             this.size=1+this.size;

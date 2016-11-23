@@ -19,7 +19,7 @@ passive class Entry<v>
         this.value = value;
     }
 
-passive class HashMapIterator<v> : Iterator<Entry<v>>
+passive class HashMapIterator<v> --: Iterator<Entry<v>>
     {-
         TODO: Add clone of internal representation of hashmap.
         This will stop aliasing problems as well as allowing this object
