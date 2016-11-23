@@ -1,3 +1,5 @@
+module Primitives
+
 import SDL_Types
 
 passive class Rectangle
@@ -44,4 +46,3 @@ passive class ColorRGBA
       (SDL_Color){#{r}, #{g}, #{b}, #{a}};
     end
   }
-

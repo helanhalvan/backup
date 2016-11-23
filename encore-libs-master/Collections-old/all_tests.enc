@@ -1,10 +1,9 @@
 import EUnit
 import HashMap_tests
-import LinkedList_tests
+import Linked_List_tests
 import BST_tests
 import Trie_tests
 import Wrappers_tests
-import ArrayList_tests
 
 class Main {
     def main() : void {
@@ -65,16 +64,8 @@ class Main {
             tests.run();
         };
         let tests = new TestSuite("Trie", 100) in {
-            tests.assert_true("Basic #1", trie_basic_1);
-            tests.assert_true("Add #1", trie_add_1);
-            tests.assert_true("Contains #1", trie_contains_1);
-            tests.assert_true("Prefix #1", trie_prefix_1);
-            tests.assert_true("Get_Suffixes #1", trie_suffix_1);
-
-            tests.run();
-        };
-        let tests = new TestSuite("ArrayList", 100) in {
-            tests.assert_true("Basic #1", arrlist_basic_1);
+            tests.assert_true("Basic #1", basic_1);
+            tests.assert_true("Add #1", add_1);
 
             tests.run();
         };

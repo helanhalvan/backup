@@ -4,11 +4,11 @@ bundle EUnit where
         match option with
             Just value when value == expected => true
             Just value => {
-                println("\t{} failed! Expected \"Just x\" got \"Just y\".", message);
+                print("Test {} failed! Expected \"Just x\" got \"Just y\".\n", message);
                 false
             }
             Nothing => {
-                println("\t{} failed! Expected \"Just x\" got \"Nothing\".", message);
+                print("Test {} failed! Expected \"Just x\" got \"Nothing\".\n", message);
                 false
             }
     }
@@ -17,7 +17,7 @@ bundle EUnit where
         match option with
             Nothing => true
             Just x => {
-                println("\t{} failed! Expected value to be nothing!", message);
+                print("Test {} failed! Expected value to be nothing!\n", message);
                 false
             }
     }
@@ -75,7 +75,7 @@ bundle EUnit where
             let
                 finished = 0
             in {
-                println("\nEUnit testsuite \"{}\" running {} test(s)...", this.suite_name, this.counter);
+                print("\nEUnit testsuite \"{}\" running {} test(s)...\n", this.suite_name, this.counter);
 
                 (repeat i <- this.counter {
                     let
@@ -83,16 +83,16 @@ bundle EUnit where
                         value = test.perform()     : bool
                     in {
                         if value != test.expected then {
-                            println("\tFailure!");
+                            print("\tFailure!\n");
                         } else {
-                            println("\tSuccess!");
+                            print("\tSuccess!\n");
                             finished = finished + 1;
                         };
                     }
                 });
 
-                println("\nEUnit testsuite \"{}\" completed.", this.suite_name);
-                println("{}/{} tests completed successfully!", finished, this.counter);
+                print("\nEUnit testsuite \"{}\" completed.\n", this.suite_name);
+                print("{}/{} tests completed successfully!\n", finished, this.counter);
             }
         }
     }

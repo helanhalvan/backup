@@ -1,4 +1,5 @@
-bundle global_funs where
+module Global_funs
+
 def flatten(listlist:[[(int,int)]]): [(int,int)] {
         let len=0;
         for a in listlist {

@@ -1,6 +1,6 @@
 module HashMap
 
-import LinkedList
+import Linked_List
 import Siphash
 import Hasher
 import HashCode

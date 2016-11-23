@@ -1,5 +1,5 @@
 module Map
-import LinkedList
+import Linked_List
 import HashCode
 trait Map<v>
     require size  : uint

@@ -1,4 +1,4 @@
-bundle XML.XML where
+module XML
 import FileIO.IO
 passive class XML_node {
     s_rep : String

@@ -1,6 +1,8 @@
+module SDL_Main
 import SDL.SDL_Types
 import SDL.SDL_Primitives
 import SDL.SDL_Events
+import SDL.Vat
 embed
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
@@ -47,7 +49,7 @@ end
 -- Call some drawing method.
 -- Call the refresh method.
 --
--- The refresh method must be called for the drawings 
+-- The refresh method must be called for the drawings
 -- to be be displayed to the screen.
 --
 -- To get the events call the pollEvent or waitForEvent methods
@@ -95,7 +97,7 @@ class SDL_Main
   }
 
   -- Sets the color for the renderer.
-  -- All objects (not counting text and images) will be 
+  -- All objects (not counting text and images) will be
   -- drawed with this color untill this method is called again.
   def setRenderColor(c: ColorRGBA) : void{
     let sdl_settings = this.sdl_settings;
@@ -121,17 +123,17 @@ class SDL_Main
     let image_path = image_path.data;
     embed void
       SDL_Texture *img = NULL;
-      int w, h; 
+      int w, h;
       img = IMG_LoadTexture(#{sdl_settings}->renderer, #{image_path});
       if(img == NULL){
         fprintf(stderr,"Error occuered while loading image:\n%s",#{image_path});
       }
       SDL_QueryTexture(img, NULL, NULL, &w, &h);
-      SDL_Rect rect; 
-      rect.x = #{x}; 
-      rect.y = #{y}; 
-      rect.w = (int)(w*#{x_scale}); 
-      rect.h = (int)(h*#{y_scale}); 
+      SDL_Rect rect;
+      rect.x = #{x};
+      rect.y = #{y};
+      rect.w = (int)(w*#{x_scale});
+      rect.h = (int)(h*#{y_scale});
       SDL_RenderCopy(#{sdl_settings}->renderer, img, NULL, &rect);
       SDL_DestroyTexture(img);
     end
@@ -177,9 +179,9 @@ class SDL_Main
   }
 
   -- Initializes the SDL font.
-  -- As of now a limitation of the library is that 
+  -- As of now a limitation of the library is that
   -- it can only load a single font at a time.
-  -- if you want to change fonts during the execution of 
+  -- if you want to change fonts during the execution of
   -- the program you will need to call this funtion every time you want to change the font.
   def initFont(font_name : String, size: int) : void{
     let font = this.sdl_font;
@@ -196,7 +198,7 @@ class SDL_Main
 
   -- Draws the text on the screen in the given color.
   -- Will use the font and size loaded with the initFont method.
-  def drawText(text: String, x : int, y: int, color: ColorRGBA) : void{ 
+  def drawText(text: String, x : int, y: int, color: ColorRGBA) : void{
     let text_color = color.getCRepresentation();
     let sdl_settings = this.sdl_settings;
     let font = this.sdl_font;
@@ -233,7 +235,7 @@ class SDL_Main
     let sdl_settings = this.sdl_settings;
     let sdl_texture = this.sdl_texture;
     let sdl_font = this.sdl_font;
-    embed void 
+    embed void
       #{sdl_font} = NULL;
       SDL_Init(SDL_INIT_VIDEO);
       TTF_Init();
@@ -242,7 +244,7 @@ class SDL_Main
       sdl_settings->height = #{height};
       sdl_settings->window = SDL_CreateWindow("Encore Program",
             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, #{width}, #{height}, 0);
-      sdl_settings->renderer = SDL_CreateRenderer(sdl_settings->window, -1, 0); 
+      sdl_settings->renderer = SDL_CreateRenderer(sdl_settings->window, -1, 0);
       sdl_settings->event = malloc(sizeof(SDL_Event));
       #{sdl_settings} = sdl_settings;
 
@@ -254,7 +256,7 @@ class SDL_Main
       sdl_only_texture->pixels = malloc(sdl_only_texture->width*sdl_only_texture->height*sizeof(pixel));
 
       #{sdl_texture} = sdl_only_texture;
-      
+
     end;
     this.sdl_settings = sdl_settings;
     this.sdl_texture = sdl_texture;
@@ -287,7 +289,7 @@ class SDL_Main
   -- This is necessary since just passing along the pointer to the
   -- event object would cause race conditions.
   def event_clone() : SDL_Event{
-    let sdl_settings = this.sdl_settings; 
+    let sdl_settings = this.sdl_settings;
     embed SDL_Event
       SDL_Event* copy = malloc(sizeof(SDL_Event));
       (SDL_Event*)memcpy(copy,#{sdl_settings}->event,sizeof(SDL_Event));
@@ -298,7 +300,7 @@ class SDL_Main
   -- Checks if an event is present and send the event to the event handler
   -- if such an event is present.
   def pollEvent(handler: SDL_Event_Handler) : void{
-    let sdl_settings = this.sdl_settings; 
+    let sdl_settings = this.sdl_settings;
     let event_present = 0;
     embed void
       #{event_present} = SDL_PollEvent(#{sdl_settings}->event);
@@ -306,16 +308,16 @@ class SDL_Main
     if(event_present == 1) then {
       handler!handleEvent(this, this.event_clone());
     }
-  } 
+  }
 
   -- Blocks untill an event is avaliable. The timeout parameters is in milliseconds
   -- and if it is set to zero the method will block untill indefintley utill there
   -- is an event present.
   --
   -- WARNING: There is some confusion as to how this method behaves in the case when it
-  -- times even though no new event was found. 
+  -- times even though no new event was found.
   def waitForEvent(handler: SDL_Event_Handler, timeout : int) : void{
-    let sdl_settings = this.sdl_settings; 
+    let sdl_settings = this.sdl_settings;
     if(timeout == 0) then {
       embed void
         SDL_WaitEvent(#{sdl_settings}->event);
@@ -355,7 +357,7 @@ class Event_Vat<event_type>
   def pushEvent(event: (SDL_Main,event_type)) : void {
     this.vat!write(event);
   }
-  
+
 -- This class handles the events generated by the SDL_PollEvent and
 -- the SDL_WaitForEvent.
 -- Note:
@@ -377,12 +379,12 @@ class SDL_Event_Handler
   def addMouseButtonCallback(action : Hack<SDL_MouseButtonEvent> -> bool) : void{
     this.mouse_button_vat.registerCallback(action);
   }
-  
+
   --Ads a new callback to be triggered ona keyboard event
   def addKeyboardCallback(action : Hack<SDL_KeyboardEvent>-> bool) : void{
     this.keyboard_vat.registerCallback(action);
   }
-  
+
   --Ads a new callback to be triggered ona mouse motion event.
   def addMotionCallback(action : Hack<SDL_MouseMotionEvent>-> bool) : void{
     this.mouse_motion_vat.registerCallback(action);
@@ -411,5 +413,3 @@ class SDL_Event_Handler
       free(#{event});
     end
   }
-
-

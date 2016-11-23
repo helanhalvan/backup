@@ -1,8 +1,8 @@
 import FileIO.IO
-import XML.xml
-import Ped_util.agent_passive
+import XML.XML
+import Ped_util.Agent_passive
 import SDL.SDL_Main
-import Ped_util.global_funs
+import Ped_util.Global_funs
 
 class Main {
 --TODO
@@ -128,7 +128,7 @@ class Main {
                                             else {
                                                 dy=dy+rand()%4
                                             };
-                                                --print((i,dx,dy));
+                                                --print("({})",dx);
                                                 agents[i]=new Agent((dx,dy),copy_tr(agent_waypoints),copy_ar(waypoints_distance),i);
                                                 i=i+1
                                        }
@@ -141,6 +141,7 @@ class Main {
                                            else
                                                print("AGENT HAVE {} WAYPOINTS\n",|a.targets|)
                                            };
+                                    --while true ();
                                            agents
                                        }}}}
 }
@@ -257,6 +258,7 @@ class Multi_box {
         b = this.top_left.move();
         c = this.bottom_right.move();
         d = this.bottom_left.move();
+        -- SHORT CIRCUT DOES MAKE THIS RETURN BEFORE ALL DONE!
         (get(a)) or (get(b)) or (get(c)) or (get(d))
         }
     }

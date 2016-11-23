@@ -1,3 +1,4 @@
+module SDL_Events
 import SDL.SDL_Types
 import SDL.Vat
 
@@ -50,7 +51,7 @@ passive class SDL_MouseMotionEvent
   y         : int   -- The y cordinate relative to the window.
   xrel      : int   -- X relative motion to the previous motion event.
   yrel      : int   -- Y relative motion to the previous mouse event.
-  
+
   def init(event: SDL_Event) : void{
     let timestamp = this.timestamp;
     let windowID  = this.windowID;
@@ -93,25 +94,23 @@ passive class SDL_KeyboardEvent
                    -- Take note that this field stores the SDL_Keycode value.
 
   def init(event: SDL_Event) : void{
-    let timestamp = this.timestamp; 
-    let windowID  = this.windowID; 
-    let state     = this.state; 
-    let repeated  = this.repeated; 
-    let keycode   = this.keycode; 
+    let timestamp = this.timestamp;
+    let windowID  = this.windowID;
+    let state     = this.state;
+    let repeated  = this.repeated;
+    let keycode   = this.keycode;
     embed void
       SDL_KeyboardEvent* key_event = (SDL_KeyboardEvent*)#{event};
-        #{timestamp} = key_event->timestamp; 
-        #{windowID } = key_event->windowID; 
-        #{state    } = key_event->state; 
-        #{repeated } = key_event->repeat; 
-        #{keycode  } = key_event->keysym.sym; 
+        #{timestamp} = key_event->timestamp;
+        #{windowID } = key_event->windowID;
+        #{state    } = key_event->state;
+        #{repeated } = key_event->repeat;
+        #{keycode  } = key_event->keysym.sym;
     end;
-    this.timestamp = timestamp; 
-    this.windowID  = windowID; 
-    this.state     = state; 
-    this.repeated  = repeated; 
-    this.keycode   = keycode; 
-  
+    this.timestamp = timestamp;
+    this.windowID  = windowID;
+    this.state     = state;
+    this.repeated  = repeated;
+    this.keycode   = keycode;
+
   }
-
-

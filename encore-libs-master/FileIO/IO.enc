@@ -1,4 +1,4 @@
-bundle FileIO.IO where
+module IO
 
 passive class File {
 

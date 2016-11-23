@@ -1,3 +1,4 @@
+module SDL_Types
 typedef SDL_Event = embed SDL_Event* end
 typedef SDL_Font = embed TTF_Font* end
 typedef SDL_Color = embed SDL_Color end

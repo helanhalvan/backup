@@ -1,3 +1,5 @@
+module Linked_List
+
 passive class LinkedNode<t>
     value : t
     prev  : Maybe LinkedNode<t>
