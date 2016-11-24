@@ -2,7 +2,10 @@ import FileIO.IO
 import XML.XML
 import Ped_util.Agent_passive
 import SDL.SDL_Main
+import SDL.SDL_Types
+import SDL.SDL_Primitives
 import Ped_util.Global_funs
+import Collections.HashMap
 
 class Main {
 --TODO
@@ -17,7 +20,7 @@ class Main {
        superbox = new Multi_box(this.parse_file("scenario.xml"))
         x_size=0
         y_size=0
-        aui=true
+        aui=false
         sdl_main = null : SDL_Main
        in {
        --match (get(superbox.max()),get(superbox.min())) with
@@ -246,18 +249,15 @@ class Multi_box {
     def move () : bool {
         --debug check
         let
-        a = this.top_right.alive()
-        b = this.top_left.alive()
-        c = this.bottom_right.alive()
-        d = this.bottom_left.alive()
+        a = this.top_right.move()
+        b = this.top_left.move()
+        c = this.bottom_right.move()
+        d = this.bottom_left.move()
         in {
-        unless ( (get(a)) or (get(b)) or (get(c)) or (get(d)) ) then print("SOMEONE IS DEAD!\n");
-
-        --Moves all the boxes in parrallel, then awaits them being done moving
-        a = this.top_right.move();
-        b = this.top_left.move();
-        c = this.bottom_right.move();
-        d = this.bottom_left.move();
+        get(a);
+        get(b);
+        get(c);
+        get(d);
         -- SHORT CIRCUT DOES MAKE THIS RETURN BEFORE ALL DONE!
         (get(a)) or (get(b)) or (get(c)) or (get(d))
         }
@@ -310,7 +310,8 @@ def max() : (int,int) {this.max}
 def agents() : [(int,int)] {
     let
      b = new [(int,int)](this.agents.size())
-     a = new HashMapIterator<Agent>(this.agents.get_data())
+     hashmap = this.agents.get_data()
+     a = new HashMapIterator<Agent>(hashmap)
      i = 0
     in {
     while a.has_next() {

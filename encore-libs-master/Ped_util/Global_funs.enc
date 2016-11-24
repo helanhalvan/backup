@@ -1,5 +1,24 @@
 module Global_funs
-
+def copy_ar(arr:[int]) : [int] {
+    let a2=new[int](|arr|)
+        i=0
+    in {
+    for a in arr {
+        --print("{} \n", a);
+        a2[i]=a;
+        i=i+1
+    };
+    a2}
+}
+def copy_tr(arr:[(int,int)]) : [(int,int)] {
+        let a2=new [(int,int)](|arr|);
+        let i=0;
+        for a in arr {
+            a2[i]=a;
+            i=i+1;
+        };
+        a2
+}
 def flatten(listlist:[[(int,int)]]): [(int,int)] {
         let len=0;
         for a in listlist {
