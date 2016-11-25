@@ -1,24 +1,26 @@
 #!/bin/bash
 
-if [[ $2 == "-r" ]]; then 
+if [[ $2 == "-r" ]]; then
 encorec $1 -o $1.run -I ./encore-libs-master/Collections:./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_image -ggdb" -g --run
 fi
+if [[ $2 == "-t" ]]; then
+time encorec $1 -o $1.run -I ./encore-libs-master/Collections:./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_image -ggdb" -g --run
+fi
 
-if [[ $2 == "-s" ]]; then 
+if [[ $2 == "-s" ]]; then
 encorec $1 -o $1.run --import ./encore-libs-master/Collections:./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_image -ggdb" -g #--no-gc
 ./$1.run --ponythreads 1
 fi
 
-if [[ $2 == "-d" ]]; then 
+if [[ $2 == "-d" ]]; then
 encorec $1 -o $1.run --import ./encore-libs-master/Collections:./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_image -ggdb" -g
 gdb $1.run
 fi
 
-if [[ $2 == "-c" ]]; then 
+if [[ $2 == "-c" ]]; then
 encorec $1 -o $1.run --import ./encore-libs-master/Collections:./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_image -ggdb" -g -c --debug
 fi
 #cd ./main_src
 #make CONFIG=debug
 #gdb $1.run
 #./main --ponythreads 1
-

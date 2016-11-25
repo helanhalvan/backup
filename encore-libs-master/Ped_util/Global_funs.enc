@@ -1,4 +1,15 @@
 module Global_funs
+def mk_Future(n : bool) : Fut bool
+ embed Fut bool
+   future_t *fut = future_mk(_ctx, ENCORE_PRIMITIVE);
+   future_fulfil(_ctx, fut, (encore_arg_t) {.i = #{n}});
+   fut;
+ end
+def inside(pos:(int,int),space:((int,int),(int,int)) ) : bool {
+    match (pos,space) with
+        ((x,y),((xmax,ymax),(xmin,ymin))) when x>xmax or x<xmin or y>ymax or y<ymin => false
+        _ => true
+}
 def copy_ar(arr:[int]) : [int] {
     let a2=new[int](|arr|)
         i=0

@@ -10,18 +10,21 @@ passive class Agent : HashCode {
     targets : [(int,int)]   --waypoints, a list of positions to go to IMMUTABLE
     targets_size : [int]    -- --||-- redundant, workaround var
     i : int                 --index of targets MUTABLE
-
-    def init(in_pos:(int,int), list:[(int,int)], targets_size:[int], in_id:int) : void {
+    ttl : int               --number of steps before calling it a day
+    def init(in_pos:(int,int), list:[(int,int)], targets_size:[int], in_id:int,ttl:int) : void {
         this.pos=in_pos;
         this.i=0;
         this.targets=list;
         this.targets_size=targets_size;
         this.hash_code=in_id;
+        this.ttl=ttl;
     }
     -- --returns places the agent can and want to go to
     -- --can => an agent can only go up, down, left or right
     -- --want => an agent only want to go closer to their next waypoint
+    -- lowers TTL
     def next() : [(int,int)] {
+            this.ttl=this.ttl-1;
 
             if |this.targets| == this.i then this.i=0;
 
@@ -32,6 +35,7 @@ passive class Agent : HashCode {
             if |this.targets| == this.i then this.i=0;
 
             match (this.pos, this.targets[this.i]) with
+                _ when this.ttl <= 0 => { new [(int,int)](0) }
                 ((x1,y1), (x2,y2)) when x1>x2 and y1>y2 => { [(x1-1,y1),(x1,y1-1)] }
                 ((x1,y1), (x2,y2)) when x1<x2 and y1<y2 => { [(x1+1,y1),(x1,y1+1)] }
                 ((x1,y1), (x2,y2)) when x1>x2 and y1<y2 => { [(x1-1,y1),(x1,y1+1)] }
@@ -44,9 +48,9 @@ passive class Agent : HashCode {
             }
                             --updates the current position
                             --agents have no agency and check nothing when it comes to their own position
-    def move(in_pos:(int,int)) : void
+    def move(in_pos:(int,int)) : void{
         this.pos=in_pos
-
+    }
                                 --getter for position, used for collision detection
     def pos() : (int,int)
         this.pos
@@ -60,7 +64,7 @@ passive class Agent : HashCode {
                     qq[i]=this.targets[i];
                     --qq[i]={match this.targets[i] with (x,y) => (x,y)};
                 };
-            let w = new Agent(q, qq, copy_ar(this.targets_size),this.hash_code);
+            let w = new Agent(q, qq, copy_ar(this.targets_size),this.hash_code,this.ttl);
                 w.i=this.i;
                 w
             }
