@@ -1,9 +1,9 @@
 import FileIO.IO
 import XML.XML
 import Ped_util.Agent_passive
---import SDL.SDL_Main
---import SDL.SDL_Types
---import SDL.SDL_Primitives
+import SDL.SDL_Main
+import SDL.SDL_Types
+import SDL.SDL_Primitives
 import Ped_util.Global_funs
 import Collections.HashMap
 import Data.Either
@@ -20,22 +20,26 @@ class Main {
        superbox = new Top_box(this.parse_file("scenario.xml"))
         x_size=0
         y_size=0
-        aui=false
-        --sdl_main = null : SDL_Main
+        aui=true
+        sdl_main = null : SDL_Main
        in {
+        print("constructor-done!\n");
        --match (get(superbox.max()),get(superbox.min())) with
         --        ((xmax,ymax),(xmin,ymin)) => {x_size=(xmax-xmin); y_size=(ymax-ymin);};
-       {- if aui then {
+       if aui then {
        sdl_main = new SDL_Main(1000,1000);
        get sdl_main.clearAll();
        get sdl_main.refresh();
-       }; -}
-       this!loop(superbox,0,aui);
+       };
+        --print("123456789\n");
+        --superbox!hi();
+        --while true { () }
+       this!loop(superbox,0,aui,sdl_main);
        } --}
    }
-   def loop(superbox:Top_box, tick:int, ui:bool) : void {
+   def loop(superbox:Top_box, tick:int, ui:bool,sdl_main:SDL_Main) : void {
        print("tick {}\n",tick);
-    {-
+
         if(ui) then {
        get(sdl_main.clearAll());
        get sdl_main.setRenderColor(new ColorRGBA(240,240,240,0));
@@ -50,10 +54,9 @@ class Main {
        get sdl_main.fillRectangle( new Rectangle(160*4,60*4,3,3) );
        get(sdl_main.refresh());
             };
-        -}
         get(superbox.move());
        --if  then
-        this!loop(superbox,tick,ui)
+        this!loop(superbox,tick+1,ui,sdl_main)
        }
 
     def parse_file(fname:String) : [Agent] {
@@ -180,20 +183,28 @@ class Top_box {
         match this.find_extreme(agents) with
             (xmax,ymax,xmin,ymin) => {this.max=(xmax,ymax);
                                       this.min=(xmin,ymin);
+                                      --print("top-setup-toplevel\n");
                                       this.toplevel=new Box( (100000,100000), (-100000,-100000), Nothing : Maybe Box, -1 );
-                                      this.implementation=new Box(this.max,this.min,Just this.toplevel, 1 );
+                                      --print("top-setup-imp\n");
+                                      this.implementation=new Box(this.max,this.min,Just this.toplevel, 2 );
+                                      --print("top-imp-done\n");
                                       };
         for a in agents {
+            print(".");
             this.implementation.add(a)
-        }}}
+        }};
+    print("top-setup-done\n")
+    }
     --get corners of box
     def max() : (int,int) {this.max}
     def min() : (int,int) {this.min}
     --moves all internal agents on step, returns true if any agents tried to move
     def move () : bool {
-            get(this.implementation.move()); print("done\n\n"); true
+            get(this.implementation.move());
+            --print("done\n\n");
+            true
         }
-    def agents() : [(int,int)] { get(this.implementation.agents()) }
+    def agents() : [(int,int)] { this.implementation.agents() }
 
     def find_extreme(agents:[Agent]) : (int,int,int,int) {
         let extreme=(-10000,-10000,10000,10000);
@@ -212,77 +223,8 @@ class Top_box {
         match (a,b) with
             ((x,y),(xmax,ymax,xmin,ymin)) => (max(x,xmax),max(y,ymax),min(x,xmin),min(y,ymin))
     }
-}
-class Multi_Box {
-    --max x and y cords
-    max : (int,int)
-    --min x and y cords
-    min : (int,int)
-    subarray : [Box]
-    def init(in_max:(int,int), in_min:(int,int),currentlevel:Box,leveldata:int ) : void {
-            match (in_max,in_min) with
-                ((xmax,ymax),(xmin,ymin)) => {
-          this.max=(xmax,ymax);
-          this.min=(xmin,ymin);
-        let
-          dx=xmax-xmin
-          dy=ymax-ymin
-        in {
-          dx=dx/2;
-          dy=dy/2;
-          this.subarray = new [Box](4);
-          this.subarray[0]=new Box(this.max,(xmax-dx+1,ymax-dy+1 ), Just currentlevel,leveldata );
-          this.subarray[1]=new Box( (xmax-dx,ymax-dy),this.min,     Just currentlevel,leveldata );
-          this.subarray[2]=new Box( (xmax-dx,ymax),(xmin,ymax-dy+1),Just currentlevel,leveldata );
-          this.subarray[3]=new Box( (xmax,ymax-dy),(xmax-dx+1,ymin),Just currentlevel,leveldata );
-    }}}
-    def add(a:Agent) : void {
-        if(  ((this.subarray)[0]).add(a)) then { () }
-        else if( ((this.subarray)[1]).add(a)) then { () }
-        else if( ((this.subarray)[2]).add(a)) then { () }
-        else if( ((this.subarray)[3]).add(a)) then { () }
-        else { print("{} didn't get in \n", a.pos);}
-    }
-    def agents() : [(int,int)] {
-        flatten([
-        get(((this.subarray)[0]).agents()),
-        get(((this.subarray)[1]).agents()),
-        get(((this.subarray)[2]).agents()),
-        get(((this.subarray)[3]).agents())
-        ])
-    }
-    def external_move(ag:Agent, pos:(int,int)) : bool {
-        let
-            --external_move now have a horrible type,
-         a = ((this.subarray)[0]).external_move(ag,pos)
-         b = ((this.subarray)[1]).external_move(ag,pos)
-         c = ((this.subarray)[2]).external_move(ag,pos)
-         d = ((this.subarray)[3]).external_move(ag,pos)
-        in {
-            --allowed to short circut
-            (get(a)) or (get(b)) or (get(c)) or (get(d))
-        }
-    }
-    def link(box:Box) : void {
-            for a in this.subarray
-                a.link(box)
-        }
-    def move() : bool {
-            let
-            a = ((this.subarray)[0]).move()
-            b = ((this.subarray)[1]).move()
-            c = ((this.subarray)[2]).move()
-            d = ((this.subarray)[3]).move()
-            in {
-            --not allowed to short CIRCUT
-            print("{}:{}:{}:{} \n", get(a),get(b),get(c),get(d));
-            get(a);
-            get(b);
-            get(c);
-            get(d);
-            (get(a)) or (get(b)) or (get(c)) or (get(d))
-            }
-        }
+    --makes all box instances print 0 to stdout, only for troubleshooting
+    def hi() : void {print("zeroes\n");this.implementation.hi()}
 }
 --EITHER
 -- new Left<LEFTTYPE,RIGHTTYPE>(OBJ)
@@ -290,55 +232,106 @@ class Multi_Box {
 passive class Box {
     toplevel : Box --immutable
     single : Single_Box --immutable
-    multi : Multi_Box --immutable
+    multi : [Box]  --immutable
     single_now : bool --mutable
     max : (int,int) --immutable
     min : (int,int) --immutable
-
+    def max() : (int,int) {this.max}
+    def min() : (int,int) {this.min}
+    def hi() : void {print("0\n"); for a in this.multi a.hi()}
     --SETUP FUNCTIONS ++++++++++++++++++++++++++++++++++++++++++++++++
     --TOPLEVEL IS AN OPTIONAL ARGUEMNT FOR SOMEWHERE TO SEND AGENTS THAT GO OUT OF BOUNDS
     --IF NO TOPLEVEL IS PRESENT AND A AGENT GOES OUT OF BONDS BAD THINGS WILL HAPPEN
     def init(in_max:(int,int), in_min:(int,int), toplevel:Maybe Box, levels_left:int) : void {
-        --single box will allways send to toplevel so instead of linking it with current level, I link it with toplevel
-        match toplevel with
-            Just box => {this.single=new Single_Box(in_max,in_min,box);
-                         this.toplevel=box}
-            _ => {this.single=new Single_Box(in_max,in_min,this)};
-        if(levels_left>0) then {
-        this.multi=new Multi_Box(in_max,in_min,this, levels_left-1);
-        this.single_now=false;
-        }
-        else { this.single_now=true };
         this.max=in_max;
         this.min=in_min;
+        this.toplevel= { match toplevel with Just box => {box} _ => {this} };
+        if(levels_left>0) then {
+            match (in_max,in_min) with
+                ((xmax,ymax),(xmin,ymin)) => {
+            let
+                dx=xmax-xmin
+                dy=ymax-ymin
+                in {
+                  dx=dx/2;
+                  dy=dy/2;
+                  this.multi = new [Box](4);
+                  this.multi[0]=new Box( this.max,(xmax-dx+1,ymax-dy+1 ), Just this,levels_left-1);
+                  this.multi[1]=new Box( (xmax-dx,ymax-dy),this.min,      Just this,levels_left-1);
+                  this.multi[2]=new Box( (xmax-dx,ymax),(xmin,ymax-dy+1), Just this,levels_left-1);
+                  this.multi[3]=new Box( (xmax,ymax-dy),(xmax-dx+1,ymin), Just this,levels_left-1);
+                  this.single_now=false;
+        }}}
+        else { this.single_now=true; this.multi= new [Box](0) };
+        this.single=new Single_Box(in_max,in_min,this.toplevel)
     }
     --propagate linking message if relevant
     def link(a:Box) : void {
-    let c=a.max();
-    let d=a.min();
+    let c=a.max;
+    let d=a.min;
     match (this.max,this.min,c,d ) with
-        ( (x_max_1,y_max_1),(x_min_1,y_min_1),(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((x_max_1+1) == x_min_2) or ((y_max_1+1) == y_min_2) or ((x_max_2+1) == x_min_1) or ((y_max_2+1) == y_min_1)=> { if (this.single_now) then {this.single.link(a); ()} else {this.multi.link(a); ()}; ()}
+        ( (x_max_1,y_max_1),(x_min_1,y_min_1),(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((x_max_1+1) == x_min_2) or ((y_max_1+1) == y_min_2) or ((x_max_2+1) == x_min_1) or ((y_max_2+1) == y_min_1)
+        => { for item in this.multi { item.link(a) }; --works every time as this.multi can have length 0
+             this.single.link(a);
+             ()}
         _ => ()
     }
-    def min() : (int,int) { this.min }
-    def max() : (int,int) { this.max }
-    --END OF SETUP FUNCTIONS +++++++++++++++++++++++++++++++++++++++++++++++++
 
     def add(a:Agent) : bool {
+        --print("adding {}\n",a.pos());
+        --print("{}{}\n",this.max,this.min);
         if not inside(a.pos(),(this.max,this.min)) then false else {
-            if(this.single_now) then {this.single.add(a)} else {this.multi.add(a)};
+            if(this.single_now) then {
+                --print("SINGLE FOUND\n");
+                --print("{} {} \n",this.single_now,this.single);
+                this.single.add(a); ()
+            } else {
+                for item in this.multi {
+                --print("{} {}\n",a,item);
+                --print("add multiplying {}\n",a.pos());
+                item.add(a.copy())
+            }};
             true
     }}
-
-    def agents() : Fut [(int,int)] {
-        if(this.single_now) then {this.single.agents()} else {this.multi.agents()}
+        --this fun will be massive bottleneck, however only when UI is on
+    def agents() : [(int,int)] {
+        if(this.single_now) then { get(this.single.agents())
+        } else {
+            let
+                a = ((this.multi)[0]).agents()
+                b = ((this.multi)[1]).agents()
+                c = ((this.multi)[2]).agents()
+                d = ((this.multi)[3]).agents()
+            in {
+            flatten([a,b,c,d])
+        }}
     }
     --check if within bounds, else send to toplevel
     def external_move(a:Agent, pos:(int,int)) : Fut bool {
         if( not inside(pos,(this.max,this.min)) ) then mk_Future(false) else {
-        if(this.single_now) then this.single.external_move(a,pos) else { this.multi.external_move(a,pos) }}
+        if(this.single_now) then this.single.external_move(a,pos) else {
+            --or between box return values
+            let
+                lamb = \ (p1:bool) -> { p1 }
+            in {
+            for index in [0..|this.multi|-2] {
+                let cur = (this.multi[index]).external_move(a,pos);
+                lamb = \ (p1:bool) -> {p1 or get(cur ~~> lamb)}
+                };
+                ((this.multi)[ |this.multi|-1 ]).external_move(a,pos) ~~> lamb
+        }}}
     }
-    def move() : Fut bool { if(this.single_now) then this.single.move() else this.multi.move() }
+    def move() : Fut bool {
+        if(this.single_now) then this.single.move() else {
+        let
+            lamb = \ (p1:bool) -> { p1 }
+        in {
+        for index in [0..|this.multi|-2] {
+            let cur = (this.multi[index]).move();
+            lamb = \ (p1:bool) -> {p1 or get(cur ~~> lamb)}
+            };
+            ((this.multi)[ |this.multi|-1 ]).move() ~~> lamb
+    }}}
 }
 --single threaded 2D space container
 --contains all Agents in a given 2D region of space
@@ -402,8 +395,6 @@ def link(a:Box) : bool {
         ( (x_max_1,y_max_1),(x_min_1,y_min_1),(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_2+1) == y_min_1) => {this.down=a; print("down\n");true }
         _ => { false }
     }
-def alive(): bool { true }
-
  --moves all agents in the box once
  --returns true if there are some agents to move
  --otherwise false
@@ -449,7 +440,7 @@ def move(): bool {
                     this.agents.remove(a);
                 }
             }};
-        if this.agents.size() == 0 then false else { print("true\n");true }
+        if this.agents.size() == 0 then false else { true }
         --if n==0 then true else this.move(n)
     }
     --recives a Agent from another box
