@@ -1,9 +1,9 @@
 import FileIO.IO
 import XML.XML
 import Ped_util.Agent_passive
-import SDL.SDL_Main
-import SDL.SDL_Types
-import SDL.SDL_Primitives
+--import SDL.SDL_Main
+--import SDL.SDL_Types
+--import SDL.SDL_Primitives
 import Ped_util.Global_funs
 import Collections.HashMap
 import Data.Either
@@ -50,7 +50,7 @@ class Main {
        get sdl_main.fillRectangle( new Rectangle(160*4,60*4,3,3) );
        get(sdl_main.refresh());
             };
-        -} 
+        -}
         get(superbox.move());
        --if  then
         this!loop(superbox,tick,sdl_main,ui)
