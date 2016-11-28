@@ -21,7 +21,7 @@ class Main {
         x_size=0
         y_size=0
         aui=false
-        sdl_main = null : SDL_Main
+        --sdl_main = null : SDL_Main
        in {
        --match (get(superbox.max()),get(superbox.min())) with
         --        ((xmax,ymax),(xmin,ymin)) => {x_size=(xmax-xmin); y_size=(ymax-ymin);};
@@ -30,10 +30,10 @@ class Main {
        get sdl_main.clearAll();
        get sdl_main.refresh();
        }; -}
-       this!loop(superbox,0,sdl_main,aui);
+       this!loop(superbox,0,aui);
        } --}
    }
-   def loop(superbox:Top_box, tick:int,sdl_main:SDL_Main, ui:bool) : void {
+   def loop(superbox:Top_box, tick:int, ui:bool) : void {
        print("tick {}\n",tick);
     {-
         if(ui) then {
@@ -53,7 +53,7 @@ class Main {
         -}
         get(superbox.move());
        --if  then
-        this!loop(superbox,tick,sdl_main,ui)
+        this!loop(superbox,tick,ui)
        }
 
     def parse_file(fname:String) : [Agent] {
