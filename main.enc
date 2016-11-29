@@ -39,7 +39,7 @@ class Main {
    }
    def loop(superbox:Top_box, tick:int, ui:bool,sdl_main:SDL_Main) : void {
        print("tick {}\n",tick);
-
+{-
         if(ui) then {
        get(sdl_main.clearAll());
        get sdl_main.setRenderColor(new ColorRGBA(240,240,240,0));
@@ -53,10 +53,11 @@ class Main {
        get sdl_main.setRenderColor(new ColorRGBA(0,240,0,0));
        get sdl_main.fillRectangle( new Rectangle(160*4,60*4,3,3) );
        get(sdl_main.refresh());
-            };
+            };-}
 --       if
-get(superbox.move()); 
+        get(superbox.move());
 --then
+        --print("lets go to tick n+1\n");
         this!loop(superbox,tick+1,ui,sdl_main)
        }
 
@@ -228,7 +229,6 @@ class Top_box {
 --EITHER
 -- new Left<LEFTTYPE,RIGHTTYPE>(OBJ)
 -- new RIGHT<LEFTTYPE,RIGHTTYPE>(OBJ)
-
 
 passive class Box {
     toplevel : Box --immutable
