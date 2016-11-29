@@ -54,7 +54,9 @@ class Main {
        get sdl_main.fillRectangle( new Rectangle(160*4,60*4,3,3) );
        get(sdl_main.refresh());
             };
-       if get(superbox.move()) then
+--       if
+get(superbox.move()); 
+--then
         this!loop(superbox,tick+1,ui,sdl_main)
        }
 
@@ -199,7 +201,7 @@ class Top_box {
     def min() : (int,int) {this.min}
     --moves all internal agents on step, returns true if any agents tried to move
     def move () : bool {
-            get(this.implementation.move());
+            if (get(this.implementation.move()))>0 then true else false
         }
     def agents() : [(int,int)] { this.implementation.agents() }
 
@@ -226,11 +228,13 @@ class Top_box {
 --EITHER
 -- new Left<LEFTTYPE,RIGHTTYPE>(OBJ)
 -- new RIGHT<LEFTTYPE,RIGHTTYPE>(OBJ)
+
+
 passive class Box {
     toplevel : Box --immutable
     single : Single_Box --immutable
     multi : [Box]  --immutable
-    single_now : bool --mutable but not now
+    allways_single : bool --immutable
     max : (int,int) --immutable
     min : (int,int) --immutable
     level : int -- immutable, 0 is the basement where all the workers are
@@ -259,9 +263,9 @@ passive class Box {
                   this.multi[1]=new Box( (xmax-dx,ymax-dy),this.min,      Just this,levels_left-1);
                   this.multi[2]=new Box( (xmax-dx,ymax),(xmin,ymax-dy+1), Just this,levels_left-1);
                   this.multi[3]=new Box( (xmax,ymax-dy),(xmax-dx+1,ymin), Just this,levels_left-1);
-                  this.single_now=false;
+                  this.allways_single=false;
         }}}
-        else { this.single_now=true; this.multi= new [Box](0) };
+        else { this.allways_single=true; this.multi= new [Box](0) };
         this.single=new Single_Box(in_max,in_min,this.toplevel)
     }
     --single_box can link to box, it's one way
@@ -281,7 +285,7 @@ passive class Box {
         --print("adding {}\n",a.pos());
         --print("{}{}\n",this.max,this.min);
         if not inside(a.pos(),(this.max,this.min)) then false else {
-            if(this.single_now) then {
+            if(this.allways_single) then {
                 --print("SINGLE FOUND\n");
                 --print("{} {} \n",this.single_now,this.single);
                 this.single.add(a); ()
@@ -295,7 +299,7 @@ passive class Box {
     }}
         --this fun will be massive bottleneck, however only when UI is on
     def agents() : [(int,int)] {
-        if(this.single_now) then { get(this.single.agents())
+        if(this.allways_single) then { get(this.single.agents())
         } else {
             let
                 a = ((this.multi)[0]).agents()
@@ -315,7 +319,7 @@ passive class Box {
                 mk_Future(false)}
             else { this.toplevel.external_move(a,pos) }}
         else {
-        if (this.single_now) then this.single.external_move(a,pos) else {
+        if (this.allways_single) then this.single.external_move(a,pos) else {
             let ret = mk_Future(false);
             for item in this.multi {
                 if inside(pos, (item.max, item.min)) then {
@@ -327,17 +331,15 @@ passive class Box {
             --print("CHILDREN DON'T COVER ALL GROUND"); 1/0; mk_Future(false)
         }}
     }
-    def move() : Fut bool {
-        if(this.single_now) then this.single.move() else {
+    def move() : Fut int {
+        if(this.allways_single) then this.single.move() else {
         let
-            lamb = \ (p1:bool) -> { p1 }
+            lamb = \ (nr:int) -> {nr}
         in {
         for index in [0..|this.multi|-2] {
-            let cur = (this.multi[index]).move();
-            lamb = \ (p1:bool) -> {p1 or get(cur ~~> lamb)}
+            lamb = \ (x:int)-> { x+get(((this.multi[index]).move()) ~~>lamb ) };
             };
-            ((this.multi)[ |this.multi|-1 ]).move() ~~> lamb
-            --}
+         (((this.multi)[ |this.multi|-1 ]).move()) ~~> lamb
     }}}
 }
 --single threaded 2D space container
@@ -393,6 +395,8 @@ def agents() : [(int,int)] {
 def add(a:Agent) : void { this.agents.add(a) }
 --if the arguements shares a border with this box, it's added to the apropriate edge and returns true
 --otherwise returns false
+--unused
+{-
 def link(a:Box) : bool {
     let c=a.max();
     let d=a.min();
@@ -403,10 +407,17 @@ def link(a:Box) : bool {
         ( (x_max_1,y_max_1),(x_min_1,y_min_1),(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_2+1) == y_min_1) => {this.down=a; print("down\n");true }
         _ => { false }
     }
+-}
  --moves all agents in the box once
  --returns true if there are some agents to move
  --otherwise false
-def move(): bool {
+{--
+def move(n:int, callback: bool -> void) : void {
+        if n==1 then callback(this.internal_move()) else {
+            this!move(n-1,callback)
+        }
+    } --}
+def move(): int {
         --n=n-1;
         let iterator = new HashMapIterator<Agent>(this.agents.get_data());
        while iterator.has_next() {
@@ -448,7 +459,7 @@ def move(): bool {
                     this.agents.remove(a);
                 }
             }};
-        if this.agents.size() == 0 then false else { true }
+        this.agents.size()
         --if n==0 then true else this.move(n)
     }
     --recives a Agent from another box
