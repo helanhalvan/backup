@@ -39,8 +39,7 @@ class Main {
    }
    def loop(superbox:Top_box, tick:int, ui:bool,sdl_main:SDL_Main) : void {
        print("tick {}\n",tick);
-{-
-        if(ui) then {
+         if(ui) then {
        get(sdl_main.clearAll());
        get sdl_main.setRenderColor(new ColorRGBA(240,240,240,0));
        for a in get(superbox.agents())
@@ -53,12 +52,8 @@ class Main {
        get sdl_main.setRenderColor(new ColorRGBA(0,240,0,0));
        get sdl_main.fillRectangle( new Rectangle(160*4,60*4,3,3) );
        get(sdl_main.refresh());
-            };-}
---       if
-        get(superbox.move());
---then
-        --print("lets go to tick n+1\n");
-        this!loop(superbox,tick+1,ui,sdl_main)
+            }; --}
+         if get(superbox.move()) then this!loop(superbox,tick+1,ui,sdl_main);
        }
 
     def parse_file(fname:String) : [Agent] {
@@ -331,13 +326,16 @@ passive class Box {
             --print("CHILDREN DON'T COVER ALL GROUND"); 1/0; mk_Future(false)
         }}
     }
+    --the number of agents moved by this box
     def move() : Fut int {
         if(this.allways_single) then this.single.move() else {
         let
             lamb = \ (nr:int) -> {nr}
         in {
         for index in [0..|this.multi|-2] {
-            lamb = \ (x:int)-> { x+get(((this.multi[index]).move()) ~~>lamb ) };
+            let future=((this.multi)[index]).move();
+            future=future~~>lamb;
+            lamb = \ (x:int)-> { await(future); x+get(future) };
             };
          (((this.multi)[ |this.multi|-1 ]).move()) ~~> lamb
     }}}
@@ -361,7 +359,6 @@ def init(in_max:(int,int), in_min:(int,int),toplevel:Box ) : void {
     this.agents=new Agent_struct();
     this.max=in_max;
     this.min=in_min;
-    --print("LEVEL: {}\n",toplevel.level);
     this.up=toplevel;
     this.down=toplevel;
     this.left=toplevel;
@@ -393,32 +390,8 @@ def agents() : [(int,int)] {
     }}
 
 def add(a:Agent) : void { this.agents.add(a) }
---if the arguements shares a border with this box, it's added to the apropriate edge and returns true
---otherwise returns false
---unused
-{-
-def link(a:Box) : bool {
-    let c=a.max();
-    let d=a.min();
-    match (this.max,this.min,c,d ) with
-        ( (x_max_1,y_max_1),(x_min_1,y_min_1),(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((x_max_1+1) == x_min_2) => {this.right=a;print("right\n");true }
-        ( (x_max_1,y_max_1),(x_min_1,y_min_1),(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_1+1) == y_min_2) => {this.up=a;   print("up\n"); true }
-        ( (x_max_1,y_max_1),(x_min_1,y_min_1),(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((x_max_2+1) == x_min_1) => {this.left=a; print("left\n");true }
-        ( (x_max_1,y_max_1),(x_min_1,y_min_1),(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_2+1) == y_min_1) => {this.down=a; print("down\n");true }
-        _ => { false }
-    }
--}
- --moves all agents in the box once
- --returns true if there are some agents to move
- --otherwise false
-{--
-def move(n:int, callback: bool -> void) : void {
-        if n==1 then callback(this.internal_move()) else {
-            this!move(n-1,callback)
-        }
-    } --}
+
 def move(): int {
-        --n=n-1;
         let iterator = new HashMapIterator<Agent>(this.agents.get_data());
        while iterator.has_next() {
             let
@@ -460,7 +433,6 @@ def move(): int {
                 }
             }};
         this.agents.size()
-        --if n==0 then true else this.move(n)
     }
     --recives a Agent from another box
 def external_move(a:Agent, pos:(int,int) ) : bool {
