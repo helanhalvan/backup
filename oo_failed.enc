@@ -1,0 +1,170 @@
+
+class Multi_Box {
+    box : Box
+    def init(box:Box) : void { this.box=box }
+    def start() : void {
+        if(this.box.level>0) then {
+            let futures = new [Fut int](4);
+            for index in [0..3]
+                futures[index]=(this.box.multi[index]).start();
+        } else {
+            let ret=0;
+            while true {
+                let future=this.box.move();
+                await(future);
+                ret=get(future)
+                if ret==0 then this.box.toplevel.active!possibly_done()
+            }
+        };
+    }
+    def possibly_done () : void {
+        if this.box.agents()==0 then
+            this.toplevel.active!possibly_done()
+    }
+    def move_n(n:int) : int {
+        if(this.box.level>0) then {
+            let ret = 0;
+            let futures = new [Fut int](4);
+            for count in [0..n] {
+                for index in [0..3]
+                    futures[index]=(this.box.multi[index]).move_n(n-1);
+                for item in futures
+                    ret=ret+get(item);
+            };
+            ret
+        } else {
+            --print("bottom\n");
+            let ret = 0;
+            for count in [0..n]
+                ret=get(this.box.move());
+            ret
+        }
+    }
+}
+
+passive class Box {
+    active : Multi_Box
+    toplevel : Box --immutable
+    single : Single_Box --immutable
+    multi : [Box]  --immutable
+    allways_single : bool --immutable
+    max : (int,int) --immutable
+    min : (int,int) --immutable
+    level : int -- immutable, 0 is the basement where all the workers are
+    def move_all() : Fut int {this.active.move_all()}
+    def max() : (int,int) {this.max}
+    def min() : (int,int) {this.min}
+    def hi() : void {print("0\n"); for a in this.multi a.hi()}
+    --SETUP FUNCTIONS ++++++++++++++++++++++++++++++++++++++++++++++++
+    --TOPLEVEL IS AN OPTIONAL ARGUEMNT FOR SOMEWHERE TO SEND AGENTS THAT GO OUT OF BOUNDS
+    --IF NO TOPLEVEL IS PRESENT AND A AGENT GOES OUT OF BONDS BAD THINGS WILL HAPPEN
+    def init(in_max:(int,int), in_min:(int,int), toplevel:Maybe Box, levels_left:int) : void {
+        this.active= new Multi_Box(this);
+        this.max=in_max;
+        this.min=in_min;
+        this.level=levels_left;
+        this.toplevel= { match toplevel with Just box => {box} _ => {this} };
+        if(levels_left>0) then {
+            match (in_max,in_min) with
+                ((xmax,ymax),(xmin,ymin)) => {
+            let
+                dx=xmax-xmin
+                dy=ymax-ymin
+                in {
+                  dx=dx/2;
+                  dy=dy/2;
+                  this.multi = new [Box](4);
+                  this.multi[0]=new Box( this.max,(xmax-dx+1,ymax-dy+1 ), Just this,levels_left-1);
+                  this.multi[1]=new Box( (xmax-dx,ymax-dy),this.min,      Just this,levels_left-1);
+                  this.multi[2]=new Box( (xmax-dx,ymax),(xmin,ymax-dy+1), Just this,levels_left-1);
+                  this.multi[3]=new Box( (xmax,ymax-dy),(xmax-dx+1,ymin), Just this,levels_left-1);
+                  this.allways_single=false;
+        }}}
+        else { this.allways_single=true; this.multi= new [Box](0) };
+        this.single=new Single_Box(in_max,in_min,this.toplevel)
+    }
+    --single_box can link to box, it's one way
+{-
+    def link(a:Box) : void {
+    let c=a.max;
+    let d=a.min;
+    match (this.max,this.min,c,d ) with
+        ( (x_max_1,y_max_1),(x_min_1,y_min_1),(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((x_max_1+1) == x_min_2) or ((y_max_1+1) == y_min_2) or ((x_max_2+1) == x_min_1) or ((y_max_2+1) == y_min_1)
+        => { for item in this.multi { item.link(a) }; --works every time as this.multi can have length 0
+             this.single.link(a);
+             ()}
+        _ => ()
+    }
+-}
+    def add(a:Agent) : bool {
+        --print("adding {}\n",a.pos());
+        --print("{}{}\n",this.max,this.min);
+        if not inside(a.pos(),(this.max,this.min)) then false else {
+            if(this.allways_single) then {
+                --print("SINGLE FOUND\n");
+                --print("{} {} \n",this.single_now,this.single);
+                this.single.add(a); ()
+            } else {
+                for item in this.multi {
+                --print("{} {}\n",a,item);
+                --print("add multiplying {}\n",a.pos());
+                if ( inside(a.pos(), (this.max,this.min)) ) then item.add(a.copy())
+            }};
+            true
+    }}
+        --this fun will be massive bottleneck, however only when UI is on
+    def agents() : [(int,int)] {
+        if(this.allways_single) then { get(this.single.agents())
+        } else {
+            let
+                a = ((this.multi)[0]).agents()
+                b = ((this.multi)[1]).agents()
+                c = ((this.multi)[2]).agents()
+                d = ((this.multi)[3]).agents()
+            in {
+            flatten([a,b,c,d])
+        }}
+    }
+    --check if within bounds, else send to toplevel
+    def external_move(a:Agent, pos:(int,int)) : Fut bool {
+        if( not inside(pos,(this.max,this.min)) ) then {
+            if(this==this.toplevel) then {
+                print("GOING TO HIGH! SHOULD NEVER HAPPEN\n");
+                1/0;
+                mk_Future(false)}
+            else { this.toplevel.external_move(a,pos) }}
+        else {
+        if (this.allways_single) then this.single.external_move(a,pos) else {
+            let ret = mk_Future(false);
+            for item in this.multi {
+                if inside(pos, (item.max, item.min)) then {
+                    ret=item.external_move(a,pos);
+                    --embed Fut bool { return #{ret} } end
+                    }
+                };
+            ret
+            --print("CHILDREN DON'T COVER ALL GROUND"); 1/0; mk_Future(false)
+        }}
+    }
+    def move_n(n:int) : Fut int {
+        this.active.move_n(n)
+    }
+    --the number of agents moved by this box
+    def move() : Fut int {
+        this.single.move()
+        {-
+        if(this.allways_single) then this.single.move() else {
+        let
+            lamb = \ (nr:int) -> {nr}
+        in {
+        for index in [0..|this.multi|-2] {
+            let future=((this.multi)[index]).move();
+            future=future~~>lamb;
+            lamb = \ (x:int)-> { await(future); x+get(future) };
+            };
+         (((this.multi)[ |this.multi|-1 ]).move()) ~~> lamb
+    }}-} }
+}
+--single threaded 2D space container
+--contains all Agents in a given 2D region of space
+--assumess cordnate system where Y is height and X is with, so increasing X means further to the right

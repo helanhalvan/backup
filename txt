@@ -1,531 +1,269 @@
-Warning at "./encore-libs-master/Collections/Linked_List.enc" (line 88, column 43):
+Warning at "./encore-libs-master/Collections/LinkedList.enc" (line 82, column 47):
 Comparing polymorphic values is unstable. 
 Later versions of Encore will require type constraints for this to work
  *** Error during typechecking *** 
-"main.enc" (line 415, column 22)
-Type '[Agent]' does not match expected type 'Agent'
+"./encore-libs-master/Ped_util/Box.enc" (line 131, column 34)
+Type 'Box.Multi_Box' does not match expected type 'Box.Box_face'
 In expression: 
-  this.agents.add([a])
+  new Multi_Box_face((max, (xmax - dx + 1, ymax - dy + 1)), 
+                     this, 
+                     levels_left - 1)
 In expression: 
-  {this.agents.add([a]);
-   i = i + 1}
+  this.multi[0] = new Multi_Box_face((max, 
+                                      (xmax - dx + 1, ymax - dy + 1)), 
+                                     this, 
+                                     levels_left - 1)
 In expression: 
-  if get nejbor then
-    embed void { break; } end
+  {this.multi[0] = new Multi_Box_face((max, 
+                                       (xmax - dx + 1, ymax - dy + 1)), 
+                                      this, 
+                                      levels_left - 1);
+   this.multi[1] = new Multi_Box_face(((xmax - dx, ymax - dy), min), 
+                                      this, 
+                                      levels_left - 1);
+   this.multi[2] = new Multi_Box_face(((xmax - dx, ymax), 
+                                       (xmin, ymax - dy + 1)), 
+                                      this, 
+                                      levels_left - 1);
+   this.multi[3] = new Multi_Box_face(((xmax, ymax - dy), 
+                                       (xmax - dx + 1, ymin)), 
+                                      this, 
+                                      levels_left - 1)}
+In expression: 
+  if levels_left > 0 then
+    {this.multi[0] = new Multi_Box_face((max, 
+                                         (xmax - dx + 1, ymax - dy + 1)), 
+                                        this, 
+                                        levels_left - 1);
+     this.multi[1] = new Multi_Box_face(((xmax - dx, ymax - dy), min), 
+                                        this, 
+                                        levels_left - 1);
+     this.multi[2] = new Multi_Box_face(((xmax - dx, ymax), 
+                                         (xmin, ymax - dy + 1)), 
+                                        this, 
+                                        levels_left - 1);
+     this.multi[3] = new Multi_Box_face(((xmax, ymax - dy), 
+                                         (xmax - dx + 1, ymin)), 
+                                        this, 
+                                        levels_left - 1)}
   else
-    {this.agents.add([a]);
-     i = i + 1}
+    {this.multi[0] = new Single_Box_face((max, 
+                                          (xmax - dx + 1, ymax - dy + 1)), 
+                                         this);
+     this.multi[1] = new Single_Box_face(((xmax - dx, ymax - dy), min), 
+                                         this);
+     this.multi[2] = new Single_Box_face(((xmax - dx, ymax), 
+                                          (xmin, ymax - dy + 1)), 
+                                         this);
+     this.multi[3] = new Single_Box_face(((xmax, ymax - dy), 
+                                          (xmax - dx + 1, ymin)), 
+                                         this)}
 In expression: 
-  {match (desired[i], this.max, this.min) with
-     _ when this.agents.isin(desired[i]) => {i = i + 1;
-                                             embed void { continue; } end;
-                                             ()}
-     ((x, y), 
-      (x_max, y_max), 
-      (x_min, 
-       y_min)) when x <= x_max and x >= x_min and y <= y_max and y >= y_min => {a.move((x, 
-                                                                                        y));
-                                                                                this.agents.add(a);
-                                                                                embed void { break; } end}
-     ((x, y), 
-      (x_max, y_max), 
-      (x_min, 
-       y_min)) when x > x_max and y < y_min or y > y_max or x < x_min and y < y_min or y > y_max => {print("this should never happen, agent way off");
-                                                                                                     1 / 0;
-                                                                                                     ()}
-     ((x, y), 
-      (x_max, y_max), 
-      (x_min, 
-       y_min)) when x > x_max => {nejbor = this.right.external_move(a.copy(), 
-                                                                    (x, y));
-                                  ()}
-     ((x, y), 
-      (x_max, y_max), 
-      (x_min, 
-       y_min)) when x < x_min => {nejbor = this.left.external_move(a.copy(), 
-                                                                   (x, y));
-                                  ()}
-     ((x, y), 
-      (x_max, y_max), 
-      (x_min, 
-       y_min)) when y > y_max => {nejbor = this.up.external_move(a.copy(), 
-                                                                 (x, y));
-                                  ()}
-     ((x, y), 
-      (x_max, y_max), 
-      (x_min, 
-       y_min)) when y < y_min => {nejbor = this.down.external_move(a.copy(), 
-                                                                   (x, y));
-                                  ()}
-   ;
-   await nejbor;
-   if get nejbor then
-     embed void { break; } end
+  {dx = dx / 2;
+   dy = dy / 2;
+   this.multi = new [Box_face](4);
+   if levels_left > 0 then
+     {this.multi[0] = new Multi_Box_face((max, 
+                                          (xmax - dx + 1, ymax - dy + 1)), 
+                                         this, 
+                                         levels_left - 1);
+      this.multi[1] = new Multi_Box_face(((xmax - dx, ymax - dy), min), 
+                                         this, 
+                                         levels_left - 1);
+      this.multi[2] = new Multi_Box_face(((xmax - dx, ymax), 
+                                          (xmin, ymax - dy + 1)), 
+                                         this, 
+                                         levels_left - 1);
+      this.multi[3] = new Multi_Box_face(((xmax, ymax - dy), 
+                                          (xmax - dx + 1, ymin)), 
+                                         this, 
+                                         levels_left - 1)}
    else
-     {this.agents.add([a]);
-      i = i + 1}}
+     {this.multi[0] = new Single_Box_face((max, 
+                                           (xmax - dx + 1, ymax - dy + 1)), 
+                                          this);
+      this.multi[1] = new Single_Box_face(((xmax - dx, ymax - dy), min), 
+                                          this);
+      this.multi[2] = new Single_Box_face(((xmax - dx, ymax), 
+                                           (xmin, ymax - dy + 1)), 
+                                          this);
+      this.multi[3] = new Single_Box_face(((xmax, ymax - dy), 
+                                           (xmax - dx + 1, ymin)), 
+                                          this)}}
 In expression: 
-  while i < |desired|
-    {match (desired[i], this.max, this.min) with
-       _ when this.agents.isin(desired[i]) => {i = i + 1;
-                                               embed void { continue; } end;
-                                               ()}
-       ((x, y), 
-        (x_max, y_max), 
-        (x_min, 
-         y_min)) when x <= x_max and x >= x_min and y <= y_max and y >= y_min => {a.move((x, 
-                                                                                          y));
-                                                                                  this.agents.add(a);
-                                                                                  embed void { break; } end}
-       ((x, y), 
-        (x_max, y_max), 
-        (x_min, 
-         y_min)) when x > x_max and y < y_min or y > y_max or x < x_min and y < y_min or y > y_max => {print("this should never happen, agent way off");
-                                                                                                       1 / 0;
-                                                                                                       ()}
-       ((x, y), 
-        (x_max, y_max), 
-        (x_min, 
-         y_min)) when x > x_max => {nejbor = this.right.external_move(a.copy(), 
-                                                                      (x, y));
-                                    ()}
-       ((x, y), 
-        (x_max, y_max), 
-        (x_min, 
-         y_min)) when x < x_min => {nejbor = this.left.external_move(a.copy(), 
-                                                                     (x, y));
-                                    ()}
-       ((x, y), 
-        (x_max, y_max), 
-        (x_min, 
-         y_min)) when y > y_max => {nejbor = this.up.external_move(a.copy(), 
-                                                                   (x, y));
-                                    ()}
-       ((x, y), 
-        (x_max, y_max), 
-        (x_min, 
-         y_min)) when y < y_min => {nejbor = this.down.external_move(a.copy(), 
-                                                                     (x, y));
-                                    ()}
-     ;
-     await nejbor;
-     if get nejbor then
-       embed void { break; } end
-     else
-       {this.agents.add([a]);
-        i = i + 1}}
-In expression: 
-  while i < |desired|
-    {match (desired[i], this.max, this.min) with
-       _ when this.agents.isin(desired[i]) => {i = i + 1;
-                                               embed void { continue; } end;
-                                               ()}
-       ((x, y), 
-        (x_max, y_max), 
-        (x_min, 
-         y_min)) when x <= x_max and x >= x_min and y <= y_max and y >= y_min => {a.move((x, 
-                                                                                          y));
-                                                                                  this.agents.add(a);
-                                                                                  embed void { break; } end}
-       ((x, y), 
-        (x_max, y_max), 
-        (x_min, 
-         y_min)) when x > x_max and y < y_min or y > y_max or x < x_min and y < y_min or y > y_max => {print("this should never happen, agent way off");
-                                                                                                       1 / 0;
-                                                                                                       ()}
-       ((x, y), 
-        (x_max, y_max), 
-        (x_min, 
-         y_min)) when x > x_max => {nejbor = this.right.external_move(a.copy(), 
-                                                                      (x, y));
-                                    ()}
-       ((x, y), 
-        (x_max, y_max), 
-        (x_min, 
-         y_min)) when x < x_min => {nejbor = this.left.external_move(a.copy(), 
-                                                                     (x, y));
-                                    ()}
-       ((x, y), 
-        (x_max, y_max), 
-        (x_min, 
-         y_min)) when y > y_max => {nejbor = this.up.external_move(a.copy(), 
-                                                                   (x, y));
-                                    ()}
-       ((x, y), 
-        (x_max, y_max), 
-        (x_min, 
-         y_min)) when y < y_min => {nejbor = this.down.external_move(a.copy(), 
-                                                                     (x, y));
-                                    ()}
-     ;
-     await nejbor;
-     if get nejbor then
-       embed void { break; } end
-     else
-       {this.agents.add([a]);
-        i = i + 1}}
-In expression: 
-  let a = match iterator.next() with
-            Just entry => entry.value
-          
-      desired = a.next()
-      i = 0
-      nejbor = null : Fut bool
+  let max = (xmax, ymax)
+      min = (xmin, ymin)
+      dx = xmax - xmin
+      dy = ymax - ymin
   in
-    while i < |desired|
-      {match (desired[i], this.max, this.min) with
-         _ when this.agents.isin(desired[i]) => {i = i + 1;
-                                                 embed void { continue; } end;
-                                                 ()}
-         ((x, y), 
-          (x_max, y_max), 
-          (x_min, 
-           y_min)) when x <= x_max and x >= x_min and y <= y_max and y >= y_min => {a.move((x, 
-                                                                                            y));
-                                                                                    this.agents.add(a);
-                                                                                    embed void { break; } end}
-         ((x, y), 
-          (x_max, y_max), 
-          (x_min, 
-           y_min)) when x > x_max and y < y_min or y > y_max or x < x_min and y < y_min or y > y_max => {print("this should never happen, agent way off");
-                                                                                                         1 / 0;
-                                                                                                         ()}
-         ((x, y), 
-          (x_max, y_max), 
-          (x_min, 
-           y_min)) when x > x_max => {nejbor = this.right.external_move(a.copy(), 
-                                                                        (x, y));
-                                      ()}
-         ((x, y), 
-          (x_max, y_max), 
-          (x_min, 
-           y_min)) when x < x_min => {nejbor = this.left.external_move(a.copy(), 
-                                                                       (x, y));
-                                      ()}
-         ((x, y), 
-          (x_max, y_max), 
-          (x_min, 
-           y_min)) when y > y_max => {nejbor = this.up.external_move(a.copy(), 
-                                                                     (x, y));
-                                      ()}
-         ((x, y), 
-          (x_max, y_max), 
-          (x_min, 
-           y_min)) when y < y_min => {nejbor = this.down.external_move(a.copy(), 
-                                                                       (x, y));
-                                      ()}
-       ;
-       await nejbor;
-       if get nejbor then
-         embed void { break; } end
-       else
-         {this.agents.add([a]);
-          i = i + 1}}
+    {dx = dx / 2;
+     dy = dy / 2;
+     this.multi = new [Box_face](4);
+     if levels_left > 0 then
+       {this.multi[0] = new Multi_Box_face((max, 
+                                            (xmax - dx + 1, ymax - dy + 1)), 
+                                           this, 
+                                           levels_left - 1);
+        this.multi[1] = new Multi_Box_face(((xmax - dx, ymax - dy), min), 
+                                           this, 
+                                           levels_left - 1);
+        this.multi[2] = new Multi_Box_face(((xmax - dx, ymax), 
+                                            (xmin, ymax - dy + 1)), 
+                                           this, 
+                                           levels_left - 1);
+        this.multi[3] = new Multi_Box_face(((xmax, ymax - dy), 
+                                            (xmax - dx + 1, ymin)), 
+                                           this, 
+                                           levels_left - 1)}
+     else
+       {this.multi[0] = new Single_Box_face((max, 
+                                             (xmax - dx + 1, ymax - dy + 1)), 
+                                            this);
+        this.multi[1] = new Single_Box_face(((xmax - dx, ymax - dy), min), 
+                                            this);
+        this.multi[2] = new Single_Box_face(((xmax - dx, ymax), 
+                                             (xmin, ymax - dy + 1)), 
+                                            this);
+        this.multi[3] = new Single_Box_face(((xmax, ymax - dy), 
+                                             (xmax - dx + 1, ymin)), 
+                                            this)}}
 In expression: 
-  let a = match iterator.next() with
-            Just entry => entry.value
-          
-      desired = a.next()
-      i = 0
-      nejbor = null : Fut bool
+  let max = (xmax, ymax)
+      min = (xmin, ymin)
+      dx = xmax - xmin
+      dy = ymax - ymin
   in
-    while i < |desired|
-      {match (desired[i], this.max, this.min) with
-         _ when this.agents.isin(desired[i]) => {i = i + 1;
-                                                 embed void { continue; } end;
-                                                 ()}
-         ((x, y), 
-          (x_max, y_max), 
-          (x_min, 
-           y_min)) when x <= x_max and x >= x_min and y <= y_max and y >= y_min => {a.move((x, 
-                                                                                            y));
-                                                                                    this.agents.add(a);
-                                                                                    embed void { break; } end}
-         ((x, y), 
-          (x_max, y_max), 
-          (x_min, 
-           y_min)) when x > x_max and y < y_min or y > y_max or x < x_min and y < y_min or y > y_max => {print("this should never happen, agent way off");
-                                                                                                         1 / 0;
-                                                                                                         ()}
-         ((x, y), 
-          (x_max, y_max), 
-          (x_min, 
-           y_min)) when x > x_max => {nejbor = this.right.external_move(a.copy(), 
-                                                                        (x, y));
-                                      ()}
-         ((x, y), 
-          (x_max, y_max), 
-          (x_min, 
-           y_min)) when x < x_min => {nejbor = this.left.external_move(a.copy(), 
-                                                                       (x, y));
-                                      ()}
-         ((x, y), 
-          (x_max, y_max), 
-          (x_min, 
-           y_min)) when y > y_max => {nejbor = this.up.external_move(a.copy(), 
-                                                                     (x, y));
-                                      ()}
-         ((x, y), 
-          (x_max, y_max), 
-          (x_min, 
-           y_min)) when y < y_min => {nejbor = this.down.external_move(a.copy(), 
-                                                                       (x, y));
-                                      ()}
-       ;
-       await nejbor;
-       if get nejbor then
-         embed void { break; } end
-       else
-         {this.agents.add([a]);
-          i = i + 1}}
+    {dx = dx / 2;
+     dy = dy / 2;
+     this.multi = new [Box_face](4);
+     if levels_left > 0 then
+       {this.multi[0] = new Multi_Box_face((max, 
+                                            (xmax - dx + 1, ymax - dy + 1)), 
+                                           this, 
+                                           levels_left - 1);
+        this.multi[1] = new Multi_Box_face(((xmax - dx, ymax - dy), min), 
+                                           this, 
+                                           levels_left - 1);
+        this.multi[2] = new Multi_Box_face(((xmax - dx, ymax), 
+                                            (xmin, ymax - dy + 1)), 
+                                           this, 
+                                           levels_left - 1);
+        this.multi[3] = new Multi_Box_face(((xmax, ymax - dy), 
+                                            (xmax - dx + 1, ymin)), 
+                                           this, 
+                                           levels_left - 1)}
+     else
+       {this.multi[0] = new Single_Box_face((max, 
+                                             (xmax - dx + 1, ymax - dy + 1)), 
+                                            this);
+        this.multi[1] = new Single_Box_face(((xmax - dx, ymax - dy), min), 
+                                            this);
+        this.multi[2] = new Single_Box_face(((xmax - dx, ymax), 
+                                             (xmin, ymax - dy + 1)), 
+                                            this);
+        this.multi[3] = new Single_Box_face(((xmax, ymax - dy), 
+                                             (xmax - dx + 1, ymin)), 
+                                            this)}}
 In expression: 
-  while iterator.has_next()
-    let a = match iterator.next() with
-              Just entry => entry.value
-            
-        desired = a.next()
-        i = 0
-        nejbor = null : Fut bool
-    in
-      while i < |desired|
-        {match (desired[i], this.max, this.min) with
-           _ when this.agents.isin(desired[i]) => {i = i + 1;
-                                                   embed void { continue; } end;
-                                                   ()}
-           ((x, y), 
-            (x_max, y_max), 
-            (x_min, 
-             y_min)) when x <= x_max and x >= x_min and y <= y_max and y >= y_min => {a.move((x, 
-                                                                                              y));
-                                                                                      this.agents.add(a);
-                                                                                      embed void { break; } end}
-           ((x, y), 
-            (x_max, y_max), 
-            (x_min, 
-             y_min)) when x > x_max and y < y_min or y > y_max or x < x_min and y < y_min or y > y_max => {print("this should never happen, agent way off");
-                                                                                                           1 / 0;
-                                                                                                           ()}
-           ((x, y), 
-            (x_max, y_max), 
-            (x_min, 
-             y_min)) when x > x_max => {nejbor = this.right.external_move(a.copy(), 
-                                                                          (x, y));
-                                        ()}
-           ((x, y), 
-            (x_max, y_max), 
-            (x_min, 
-             y_min)) when x < x_min => {nejbor = this.left.external_move(a.copy(), 
-                                                                         (x, y));
-                                        ()}
-           ((x, y), 
-            (x_max, y_max), 
-            (x_min, 
-             y_min)) when y > y_max => {nejbor = this.up.external_move(a.copy(), 
-                                                                       (x, y));
-                                        ()}
-           ((x, y), 
-            (x_max, y_max), 
-            (x_min, 
-             y_min)) when y < y_min => {nejbor = this.down.external_move(a.copy(), 
-                                                                         (x, y));
-                                        ()}
-         ;
-         await nejbor;
-         if get nejbor then
-           embed void { break; } end
-         else
-           {this.agents.add([a]);
-            i = i + 1}}
+  match space with
+    ((xmin, ymin), (xmax, ymax)) => let max = (xmax, ymax)
+                                        min = (xmin, ymin)
+                                        dx = xmax - xmin
+                                        dy = ymax - ymin
+                                    in
+                                      {dx = dx / 2;
+                                       dy = dy / 2;
+                                       this.multi = new [Box_face](4);
+                                       if levels_left > 0 then
+                                         {this.multi[0] = new Multi_Box_face((max, 
+                                                                              (xmax - dx + 1, 
+                                                                               ymax - dy + 1)), 
+                                                                             this, 
+                                                                             levels_left - 1);
+                                          this.multi[1] = new Multi_Box_face(((xmax - dx, 
+                                                                               ymax - dy), 
+                                                                              min), 
+                                                                             this, 
+                                                                             levels_left - 1);
+                                          this.multi[2] = new Multi_Box_face(((xmax - dx, ymax), 
+                                                                              (xmin, 
+                                                                               ymax - dy + 1)), 
+                                                                             this, 
+                                                                             levels_left - 1);
+                                          this.multi[3] = new Multi_Box_face(((xmax, ymax - dy), 
+                                                                              (xmax - dx + 1, 
+                                                                               ymin)), 
+                                                                             this, 
+                                                                             levels_left - 1)}
+                                       else
+                                         {this.multi[0] = new Single_Box_face((max, 
+                                                                               (xmax - dx + 1, 
+                                                                                ymax - dy + 1)), 
+                                                                              this);
+                                          this.multi[1] = new Single_Box_face(((xmax - dx, 
+                                                                                ymax - dy), 
+                                                                               min), 
+                                                                              this);
+                                          this.multi[2] = new Single_Box_face(((xmax - dx, ymax), 
+                                                                               (xmin, 
+                                                                                ymax - dy + 1)), 
+                                                                              this);
+                                          this.multi[3] = new Single_Box_face(((xmax, ymax - dy), 
+                                                                               (xmax - dx + 1, 
+                                                                                ymin)), 
+                                                                              this)}}
+  
 In expression: 
-  let iterator = new HashMapIterator<Agent>(this.agents.get_data())
-In expression: 
-  let iterator = new HashMapIterator<Agent>(this.agents.get_data())
-In expression: 
-  {let iterator = new HashMapIterator<Agent>(this.agents.get_data());
-   while iterator.has_next()
-     let a = match iterator.next() with
-               Just entry => entry.value
-             
-         desired = a.next()
-         i = 0
-         nejbor = null : Fut bool
-     in
-       while i < |desired|
-         {match (desired[i], this.max, this.min) with
-            _ when this.agents.isin(desired[i]) => {i = i + 1;
-                                                    embed void { continue; } end;
-                                                    ()}
-            ((x, y), 
-             (x_max, y_max), 
-             (x_min, 
-              y_min)) when x <= x_max and x >= x_min and y <= y_max and y >= y_min => {a.move((x, 
-                                                                                               y));
-                                                                                       this.agents.add(a);
-                                                                                       embed void { break; } end}
-            ((x, y), 
-             (x_max, y_max), 
-             (x_min, 
-              y_min)) when x > x_max and y < y_min or y > y_max or x < x_min and y < y_min or y > y_max => {print("this should never happen, agent way off");
-                                                                                                            1 / 0;
-                                                                                                            ()}
-            ((x, y), 
-             (x_max, y_max), 
-             (x_min, 
-              y_min)) when x > x_max => {nejbor = this.right.external_move(a.copy(), 
-                                                                           (x, y));
-                                         ()}
-            ((x, y), 
-             (x_max, y_max), 
-             (x_min, 
-              y_min)) when x < x_min => {nejbor = this.left.external_move(a.copy(), 
-                                                                          (x, y));
-                                         ()}
-            ((x, y), 
-             (x_max, y_max), 
-             (x_min, 
-              y_min)) when y > y_max => {nejbor = this.up.external_move(a.copy(), 
-                                                                        (x, y));
-                                         ()}
-            ((x, y), 
-             (x_max, y_max), 
-             (x_min, 
-              y_min)) when y < y_min => {nejbor = this.down.external_move(a.copy(), 
-                                                                          (x, y));
-                                         ()}
-          ;
-          await nejbor;
-          if get nejbor then
-            embed void { break; } end
-          else
-            {this.agents.add([a]);
-             i = i + 1}};
-   true}
-In expression: 
-  if this.agents.size() == 0 then
-    false
-  else
-    {let iterator = new HashMapIterator<Agent>(this.agents.get_data());
-     while iterator.has_next()
-       let a = match iterator.next() with
-                 Just entry => entry.value
-               
-           desired = a.next()
-           i = 0
-           nejbor = null : Fut bool
-       in
-         while i < |desired|
-           {match (desired[i], this.max, this.min) with
-              _ when this.agents.isin(desired[i]) => {i = i + 1;
-                                                      embed void { continue; } end;
-                                                      ()}
-              ((x, y), 
-               (x_max, y_max), 
-               (x_min, 
-                y_min)) when x <= x_max and x >= x_min and y <= y_max and y >= y_min => {a.move((x, 
-                                                                                                 y));
-                                                                                         this.agents.add(a);
-                                                                                         embed void { break; } end}
-              ((x, y), 
-               (x_max, y_max), 
-               (x_min, 
-                y_min)) when x > x_max and y < y_min or y > y_max or x < x_min and y < y_min or y > y_max => {print("this should never happen, agent way off");
-                                                                                                              1 / 0;
-                                                                                                              ()}
-              ((x, y), 
-               (x_max, y_max), 
-               (x_min, 
-                y_min)) when x > x_max => {nejbor = this.right.external_move(a.copy(), 
-                                                                             (x, y));
-                                           ()}
-              ((x, y), 
-               (x_max, y_max), 
-               (x_min, 
-                y_min)) when x < x_min => {nejbor = this.left.external_move(a.copy(), 
-                                                                            (x, y));
-                                           ()}
-              ((x, y), 
-               (x_max, y_max), 
-               (x_min, 
-                y_min)) when y > y_max => {nejbor = this.up.external_move(a.copy(), 
-                                                                          (x, y));
-                                           ()}
-              ((x, y), 
-               (x_max, y_max), 
-               (x_min, 
-                y_min)) when y < y_min => {nejbor = this.down.external_move(a.copy(), 
-                                                                            (x, y));
-                                           ()}
-            ;
-            await nejbor;
-            if get nejbor then
-              embed void { break; } end
-            else
-              {this.agents.add([a]);
-               i = i + 1}};
-     true}
-In expression: 
-  if this.agents.size() == 0 then
-    false
-  else
-    {let iterator = new HashMapIterator<Agent>(this.agents.get_data());
-     while iterator.has_next()
-       let a = match iterator.next() with
-                 Just entry => entry.value
-               
-           desired = a.next()
-           i = 0
-           nejbor = null : Fut bool
-       in
-         while i < |desired|
-           {match (desired[i], this.max, this.min) with
-              _ when this.agents.isin(desired[i]) => {i = i + 1;
-                                                      embed void { continue; } end;
-                                                      ()}
-              ((x, y), 
-               (x_max, y_max), 
-               (x_min, 
-                y_min)) when x <= x_max and x >= x_min and y <= y_max and y >= y_min => {a.move((x, 
-                                                                                                 y));
-                                                                                         this.agents.add(a);
-                                                                                         embed void { break; } end}
-              ((x, y), 
-               (x_max, y_max), 
-               (x_min, 
-                y_min)) when x > x_max and y < y_min or y > y_max or x < x_min and y < y_min or y > y_max => {print("this should never happen, agent way off");
-                                                                                                              1 / 0;
-                                                                                                              ()}
-              ((x, y), 
-               (x_max, y_max), 
-               (x_min, 
-                y_min)) when x > x_max => {nejbor = this.right.external_move(a.copy(), 
-                                                                             (x, y));
-                                           ()}
-              ((x, y), 
-               (x_max, y_max), 
-               (x_min, 
-                y_min)) when x < x_min => {nejbor = this.left.external_move(a.copy(), 
-                                                                            (x, y));
-                                           ()}
-              ((x, y), 
-               (x_max, y_max), 
-               (x_min, 
-                y_min)) when y > y_max => {nejbor = this.up.external_move(a.copy(), 
-                                                                          (x, y));
-                                           ()}
-              ((x, y), 
-               (x_max, y_max), 
-               (x_min, 
-                y_min)) when y < y_min => {nejbor = this.down.external_move(a.copy(), 
-                                                                            (x, y));
-                                           ()}
-            ;
-            await nejbor;
-            if get nejbor then
-              embed void { break; } end
-            else
-              {this.agents.add([a]);
-               i = i + 1}};
-     true}
-In method 'move' of type 'bool'
-In class 'Box'
+  {this.space = space;
+   this.toplevel = toplevel;
+   match space with
+     ((xmin, ymin), (xmax, ymax)) => let max = (xmax, ymax)
+                                         min = (xmin, ymin)
+                                         dx = xmax - xmin
+                                         dy = ymax - ymin
+                                     in
+                                       {dx = dx / 2;
+                                        dy = dy / 2;
+                                        this.multi = new [Box_face](4);
+                                        if levels_left > 0 then
+                                          {this.multi[0] = new Multi_Box_face((max, 
+                                                                               (xmax - dx + 1, 
+                                                                                ymax - dy + 1)), 
+                                                                              this, 
+                                                                              levels_left - 1);
+                                           this.multi[1] = new Multi_Box_face(((xmax - dx, 
+                                                                                ymax - dy), 
+                                                                               min), 
+                                                                              this, 
+                                                                              levels_left - 1);
+                                           this.multi[2] = new Multi_Box_face(((xmax - dx, ymax), 
+                                                                               (xmin, 
+                                                                                ymax - dy + 1)), 
+                                                                              this, 
+                                                                              levels_left - 1);
+                                           this.multi[3] = new Multi_Box_face(((xmax, ymax - dy), 
+                                                                               (xmax - dx + 1, 
+                                                                                ymin)), 
+                                                                              this, 
+                                                                              levels_left - 1)}
+                                        else
+                                          {this.multi[0] = new Single_Box_face((max, 
+                                                                                (xmax - dx + 1, 
+                                                                                 ymax - dy + 1)), 
+                                                                               this);
+                                           this.multi[1] = new Single_Box_face(((xmax - dx, 
+                                                                                 ymax - dy), 
+                                                                                min), 
+                                                                               this);
+                                           this.multi[2] = new Single_Box_face(((xmax - dx, ymax), 
+                                                                                (xmin, 
+                                                                                 ymax - dy + 1)), 
+                                                                               this);
+                                           this.multi[3] = new Single_Box_face(((xmax, ymax - dy), 
+                                                                                (xmax - dx + 1, 
+                                                                                 ymin)), 
+                                                                               this)}}
+   }
+In method '_init' of type 'void'
+In class 'Box.Multi_Box'
 
