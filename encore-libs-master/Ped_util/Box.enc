@@ -28,7 +28,7 @@ passive class Top_Box_face : Box_face {
     def external_move(a:Agent,b:(int,int)) : Fut bool {this.t.external_move(a,b)}
     def agents() : Fut [(int,int)] {this.t.agents()}
 }
-passive class Multi_Box_face : Box_face {
+passive class Unrelated : Box_face {
     t : Multi_Box
     def init(space:((int,int),(int,int)),toplevel:Box_face, level:int) : void {
         this.t=new Multi_Box(space,toplevel,level)
@@ -128,10 +128,10 @@ class Multi_Box {
                   dy=dy/2;
                   this.multi = new [Box_face](4);
                 if(levels_left>0) then {
-                  this.multi[0]= new Multi_Box_face( (max,(xmax-dx+1,ymax-dy+1 )), this,levels_left-1);
-                  this.multi[1]= new Multi_Box_face( ((xmax-dx,ymax-dy),min),      this,levels_left-1);
-                  this.multi[2]= new Multi_Box_face( ((xmax-dx,ymax),(xmin,ymax-dy+1)), this,levels_left-1);
-                  this.multi[3]= new Multi_Box_face( ((xmax,ymax-dy),(xmax-dx+1,ymin)), this,levels_left-1);
+                  this.multi[0]= new Unrelated( (max,(xmax-dx+1,ymax-dy+1 )), this,levels_left-1);
+                  this.multi[1]= new Unrelated( ((xmax-dx,ymax-dy),min),      this,levels_left-1);
+                  this.multi[2]= new Unrelated( ((xmax-dx,ymax),(xmin,ymax-dy+1)), this,levels_left-1);
+                  this.multi[3]= new Unrelated( ((xmax,ymax-dy),(xmax-dx+1,ymin)), this,levels_left-1);
                     ()
                     } else {
                   this.multi[0]= new Single_Box_face( (max,(xmax-dx+1,ymax-dy+1 )), this);
