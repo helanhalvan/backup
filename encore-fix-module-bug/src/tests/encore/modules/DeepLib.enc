@@ -1,0 +1,5 @@
+module DeepLib
+
+passive class Foo
+  def name() : String
+    "DeepFoo"
