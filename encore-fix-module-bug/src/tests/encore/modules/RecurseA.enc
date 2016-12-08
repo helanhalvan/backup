@@ -1,0 +1,10 @@
+module RecurseA
+
+import RecurseB
+
+def foo() : int
+  11
+
+class Main
+  def main() : void
+    print "In RecurseA"

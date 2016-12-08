@@ -5,9 +5,9 @@ def mk_Future(n : bool) : Fut bool
    future_fulfil(_ctx, fut, (encore_arg_t) {.i = #{n}});
    fut;
  end
-def inside(pos:(int,int),space:((int,int),(int,int)) ) : bool {
+def inside(pos:(int,int),space:(int,int,int,int) ) : bool {
     match (pos,space) with
-        ((x,y),((xmax,ymax),(xmin,ymin))) when x>xmax or x<xmin or y>ymax or y<ymin => false
+        ((x,y),(xmax,ymax,xmin,ymin)) when x>xmax or x<xmin or y>ymax or y<ymin => false
         _ => true
 }
 def copy_ar(arr:[int]) : [int] {

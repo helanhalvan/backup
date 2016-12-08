@@ -1,0 +1,319 @@
+module Trait_Box
+import Agent_passive
+import Collections.HashMap
+import Global_funs
+--sufficently object oriented code is indesitgushable from magic
+--passive interface for active object wrapers!
+trait Box_face {
+    --smallest x and y cords folled by greatest x and y cords
+    require space() : Fut ((int,int),(int,int))
+    --adds an agent to box
+    require add(a:Agent) : void
+    --moves all agents in box once
+    require move() : Fut int
+    --if true is returned, agent b is moved into this box
+    --else the agent collided with this box
+    require external_move(b:Agent,a:(int,int)) : Fut bool
+    --cordinates of the agents in this box
+    require agents() : Fut [(int,int)]
+    require start() : void
+    --check if we possibly are done, if we are, invoke done on toplevel
+    require done() : void
+}
+passive class Top_Box_face : Box_face {
+    t : Top_Box
+    def init(t:Top_Box) : void {
+        this.t=t
+    }
+    def space() : Fut ((int,int),(int,int)) {this.t.space()}
+    def add(a:Agent) : void { print("SOMEONE TRYING TO ADD TO TOP_BOX_FACE\n") }
+    def move() : Fut int {this.t.move()}
+    def external_move(a:Agent,b:(int,int)) : Fut bool {this.t.external_move(a,b)}
+    def agents() : Fut [(int,int)] {this.t.agents()}
+    def start() : void {this.t.start()}
+    def done() : void {this.t.done()}
+}
+passive class Multi_Box_face : Box_face {
+    t : Multi_Box
+    --def init(space:((int,int),(int,int)),toplevel:Box_face, level:int) : void {
+    --    this.t=new Multi_Box(space,toplevel,level)
+    --}
+    def init(t:Multi_Box) : void {
+    this.t=t
+    }
+    def space() : Fut ((int,int),(int,int)) {this.t.space()}
+    def add(a:Agent) : void {this.t.add(a)}
+    def move() : Fut int {this.t.move()}
+    def external_move(a:Agent,b:(int,int)) : Fut bool { this.t.external_move(a,b) }
+    def agents() : Fut [(int,int)] {this.t.agents()}
+    def start() : void {print("multi_start\n");this.t.start();print("multi_start_done\n");}
+    def done() : void {this.t.done()}
+}
+--IT'S AN ACTOR FACE!
+--TODO, add some logic for immutable data here, and some more fields!
+--this TODO is mainly a joke to scare the devs of this language to implement actor faces
+passive class Single_Box_face : Box_face {
+    t : Single_Box
+    def init(space:((int,int),(int,int)),toplevel:Box_face) : void {
+        this.t=new Single_Box( space,toplevel)
+    }
+    def space() : Fut ((int,int),(int,int)) {this.t.space()}
+    def add(a:Agent) : void {this.t.add(a)}
+    def move() : Fut int {this.t.move()}
+    def external_move(a:Agent,b:(int,int)) : Fut bool {this.t.external_move(a,b)}
+    def agents() : Fut [(int,int)] {this.t.agents()}
+    def start() : void {print("single_start\n");this.t.start()}
+    def done() : void {this.t.done()}
+}
+
+--multi threaded 2D space container
+class Top_Box {
+    --max x and y cords
+    max : (int,int)
+    --min x and y cords
+    min : (int,int)
+    implementation : Multi_Box_face --changing this to Box_face causes segfaults
+
+    def init(agents:[Agent]) : void {
+        let
+            dx=0
+            dy=0
+        in {
+        --find global xmax, xmin, and ymin, use to create boundries for the 2D space.
+        --looks at both starting positions and waypoints
+        match this.find_extreme(agents) with
+            (xmax,ymax,xmin,ymin) => {this.max=(xmax,ymax);
+                                      this.min=(xmin,ymin);
+                                      this.implementation=new Multi_Box_face(new Multi_Box( (this.min,this.max),new Top_Box_face(this), 3) );
+                                      print("top-imp-done\n");
+                                      };
+        for a in agents {
+            this.implementation.add(a)
+        }};
+    print("top-setup-done\n")
+    }
+    def move() : int { get(this.implementation.move()) }
+    def external_move(b:Agent,a:(int,int)) : bool {
+        print("AGENT IS TRYING TO ESCAPE SIMULATION!\n");
+        false
+    }
+    def start() : void {print("START\n"); print(this.implementation); this.implementation.start(); print("ING\n");}
+    --get corners of box
+    def max() : (int,int) {this.max}
+    def min() : (int,int) {this.min}
+    def space() : ((int,int),(int,int)) {(this.min,this.max)}
+    def agents() : [(int,int)] { get(this.implementation.agents()) }
+    def done() : void {
+        if |get(this.implementation.agents())| == 0 then {print("THE PROGRAM IS NOW DONE\n")}
+    }
+    def find_extreme(agents:[Agent]) : (int,int,int,int) {
+        let extreme=(-10000,-10000,10000,10000);
+        let i=0;
+        for a in agents {
+            --print("{}\n",i);
+            i=i+1;
+            extreme=this.extreme_check(a.pos(),extreme);
+            for b in a.targets {
+                extreme=this.extreme_check(b,extreme);
+            }
+        };
+        extreme
+    }
+    def extreme_check(a:(int,int),b:(int,int,int,int) ) : (int,int,int,int) {
+        match (a,b) with
+            ((x,y),(xmax,ymax,xmin,ymin)) => (max(x,xmax),max(y,ymax),min(x,xmin),min(y,ymin))
+    }
+}
+class Multi_Box {
+    toplevel : Box_face --immutable
+    multi : [Box_face]  --immutable
+    space : ((int,int),(int,int)) --immutable
+    def init(space:((int,int),(int,int)), toplevel:Box_face, levels_left:int) : void {
+        this.space=space;
+        this.toplevel=toplevel;
+
+            match space with
+                ((xmin,ymin),(xmax,ymax)) => {
+            let
+                max= (xmax,ymax)
+                min=(xmin,ymin)
+                dx=xmax-xmin
+                dy=ymax-ymin
+                myface=new Multi_Box_face(this)
+                in {
+                  dx=dx/2;
+                  dy=dy/2;
+                  this.multi = new [Box_face](4);
+                if(levels_left>0) then {
+                  this.multi[0]= new Multi_Box_face( new Multi_Box( (max,(xmax-dx+1,ymax-dy+1 )), myface,levels_left-1)  );
+                  this.multi[1]= new Multi_Box_face( new Multi_Box( ((xmax-dx,ymax-dy),min),      myface,levels_left-1));
+                  this.multi[2]= new Multi_Box_face( new Multi_Box( ((xmax-dx,ymax),(xmin,ymax-dy+1)), myface,levels_left-1));
+                  this.multi[3]= new Multi_Box_face( new Multi_Box( ((xmax,ymax-dy),(xmax-dx+1,ymin)), myface,levels_left-1));
+                    ()
+                    } else {
+                  this.multi[0]= new Single_Box_face( (max,(xmax-dx+1,ymax-dy+1 )), myface);
+                  this.multi[1]= new Single_Box_face( ((xmax-dx,ymax-dy),min),      myface);
+                  this.multi[2]= new Single_Box_face( ((xmax-dx,ymax),(xmin,ymax-dy+1)), myface);
+                  this.multi[3]= new Single_Box_face( ((xmax,ymax-dy),(xmax-dx+1,ymin)), myface);
+                    ()
+                    }
+        }}; ()
+    }
+    def done() : void {
+        let a = this.agents();
+        if(|a|==0) then this.toplevel.done();
+        }
+    def space() : ((int,int),(int,int)) {this.space}
+    def add(a:Agent) : void {
+        if not inside(a.pos(),this.space) then false else {
+                for item in this.multi {
+                if ( inside(a.pos(), this.space) ) then item.add(a.copy())
+            }};
+            true
+    }
+    def agents() : [(int,int)] {
+            let
+                a = ((this.multi)[0]).agents()
+                b = ((this.multi)[1]).agents()
+                c = ((this.multi)[2]).agents()
+                d = ((this.multi)[3]).agents()
+            in {
+            flatten([get(a),get(b),get(c),get(d)])
+            }
+    }
+    def external_move(a:Agent, pos:(int,int)) : bool {
+        if( not inside(pos,this.space) ) then {
+            get(this.toplevel.external_move(a,pos))
+        } else {
+            let ret = mk_Future(false);
+            for item in this.multi {
+                if inside(pos, get(item.space()) ) then {
+                    ret=item.external_move(a,pos);
+                    }
+                };
+            get(ret)
+        }
+    }
+    def move() : int {
+        let f = new [Fut int](4);
+            f[0] = ((this.multi)[0]).move();
+            f[1] = ((this.multi)[1]).move();
+            f[2] = ((this.multi)[2]).move();
+            f[3] = ((this.multi)[3]).move();
+        let ret = 0;
+            for a in f {await(a)};
+            for a in f {ret=ret+get(a)};
+            ret
+    }
+    def start() : void {
+        print("start\n");
+        for a in this.multi
+            {print(a); a.start()};
+        print("ing\n");
+    }
+}
+
+class Single_Box {
+-- min and max are inclusive
+-- max is the greatest X value and the greatest Y value box contains
+-- min is the smalles X and Y values
+ space : ((int,int),(int,int))
+ toplevel : Box_face
+ agents : Agent_struct
+
+def init(space:((int,int),(int,int)),toplevel:Box_face ) : void {
+    this.agents=new Agent_struct();
+    this.space=space;
+    this.toplevel=toplevel;
+    }
+--getter for borders
+def space() : ((int,int),(int,int)) { this.space }
+def agents() : [(int,int)] {
+    let
+     b = new [(int,int)](this.agents.size())
+     hashmap = this.agents.get_data()
+     a = new HashMapIterator<Agent>(hashmap)
+     i = 0
+    in {
+    while a.has_next() {
+        b[i]=match a.next() with Just entry => entry.value.pos();
+        i=i+1
+    };
+    if i < this.agents.size() then
+        {
+    let c = new [(int,int)](i);
+    for index in [0..i] {
+        c[index]=b[index];
+    };
+        c
+    }
+    else b
+    }}
+
+def add(a:Agent) : void { this.agents.add(a) }
+
+def start() : void { this!move(); print("bottom_starting\n") }
+
+def move() : int {
+        let iterator = new HashMapIterator<Agent>(this.agents.get_data());
+       while iterator.has_next() {
+            let
+                a = {match iterator.next() with Just entry => {entry.value}}
+                desired = a.next()
+                i = 0
+                nejbor = null:Fut bool
+                stillhere = true
+            in {
+            if |desired| == 0 then stillhere=false; --happens if TTL runs out
+            while( i < |desired| and stillhere == true) {
+                --print(desired[i]);
+                match (desired[i],this.space) with
+                    --local collision
+                    _ when this.agents.isin(desired[i])  => {i=i+1; embed void { continue; } end; ()}
+                    --local move
+                    ((x,y),((x_max,y_max),(x_min,y_min))) when (x<=x_max and x>=x_min and y<=y_max and y>=y_min) => { a.move((x,y));
+                                                                                                                    embed void { break; } end
+                                                                                                                  }
+                    ((x,y),((x_max,y_max),(x_min,y_min))) when (x>x_max and (y<y_min or y>y_max) ) or (x<x_min and (y<y_min or y>y_max) ) => { print("this should never happen, agent way off"); 1/0; () }
+                    --external move
+                    ((x,y),((x_max,y_max),(x_min,y_min))) => { nejbor=this.toplevel.external_move(a.copy(),(x,y) ); () };
+                    --((x,y),(x_max,y_max),(x_min,y_min)) when (x<x_min) => { nejbor=this.left.external_move(a.copy(),(x,y) ); () }
+                    --((x,y),(x_max,y_max),(x_min,y_min)) when (y>y_max) => { nejbor=this.up.external_move(a.copy(),(x,y) ); ()  }
+                    --((x,y),(x_max,y_max),(x_min,y_min)) when (y<y_min) => { nejbor=this.down.external_move(a.copy(),(x,y) ); () };
+
+                await(nejbor);
+                if get(nejbor) then {
+                    stillhere=false;
+                    --print("ACCESS DENIED {} ##########################\n", a.i);
+                    embed void { break; } end
+                }
+                else {
+                    stillhere=true;
+                    i=i+1
+                }};
+            if (stillhere == false) then {
+                    this.agents.remove(a);
+                }
+            }};
+        if this.agents.size()>0 then {this!move()} else {
+            this.toplevel.done()
+        };
+        this.agents.size()
+    }
+--unused
+def done() : void {
+        if this.agents.size()==0 then {
+            this.toplevel.done()
+        };
+    }
+    --recives a Agent from another box
+def external_move(a:Agent, pos:(int,int) ) : bool {
+    if(this.agents.size()==0) then {a.move(pos); this.agents.add(a); this!move(); true} else { --wake up if empty
+    if(this.agents.isin(pos)) then { false } else {
+        a.move(pos);
+        this.agents.add(a);
+        --print("SOMETHING WILL HAPPEN NOW\n");
+        true
+        }
+    }}
+}

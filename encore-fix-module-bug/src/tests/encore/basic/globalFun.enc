@@ -1,0 +1,6 @@
+def bump(x : int) : int
+  x + 1
+
+class Main
+  def main() : void
+    println("42 + 1 = {}", bump(42))
