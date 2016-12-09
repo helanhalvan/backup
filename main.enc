@@ -1,152 +1,135 @@
-import Ped_util.Box
-<<<<<<< HEAD
-=======
-import Ped_util.Agent_passive
-{--
 import SDL.SDL_Main
 import SDL.SDL_Types
 import SDL.SDL_Primitives
---}
+import Ped_util.Box
+import Ped_util.Agent_passive
+import Ped_util.Agent_active
+import Ped_util.UI
 import Ped_util.Global_funs
 import Data.Either
->>>>>>> d01b6cf0e39ce74536552e111b64a6af0c1636b5
 class Main {
 
-   def main() : void {
-    -- {--
+   def main(args: [String]) : void {
        let
-<<<<<<< HEAD
-       superbox = new Box((1,2,3,4), Nothing : Maybe Box, 3)
+            version={     match (args[1]).to_int() with
+                            Just result => result
+                            Nothing     => { 0 };}
+            agents=parse_file(args[2])
+            ui ={ match (args[3]).to_int() with
+                            Just 1 => true
+                            _ => false}
        in {
-        ()
-       } --}
+         print(args[2]);
+        if version==1 then this!baseline(agents,ui);
+        if version==2 then this!bucket(agents,ui);
+        if version==3 then this!box(agents,ui);
+       }
    }
-=======
-       superbox = new Top_Box(this.parse_file("scenario.xml"))
-        x_size=0
-        y_size=0
-        aui=false
-        --sdl_main = null : SDL_Main
-       in {
-        print("constructor-done!\n");
-       --match (get(superbox.max()),get(superbox.min())) with
-        --        ((xmax,ymax),(xmin,ymin)) => {x_size=(xmax-xmin); y_size=(ymax-ymin);};
-       {--if aui then {
-       sdl_main = new SDL_Main(1000,1000);
-       get sdl_main.clearAll();
-       get sdl_main.refresh();
-       superbox!start();
-       this!loop(superbox,0,aui,sdl_main);
-       } else {
-
-            --get(superbox.done());
-        };--}
-        superbox!start();
-        this!loop(superbox,0,aui);
-       } --}
-   }
-
-   def loop(superbox:Top_Box, tick:int, ui:bool) : void {
-       print("tick {}\n",tick);
-       for a in get(superbox.agents())
-            {
-            match a with
-                (x,y) => { () }
-                  _ => print("AGENT GOT NO POS!?\n")
-            };
-        this!loop(superbox,tick+1,ui);
-       }--}
-
-    def parse_file(fname:String) : [Agent] {
-           let
-               sen = new XML_lib()
-               file= new XML_node()
-            in {
-               match sen.file_to_xml("scenario.xml") with
-               Just xml => {file=xml; print("\n\nWORKED!\n")}
-               Nothing => print("\n\nBADXML!\n");
-            let
-                xml_way = file.children_named("waypoint")
-                waypoints=new [(int,int)] ( |xml_way| )
-                waypoints_distance=new [int] ( |xml_way| )
-                i=0
-            in {
-                --print(|xml_way|);
-                for a in xml_way {
-                    waypoints[i]={
-                    match (a.attribute_value("x").to_int(),a.attribute_value("y").to_int()) with
-                        (Just x,Just y) => (x,y)
-                        _ => { print("BADINT!\n"); (0,0)}};
-                    waypoints_distance[i]= int_or_0(a.attribute_value("r").to_int());
-                    --print("derp {}\n",waypoints_distance[i]);
-                    --print("derp {}\n", copy_ar(waypoints_distance)[i]);
-                    i=i+1
+def box(agents: [Agent], ui:bool) : void {
+     let
+        sdl_main = if ui then make_UI() else null : SDL_Main
+        superbox = new_Box(agents)
+     in
+    this!box_loop(40000, superbox, ui,sdl_main)
+}
+def box_loop(i:int, superbox:Box, ui:bool,sdl_main:SDL_Main) : void {
+    get(superbox.move());
+    --print(i);
+    if ui then {
+        show(get(superbox.agents()),sdl_main);
+    };
+    if i>0 then this!box_loop(i-1,superbox,ui,sdl_main);
+}
+def baseline(agents: [Agent], ui:bool) : void {
+     let
+         i = 0
+         drivers= new [Agent_driver]( |agents| )
+         futures= new [Fut void](|agents|)
+         j = 0
+         sdl_main = if ui then make_UI() else null : SDL_Main
+     in
+     {
+         for a in agents {
+             drivers[i]=new Agent_driver(a,|agents|);
+             i=i+1;
+         };
+         i=0;
+         for a in drivers{
+             for b in drivers {
+                 unless (a==b) then {
+                 a!link(b);
+                 }
+             }
+         };
+         print("baseline setup done {} ui=={}\n",|drivers|, ui);
+         this!baseline_loop(40000,drivers,futures,ui,sdl_main);
+     }
+ }
+def baseline_loop(i:int,drivers:[Agent_driver],futures:[Fut void],ui:bool,sdl_main:SDL_Main) : void {
+             let j = 0;
+             for a in drivers {
+                 futures[j]=a.move();
+                 j=j+1;
+             };
+             for a in futures {
+                 get(a);
+             };
+            if(ui) then {
+            let positions = new [(int,int)](|drivers|);
+                for w in [0..(|drivers|-1)] {
+                    positions[w]=get((drivers[w]).get_pos());
                 };
-                                   --print("SO MANY WAYPOINTS {}\n",|waypoints|);
-               let nr_agents=0;
-               for a in file.children_named("agent") {
-                       nr_agents=nr_agents+{
-                           match a.attribute_value("n").to_int() with
-                           Just nr => nr
-                           _ => {print("BADINT2!\n"); 0}
-                       }
-                   };
-                   let agents= new [Agent](nr_agents)
-                       i=0
-                    in {
-                           for a in file.children_named("agent") {
-                               let
-                                   max = int_or_0(a.attribute_value("n").to_int())
-                                   x = int_or_0(a.attribute_value("xs").to_int())
-                                   y = int_or_0(a.attribute_value("ys").to_int())
-                                   dx_max = int_or_0(a.attribute_value("dx").to_int())
-                                   dy_max = int_or_0(a.attribute_value("dy").to_int())
-                                   agent_waypoints=new [(int,int)](|a.children_named("addway")|)
-                                   dx=x
-                                   dy=y
-                                   j=0
-                                   in {
-                                       for b in a.children_named("addway") {
-                                           agent_waypoints[j]=waypoints[int_or_0(string_or_empty(b.attribute_value("id").substring(1,2)).to_int())-1];
-                                           --print(agent_waypoints[i]);
-                                           unless |agent_waypoints|>1 then {
-                                               print("THIS SHOULD NEVER HAPPEN |new_agent.waypoint|={}\n", |agent_waypoints|);
-                                               max = 1/0
-                                           };
-                                           j=j+1;
-                                       };
-                                        print((x,y,dx_max,dy_max,dx,dy,max));
-                                       --for each agent
-                                       for unused in [0..max] {
-                                           --for this to be safe, agent_waypoints need to be copied for every agent
-                                           --in the future, I can make it immutable instead
-                                           --also distributes agents in a packed ball around (x,y) with some collisions
-                                           --this should to be fixed in the future
-                                            if(dx>x+dx_max) then {
-                                                dx=x-dx_max
-                                            }
-                                            else if(dy>y+dy_max) then {
-                                                dy=y-dy_max;
-                                                dx=dx+rand()%4
-                                            }
-                                            else {
-                                                dy=dy+rand()%4
-                                            };
-                                                --print("({})",dx);
-                                                agents[i]=new Agent((dx,dy),copy_tr(agent_waypoints),copy_ar(waypoints_distance),i,40000); --THIS NUMBER DECIDES HOW LONG SIMULATION WILL RUN
-                                                i=i+1
-                                       }
-                                   }};
-                                   --this print checks if waypoints are added correctly
-                                    print("checking\n");
-                                   for a in agents {
-                                       if (a!=null and |a.targets|==2 and |a.targets_size|==2) then
-                                           ()--print(".")
-                                           else
-                                               print("AGENT HAVE {} WAYPOINTS\n",|a.targets|)
-                                           };
-                                    --while true ();
-                                           agents
-                                       }}}}
->>>>>>> d01b6cf0e39ce74536552e111b64a6af0c1636b5
+                show(positions,sdl_main)
+            };
+             if(i % 10000==0) then {
+                 print("{}\n",i);
+             };
+         if i>0 then this!baseline_loop(i-1, drivers,futures,ui,sdl_main);
+ }
+def bucket(agents: [Agent],ui:bool) : void {
+     let
+         i = 0
+         drivers= new [Bucket_driver]( |agents| )
+         futures= new [Fut void](|agents|)
+         j = 0
+         sdl_main = if ui then make_UI() else null : SDL_Main
+     in
+     {
+         for a in agents {
+             drivers[i]=new Bucket_driver(a,|agents|);
+             i=i+1;
+         };
+         i=0;
+         for a in drivers{
+             for b in drivers {
+                 unless (a==b) then {
+                 a!link(b);
+                 }
+             }
+         };
+         print("baseline setup done {} ui=={}\n",|drivers|, ui);
+         this!bucket_loop(40000,drivers,futures,ui,sdl_main);
+     }
+ }
+def bucket_loop(i:int,drivers:[Bucket_driver],futures:[Fut void],ui:bool,sdl_main:SDL_Main) : void {
+             let j = 0;
+             for a in drivers {
+                 futures[j]=a.move();
+                 j=j+1;
+             };
+             for a in futures {
+                 get(a);
+             };
+            if(ui) then {
+            let positions = new [(int,int)](|drivers|);
+                for w in [0..(|drivers|-1)] {
+                    positions[w]=get((drivers[w]).get_pos());
+                };
+                show(positions,sdl_main)
+            };
+             if(i % 10000==0) then {
+                 print("{}\n",i);
+             };
+         if i>0 then this!bucket_loop(i-1, drivers,futures,ui,sdl_main);
+ }
 }

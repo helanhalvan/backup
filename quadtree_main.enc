@@ -1,0 +1,62 @@
+import FileIO.IO
+import XML.XML
+import Ped_util.Box
+import Ped_util.Agent_passive
+{-import SDL.SDL_Main
+import SDL.SDL_Types
+import SDL.SDL_Primitives-}
+import Ped_util.Global_funs
+import Data.Either
+class Main {
+--TODO
+--There is some Issue with the UI which makes main segfault
+
+-- compile script
+--  -d for starting right into gdb
+--  -r for compile and run
+   def main() : void {
+    -- {--
+       let
+       superbox = new Box((1,2,3,4), Nothing : Maybe Box, 3)
+        x_size=0
+        y_size=0
+        aui=false
+        --sdl_main = null : SDL_Main
+       in {
+        print("constructor-done!\n");
+       --match (get(superbox.max()),get(superbox.min())) with
+        --        ((xmax,ymax),(xmin,ymin)) => {x_size=(xmax-xmin); y_size=(ymax-ymin);};
+        {-
+       if aui then {
+       sdl_main = new SDL_Main(1000,1000);
+       get sdl_main.clearAll();
+       get sdl_main.refresh();
+       superbox!start();
+       this!loop(superbox,0,aui,sdl_main);
+       } else {
+            superbox!start();
+            --get(superbox.done());
+        };-}
+        this!loop(superbox,0,aui);
+       } --}
+   }
+   def loop(superbox:Box, tick:int, ui:bool{--, sdl_main:SDL_Main --}) : void {
+       print("tick {}\n",tick);
+        get(superbox.move());{--
+         if(ui) then {
+       get(sdl_main.clearAll());
+       get sdl_main.setRenderColor(new ColorRGBA(240,240,240,0));
+       for a in get(superbox.agents())
+            {
+            match a with
+                (x,y) => { --print("{} {} \n",x,y);
+                            get sdl_main.fillRectangle( new Rectangle(x*4,y*4,1,1) )}
+                  _ => print("AGENT GOT NO POS!?\n")
+            };
+       get sdl_main.setRenderColor(new ColorRGBA(0,240,0,0));
+       get sdl_main.fillRectangle( new Rectangle(160*4,60*4,3,3) );
+       get(sdl_main.refresh());
+            }; --}
+        this!loop(superbox,tick+1,ui);
+       }
+}

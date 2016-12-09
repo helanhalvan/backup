@@ -3,8 +3,14 @@ import Agent_passive
 import Collections.HashMap
 import Global_funs
 def new_Box(agents:[Agent]) : Box {
-    new Box(find_extreme(agents),Nothing : Maybe Box, 3);
-}
+    let
+        box=new Box(find_extreme(agents),Nothing : Maybe Box, 3)
+    in {
+    for a in agents {
+        get(box.add(a))
+    };
+    box
+}}
 def find_extreme(agents:[Agent]) : (int,int,int,int) {
     let extreme=(-10000,-10000,10000,10000);
     let i=0;
@@ -22,16 +28,60 @@ def extreme_check(a:(int,int),b:(int,int,int,int) ) : (int,int,int,int) {
     match (a,b) with
         ((x,y),(xmax,ymax,xmin,ymin)) => (max(x,xmax),max(y,ymax),min(x,xmin),min(y,ymin))
 }
+{-            let iterator = new HashMapIterator<Agent>(this.agents.get_data());
+            let ret = new [(int,int)](this.agents.size());
+            let i=0;
+            while iterator.has_next() {
+                let a = {match iterator.next() with Just entry => {entry.value}};
+                print("{}\n",a.pos);
+                ret[i]=a.pos;
+                i=i+1;
+            };
+            print("{} {}\n",|ret|,i);
+            ret-}
+
 class Box {
     toplevel : Maybe Box
-    space : (int,int,int,int) --minx miny maxx maxy
+    space : (int,int,int,int) --maxx maxy minx miny
     multi : [Box]
     agents : Agent_struct
+    def agents() : [(int,int)] {
+        if |this.multi|==0 then {
+            let
+                b = new [(int,int)](this.agents.size())
+                hashmap = this.agents.get_data()
+                a = new HashMapIterator<Agent>(hashmap)
+                i = 0
+            in {
+                while a.has_next() {
+                    b[i]=match a.next() with Just entry => entry.value.pos();
+                    i=i+1
+                };
+                if i < this.agents.size() then
+                    {
+                        let c = new [(int,int)](i);
+                            for index in [0..i] {
+                                c[index]=b[index];
+                            };
+                            c
+                    } else b
+                }
+        } else {
+            let a = [
+                get(((this.multi)[0]).agents()),
+                get(((this.multi)[1]).agents()),
+                get(((this.multi)[2]).agents()),
+                get(((this.multi)[3]).agents())
+            ];
+            print("{}\n",(a[0])[0]);
+            flatten( a )
+        }
+    }
     def init(space:(int,int,int,int), toplevel: Maybe Box,levels_left:int) : void {
         this.space=space;
         this.toplevel=toplevel;
             match space with
-                (xmin,ymin,xmax,ymax) => {
+                (xmax,ymax,xmin,ymin) => {
             let
                 dx=xmax-xmin
                 dy=ymax-ymin
@@ -48,21 +98,25 @@ class Box {
                   this.multi[3]= new Box( (xmax,ymax-dy,xmax-dx+1,ymin), myface,levels_left-1);
                     ()
                     } else {
+                    --print("bottom\n");
                   this.multi = new [Box](0);
+                  this.agents= new Agent_struct();
                     ()
                     }
         }}; ()
     }
     def space() : (int,int,int,int) {this.space}
     def add(a:Agent) : void {
-        if not inside(a.pos(),this.space) then false else {
-                for item in this.multi {
-                    if ( inside(a.pos(), this.space) ) then item.add(a)
-                };
+        --if not inside(a.pos(),this.space) then false else {
                 if |this.multi| == 0 then {
                     this.agents.add(a);
-                }
-            };
+                } else {
+                for item in this.multi {
+                    if ( inside(a.pos(), this.space) ) then {
+
+                        item!add(a)}
+                };};
+            --};
             true
     }
     def move() : int {

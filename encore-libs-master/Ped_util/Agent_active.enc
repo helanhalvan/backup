@@ -1,0 +1,99 @@
+module Agent_active
+import Agent_passive
+import Global_funs
+class Agent_driver {
+    agent : Agent
+    links : [Agent_driver]
+    index : int
+    def get_pos() : (int,int) {
+        this.agent.pos;
+    }
+    def init(a:Agent,size:int) : void {
+        this.agent=a;
+        this.links=new [Agent_driver](size-1);
+        this.index=0;
+    }
+    def link(a:Agent_driver) : void {
+        this.links[this.index]=a;
+        this.index=this.index+1;
+    }
+    def move() : void {
+        for desired in this.agent.next() {
+            let
+                futures = new [Fut bool](|this.links|)
+                i = 0
+                full = false
+            in {
+            for a in this.links {
+                --print("{},{},{}\n",i,futures[i],a);
+                futures[i]=a.there(desired);
+                i=i+1;
+            };
+            i=0;
+            while (full==false and i < |futures| ) {
+                await(futures[i]);
+                full = full or get(futures[i]);
+                i=i+1;
+            };
+            if full==false then {
+                this.agent.move(desired);
+                embed void { break; } end;
+            }
+        }};
+        ()
+    }
+    def there(pos:(int,int)) : bool {
+        if (equal(this.agent.pos(),pos)) then true
+        else false
+    }
+}
+
+class Bucket_driver {
+    agent : Agent
+    responses_left : [int]
+    full : [bool]
+    moved : bool
+    link_index : int
+    links : [Bucket_driver]
+    def get_pos() : (int,int) {
+        this.agent.pos;
+    }
+    def init(a:Agent,size:int) : void {
+        this.agent=a;
+        this.links=new [Bucket_driver](size-1);
+        this.link_index=0;
+    }
+    def link(a:Bucket_driver) : void {
+        this.links[this.link_index]=a;
+        this.link_index=this.link_index+1;
+    }
+    def move() : void {
+        let i=0;
+        let temp = this.agent.next();
+        this.full = new [bool](|temp|);
+        this.responses_left = new [int](|temp|);
+        this.moved=false;
+        for desired in temp {
+            this.responses_left[i]= |this.links|;
+            for a in this.links {
+                a!request(this,i,desired);
+            };
+            i=i+1;
+        };
+        ()
+    }
+    def request(d:Bucket_driver,reply_index:int,pos:(int,int)) : void {
+        if (equal(this.agent.pos(),pos)) then
+            d!reply(reply_index,true,pos)
+        else
+            d!reply(reply_index,false,pos)
+    }
+    def reply(index:int, value:bool,pos:(int,int)) : void {
+        this.full[index]==this.full[index] or value;
+        this.responses_left[index]=this.responses_left[index]-1;
+        if(this.moved==false and this.responses_left[index]==0 and this.full[index]==false) then {
+            this.agent.move(pos);
+        }
+    }
+}
+--}

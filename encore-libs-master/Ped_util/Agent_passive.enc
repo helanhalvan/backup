@@ -94,7 +94,7 @@ passive class Agent_struct {
             }
         }
     def add(a:Agent) : void {
-            this.size=1+this.size;
+            this.size=this.size+1;
             this.ss2.set(a,a)
         }
     def remove(a:Agent) : void {
@@ -108,4 +108,3 @@ passive class Agent_struct {
         this.ss2
     }
 }
-                --Abstraction for one Agent

@@ -1,0 +1,46 @@
+import Ped_util.Agent_passive
+import Ped_util.Global_funs
+import Ped_util.Agent_active
+class Main {
+
+   def main(args: [String]) : void {
+        let
+            agents=parse_file(args[1])
+            i = 0
+            drivers= new [Agent_driver]( |agents| )
+            futures= new [Fut void](|agents|)
+            j = 0
+        in
+        {
+            print(args[1]);
+            for a in agents {
+                drivers[i]=new Agent_driver(a,|agents|);
+                i=i+1;
+            };
+            i=0;
+            for a in drivers{
+                for b in drivers {
+                    unless (a==b) then {
+                    a!link(b);
+                    }
+                }
+            };
+            print("setup done {}\n",|drivers|);
+            this!loop(40000,drivers,futures);
+        }
+    }
+   def loop(i:int,drivers:[Agent_driver],futures:[Fut void]) : void {
+                let j = 0;
+                for a in drivers {
+                    futures[j]=a.move();
+                    j=j+1;
+                };
+                for a in futures {
+                    get(a);
+                };
+                if(i % 10000==0) then {
+                    print("{}\n",i);
+                };
+            if i>0 then this!loop(i-1, drivers,futures);
+    }
+}

@@ -1,0 +1,24 @@
+module UI
+import SDL.SDL_Main
+import SDL.SDL_Types
+import SDL.SDL_Primitives
+def make_UI() : SDL_Main {
+    let sdl_main = new SDL_Main(1000,1000);
+    get sdl_main.clearAll();
+    get sdl_main.refresh();
+    sdl_main;
+}
+def show(cords:[(int,int)], sdl_main:SDL_Main) : void {
+        get(sdl_main.clearAll());
+        get sdl_main.setRenderColor(new ColorRGBA(240,240,240,0));
+        for a in cords
+             {
+             match a with
+                 (x,y) => { --print("{} {} \n",x,y);
+                             get sdl_main.fillRectangle( new Rectangle(x*4,y*4,1,1) )}
+                     _ => ()
+             };
+        get sdl_main.setRenderColor(new ColorRGBA(0,240,0,0));
+        get sdl_main.fillRectangle( new Rectangle(160*4,60*4,3,3) );
+        get(sdl_main.refresh());
+}
