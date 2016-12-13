@@ -30,12 +30,12 @@ def baseline(agents: [Agent], ui:bool) : void {
              }
          };
          --print("baseline setup done {} ui=={}\n",|drivers|, ui);
-         this!baseline_loop(40000,drivers,futures,ui,clock());
+         this!baseline_loop(40000,drivers,futures,ui);
      }
  }
-def baseline_loop(i:int,drivers:[Agent_driver],futures:[Fut void],ui:bool,last_time:int) : void {
+def baseline_loop(i:int,drivers:[Agent_driver],futures:[Fut void],ui:bool) : void {
              let j = 0;
-             let new_time = clock()-last_time;
+             let last_time=clock();
              for a in drivers {
                  futures[j]=a.move();
                  j=j+1;
@@ -44,9 +44,9 @@ def baseline_loop(i:int,drivers:[Agent_driver],futures:[Fut void],ui:bool,last_t
                  get(a);
              };
              if(i % 1000==0) then {
-                 print("{} {}\n",i,new_time);
+                 print("{} {}\n",i, clock()-last_time);
              };
-         if i>0 then this!baseline_loop(i-1, drivers,futures,ui,last_time);
+         if i>0 then this!baseline_loop(i-1, drivers,futures,ui);
  }
 }
 class Agent_driver {
