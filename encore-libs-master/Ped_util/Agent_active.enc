@@ -30,10 +30,9 @@ class Agent_driver {
                 i=i+1;
             };
             i=0;
-            while (full==false and i < |futures| ) {
-                await(futures[i]);
-                full = full or get(futures[i]);
-                i=i+1;
+            for f in futures {
+                await(f);
+                full = full or get(f);
             };
             if full==false then {
                 this.agent.move(desired);
