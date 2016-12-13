@@ -1,6 +1,12 @@
 module Global_funs
 import Agent_passive
 import XML.XML
+
+def clock() : int {
+    let x=0;
+    embed void { #{x}=clock(); } end;
+    x
+}
 def mk_Future(n : bool) : Fut bool
  embed Fut bool
    future_t *fut = future_mk(_ctx, ENCORE_PRIMITIVE);

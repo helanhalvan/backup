@@ -1,0 +1,75 @@
+module List_driver
+import Agent_passive
+import Global_funs
+class List_driver {
+    agent : Agent
+    links : [List_driver]
+    d_list : [int]
+    close : [List_driver]
+    index : int
+    responses_left : [int]
+    full : [bool]
+    id : int
+    moved : bool
+    def get_pos() : (int,int) {
+        this.agent.pos;
+    }
+    def init(a:Agent,size:int,id:int) : void {
+        this.id=id;
+        this.agent=a;
+        this.links=new [List_driver](size);
+        this.close=new [List_driver](size);
+        this.d_list = new [int](size);
+        for i in [0..size-1]
+            (this.d_list)[i]=0;
+        this.d_list[id]=50000000; --will not collide with self
+    }
+    def link(a:List_driver,id:int) : void {
+        this.links[id]=a;
+    }
+    def id() : int { this.id }
+
+    def fix_close() : int {
+        let close_size=0;
+        for index in [0..(|this.d_list|-1)] {
+            (this.d_list)[index]=(this.d_list)[index]-2;
+            if true then { --if ( ((this.d_list)[index])<1 ) then {
+                (this.close)[close_size]=(this.links)[index];
+                close_size=close_size+1;
+            };
+        };
+        --print("{}\n",close_size);
+        close_size
+    }
+    def move() : void {
+        let i=0;
+        let temp = this.agent.next();
+        let close_size = this.fix_close();
+        this.full = new [bool](|temp|);
+        this.responses_left = new [int](|temp|);
+        this.moved=false;
+        print(close_size);
+        for desired in temp {
+            this.responses_left[i]= close_size;
+            for qq in [0..(close_size-1)] {
+                ((this.close)[qq])!request(this,i,desired);
+            };
+            i=i+1;
+        };
+        ()
+    }
+    def request(d:List_driver,reply_index:int,pos:(int,int)) : void {
+        if (equal(this.agent.pos(),pos)) then
+            d!reply(reply_index,true,pos,this.id,this.agent.pos())
+        else
+            d!reply(reply_index,false,pos,this.id,this.agent.pos())
+    }
+    def reply(index:int, value:bool,pos:(int,int),id:int,src_pos:(int,int)) : void {
+        this.full[index]==this.full[index] or value;
+        this.responses_left[index]=this.responses_left[index]-1;
+        if(this.moved==false and this.responses_left[index]==0 and this.full[index]==false) then {
+            this.agent.move(pos);
+        };
+        this.d_list[id]=distance(pos,src_pos)-1;
+    }
+}

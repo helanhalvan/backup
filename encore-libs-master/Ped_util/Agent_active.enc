@@ -52,6 +52,7 @@ class Bucket_driver {
     agent : Agent
     responses_left : [int]
     full : [bool]
+    target : [(int,int)]
     moved : bool
     link_index : int
     links : [Bucket_driver]
@@ -72,28 +73,34 @@ class Bucket_driver {
         let temp = this.agent.next();
         this.full = new [bool](|temp|);
         this.responses_left = new [int](|temp|);
+        this.target = new [(int,int)](|temp|);
         this.moved=false;
         for desired in temp {
             this.responses_left[i]= |this.links|;
+            this.target[i]=desired;
+            this.full[i]=false;
             for a in this.links {
-                a!request(this,i,desired);
+                a!request(this,i);
             };
             i=i+1;
         };
         ()
     }
-    def request(d:Bucket_driver,reply_index:int,pos:(int,int)) : void {
-        if (equal(this.agent.pos(),pos)) then
-            d!reply(reply_index,true,pos)
-        else
-            d!reply(reply_index,false,pos)
+    def request(d:Bucket_driver,reply_index:int) : void {
+        d!reply(reply_index,this.agent.pos)
     }
-    def reply(index:int, value:bool,pos:(int,int)) : void {
-        this.full[index]==this.full[index] or value;
+    def reply(index:int,pos:(int,int)) : void {
+        if (index>1) then print(index);
         this.responses_left[index]=this.responses_left[index]-1;
-        if(this.moved==false and this.responses_left[index]==0 and this.full[index]==false) then {
-            this.agent.move(pos);
+        if(this.moved==false) then {
+            if( equal(pos,this.target[index]) ) then {
+                this.full[index]==true;
+                --print("x");
+            };
+        if(this.responses_left[index]==0 and this.full[index]==false) then {
+            this.agent.move(this.target[index]);
+            this.moved=true;
         }
-    }
+    }}
 }
 --}

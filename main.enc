@@ -6,9 +6,11 @@ import Ped_util.Agent_passive
 import Ped_util.Agent_active
 import Ped_util.UI
 import Ped_util.Global_funs
+import Ped_util.List_driver
 import Data.Either
 class Main {
-
+--TODO
+--REPLACE/INVESTIGATE HASHMAP IN BOX
    def main(args: [String]) : void {
        let
             version={     match (args[1]).to_int() with
@@ -23,8 +25,52 @@ class Main {
         if version==1 then this!baseline(agents,ui);
         if version==2 then this!bucket(agents,ui);
         if version==3 then this!box(agents,ui);
+        if version==4 then this!list(agents,ui);
        }
    }
+def list(agents:[Agent], ui:bool) : void {
+     let
+         i = 0
+         drivers= new [List_driver]( |agents| )
+         futures= new [Fut void](|agents|)
+         j = 0
+         sdl_main = if ui then make_UI() else null : SDL_Main
+     in
+     {
+         for a in agents {
+             drivers[i]=new List_driver(a,|agents|,a.hash_code);
+             i=i+1;
+         };
+         i=0;
+         for a in drivers{
+             for b in drivers {
+                 a!link(b,get(b.id()));
+             }
+         };
+         this!list_loop(40000,drivers,futures,ui,sdl_main);
+     }
+}
+def list_loop(i:int,drivers:[List_driver],futures:[Fut void],ui:bool,sdl_main:SDL_Main) : void {
+             let j = 0;
+             for a in drivers {
+                 futures[j]=a.move();
+                 j=j+1;
+             };
+             for a in futures {
+                 get(a);
+             };
+            if(ui) then {
+            let positions = new [(int,int)](|drivers|);
+                for w in [0..(|drivers|-1)] {
+                    positions[w]=get((drivers[w]).get_pos());
+                };
+                show(positions,sdl_main)
+            };
+             if(i % 10000==0) then {
+                 print("{}\n",i);
+             };
+         if i>0 then this!list_loop(i-1, drivers,futures,ui,sdl_main);
+ }
 def box(agents: [Agent], ui:bool) : void {
      let
         sdl_main = if ui then make_UI() else null : SDL_Main
@@ -38,7 +84,9 @@ def box_loop(i:int, superbox:Box, ui:bool,sdl_main:SDL_Main) : void {
     if ui then {
         show(get(superbox.agents()),sdl_main);
     };
-    if i>0 then this!box_loop(i-1,superbox,ui,sdl_main);
+    if i>0 then this!box_loop(i-1,superbox,ui,sdl_main) else {
+        superbox.destroy() -- TODO implement
+    };
 }
 def baseline(agents: [Agent], ui:bool) : void {
      let
@@ -61,12 +109,13 @@ def baseline(agents: [Agent], ui:bool) : void {
                  }
              }
          };
-         print("baseline setup done {} ui=={}\n",|drivers|, ui);
-         this!baseline_loop(40000,drivers,futures,ui,sdl_main);
+         --print("baseline setup done {} ui=={}\n",|drivers|, ui);
+         this!baseline_loop(40000,drivers,futures,ui,sdl_main,clock());
      }
  }
-def baseline_loop(i:int,drivers:[Agent_driver],futures:[Fut void],ui:bool,sdl_main:SDL_Main) : void {
+def baseline_loop(i:int,drivers:[Agent_driver],futures:[Fut void],ui:bool,sdl_main:SDL_Main,last_time:int) : void {
              let j = 0;
+             let new_time = clock()-last_time;
              for a in drivers {
                  futures[j]=a.move();
                  j=j+1;
@@ -81,10 +130,10 @@ def baseline_loop(i:int,drivers:[Agent_driver],futures:[Fut void],ui:bool,sdl_ma
                 };
                 show(positions,sdl_main)
             };
-             if(i % 10000==0) then {
-                 print("{}\n",i);
+             if(i % 1000==0) then {
+                 print("{} {}\n",i,new_time);
              };
-         if i>0 then this!baseline_loop(i-1, drivers,futures,ui,sdl_main);
+         if i>0 then this!baseline_loop(i-1, drivers,futures,ui,sdl_main,last_time);
  }
 def bucket(agents: [Agent],ui:bool) : void {
      let
@@ -107,11 +156,11 @@ def bucket(agents: [Agent],ui:bool) : void {
                  }
              }
          };
-         print("baseline setup done {} ui=={}\n",|drivers|, ui);
-         this!bucket_loop(40000,drivers,futures,ui,sdl_main);
+         this!bucket_loop(40000,drivers,futures,ui,sdl_main,0.0);
      }
  }
-def bucket_loop(i:int,drivers:[Bucket_driver],futures:[Fut void],ui:bool,sdl_main:SDL_Main) : void {
+def bucket_loop(i:int,drivers:[Bucket_driver],futures:[Fut void],ui:bool,sdl_main:SDL_Main,last_time:real) : void {
+             let new_time=0.0;--clock()-last_time;
              let j = 0;
              for a in drivers {
                  futures[j]=a.move();
@@ -124,12 +173,14 @@ def bucket_loop(i:int,drivers:[Bucket_driver],futures:[Fut void],ui:bool,sdl_mai
             let positions = new [(int,int)](|drivers|);
                 for w in [0..(|drivers|-1)] {
                     positions[w]=get((drivers[w]).get_pos());
+                    --print(positions[w]);
                 };
                 show(positions,sdl_main)
             };
-             if(i % 10000==0) then {
-                 print("{}\n",i);
+             if(i % 1000==0) then {
+                 print("{} {}\n",i,new_time);
              };
-         if i>0 then this!bucket_loop(i-1, drivers,futures,ui,sdl_main);
+
+         if i>0 then this!bucket_loop(i-1, drivers,futures,ui,sdl_main,new_time);
  }
 }

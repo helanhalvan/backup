@@ -45,6 +45,10 @@ class Box {
     space : (int,int,int,int) --maxx maxy minx miny
     multi : [Box]
     agents : Agent_struct
+    def destroy() : void {
+        --TODO
+        ()
+    }
     def agents() : [(int,int)] {
         if |this.multi|==0 then {
             let
