@@ -109,12 +109,12 @@ class Bucket_driver {
     def reply(index:int,pos:(int,int)) : void {
         this.responses_left[index]=this.responses_left[index]-1;
         if( equal(pos,this.target[index]) ) then {
-            this.full[index]==true;
-            --print("x");
+            this.full[index]=true;
         };
+
         --print("repyling {} {}\n",this.responses_left[index],index);
         if(this.responses_left[index]==0) then {
-            if this.full[index]==false and this.moved==false then {
+            if (((this.full)[index]==false) and (this.moved==false)) then {
                 this.agent.move(this.target[index]);
                 this.moved=true;
             };
