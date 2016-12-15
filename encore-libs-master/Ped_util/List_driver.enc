@@ -138,7 +138,7 @@ class List_driver {
     }
     def reply(index:int, pos:(int,int),id:int) : void {
         this.responses_left[index]=this.responses_left[index]-1;
-        this.d_list[id]=distance(pos,this.target[index])-1;
+        this.d_list[id]=man_distance(pos,this.target[index])-1;
         --collision check
         if( equal(pos,this.target[index]) ) then {
             this.full[index]=true;
