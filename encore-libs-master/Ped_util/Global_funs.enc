@@ -2,6 +2,25 @@ module Global_funs
 import Agent_passive
 import XML.XML
 
+--xmax ymax xmin ymin
+def find_extreme(agents:[Agent]) : (int,int,int,int) {
+    let extreme=(-10000,-10000,10000,10000);
+    let i=0;
+    for a in agents {
+        --print("{}\n",i);
+        i=i+1;
+        extreme=extreme_check(a.pos(),extreme);
+        for b in a.targets {
+            extreme=extreme_check(b,extreme);
+        }
+    };
+    extreme
+}
+def extreme_check(a:(int,int),b:(int,int,int,int) ) : (int,int,int,int) {
+    match (a,b) with
+        ((x,y),(xmax,ymax,xmin,ymin)) => (max(x,xmax),max(y,ymax),min(x,xmin),min(y,ymin))
+}
+
 def clock() : int {
     let x=0;
     embed void { #{x}=clock(); } end;
@@ -85,13 +104,13 @@ def rot(nr:int) : int {
     embed void { #{nr}=sqrt(#{nr}); } end;
     nr
 }
+def abs(a:int) : int {
+    if a>0 then a else a*(-1)
+}
 def man_distance(a:(int,int),b:(int,int)) : int {
     match (a,b) with
         ((x1,y1),(x2,y2)) => abs(x1-x2)+abs(y1-y2)
          _ => { print("THIS WILL NEVER HAPPEN!"); 1/0 }
-}
-def abs(a:int) : int {
-    if(a<0) then a*(-1) else a
 }
 def distance(a:(int,int),b:(int,int)) : int {
     match (a,b) with
@@ -109,7 +128,7 @@ def parse_file(fname:String) : [Agent] {
            file= new XML_node()
         in {
            match sen.file_to_xml(fname) with
-           Just xml => {file=xml; }
+           Just xml => {file=xml; print("\n\nWORKED!\n")}
            Nothing => print("\n\nBADXML!\n");
         let
             xml_way = file.children_named("waypoint")
@@ -161,7 +180,7 @@ def parse_file(fname:String) : [Agent] {
                                        };
                                        j=j+1;
                                    };
-                                    --print((x,y,dx_max,dy_max,dx,dy,max));
+                                    print((x,y,dx_max,dy_max,dx,dy,max));
                                    --for each agent
                                    for unused in [0..max] {
                                        --for this to be safe, agent_waypoints need to be copied for every agent
@@ -184,7 +203,7 @@ def parse_file(fname:String) : [Agent] {
                                    }
                                }};
                                --this print checks if waypoints are added correctly
-                                --print("checking\n");
+                                print("checking\n");
                                for a in agents {
                                    if (a!=null and |a.targets|==2 and |a.targets_size|==2) then
                                        ()--print(".")

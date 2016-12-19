@@ -11,23 +11,7 @@ def new_Box(agents:[Agent]) : Box {
     };
     box
 }}
-def find_extreme(agents:[Agent]) : (int,int,int,int) {
-    let extreme=(-10000,-10000,10000,10000);
-    let i=0;
-    for a in agents {
-        --print("{}\n",i);
-        i=i+1;
-        extreme=extreme_check(a.pos(),extreme);
-        for b in a.targets {
-            extreme=extreme_check(b,extreme);
-        }
-    };
-    extreme
-}
-def extreme_check(a:(int,int),b:(int,int,int,int) ) : (int,int,int,int) {
-    match (a,b) with
-        ((x,y),(xmax,ymax,xmin,ymin)) => (max(x,xmax),max(y,ymax),min(x,xmin),min(y,ymin))
-}
+
 {-            let iterator = new HashMapIterator<Agent>(this.agents.get_data());
             let ret = new [(int,int)](this.agents.size());
             let i=0;

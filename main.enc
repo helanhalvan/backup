@@ -8,11 +8,11 @@ import Ped_util.UI
 import Ped_util.Global_funs
 import Ped_util.List_driver
 import Ped_util.Bucket_driver
+import Ped_util.Matrix_driver
 import Data.Either
 class Main {
 --TODO
 --REPLACE/INVESTIGATE HASHMAP IN BOX
---Integrate with encore-case-studies-master/benchmarks
    def main(args: [String]) : void {
        let
             version={     match (args[1]).to_int() with
@@ -23,13 +23,35 @@ class Main {
                             Just 1 => true
                             _ => false}
        in {
-         --print(args[2]);
+         print(args[2]);
         if version==1 then this!baseline(agents,ui);
         if version==2 then bucket(agents,ui);
-        --if version==3 then this!box(agents,ui);
+        if version==3 then this!box(agents,ui);
         if version==4 then list(agents,ui);
+        if version==5 then matrix(agents,ui);
        }
    }
+def list_loop(i:int,drivers:[List_driver],futures:[Fut void],ui:bool,sdl_main:SDL_Main) : void {
+             let j = 0;
+             for a in drivers {
+                 futures[j]=a.move();
+                 j=j+1;
+             };
+             for a in futures {
+                 get(a);
+             };
+            if(ui) then {
+            let positions = new [(int,int)](|drivers|);
+                for w in [0..(|drivers|-1)] {
+                    positions[w]=get((drivers[w]).get_pos());
+                };
+                show(positions,sdl_main)
+            };
+             if(i % 10000==0) then {
+                 print("{}\n",i);
+             };
+         if i>0 then this!list_loop(i-1, drivers,futures,ui,sdl_main);
+ }
 def box(agents: [Agent], ui:bool) : void {
      let
         sdl_main = if ui then make_UI() else null : SDL_Main
@@ -74,7 +96,7 @@ def baseline(agents: [Agent], ui:bool) : void {
  }
 def baseline_loop(i:int,drivers:[Agent_driver],futures:[Fut void],ui:bool,sdl_main:SDL_Main,last_time:int) : void {
              let j = 0;
-             --let new_time = clock()-last_time;
+             let new_time = clock()-last_time;
              for a in drivers {
                  futures[j]=a.move();
                  j=j+1;
@@ -89,6 +111,9 @@ def baseline_loop(i:int,drivers:[Agent_driver],futures:[Fut void],ui:bool,sdl_ma
                 };
                 show(positions,sdl_main)
             };
+             if(i % 1000==0) then {
+                 print("{} {}\n",i,new_time);
+             };
          if i>0 then this!baseline_loop(i-1, drivers,futures,ui,sdl_main,last_time);
  }
 }
