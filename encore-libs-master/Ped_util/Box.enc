@@ -2,6 +2,23 @@ module Box
 import Agent_passive
 import Collections.HashMap
 import Global_funs
+def box(agents: [Agent], ui:bool) : void {
+     let
+        sdl_main = if ui then make_UI() else null : SDL_Main
+        superbox = new_Box(agents)
+     in
+    this!box_loop(40000, superbox, ui,sdl_main)
+}
+def box_loop(i:int, superbox:Box, ui:bool,sdl_main:SDL_Main) : void {
+    get(superbox.move());
+    --print(i);
+    if ui then {
+        show(get(superbox.agents()),sdl_main);
+    };
+    if i>0 then this!box_loop(i-1,superbox,ui,sdl_main) else {
+        superbox.destroy() -- TODO implement
+    };
+}
 def new_Box(agents:[Agent]) : Box {
     let
         box=new Box(find_extreme(agents),Nothing : Maybe Box, 3)

@@ -3,7 +3,7 @@
 
 
 #echo $w;
-for i in {10,20,40,80,400,800,4000,8000}
+for i in {10,20,40,80,400}
 do
 echo $i
 echo "&"
@@ -24,7 +24,7 @@ if [ "$nr" == "3" ]; then
 fi
 if [ "$nr" == "5" ]; then
     echo $a
-    echo "&"
+    #echo "&"
 fi
 nr=$((nr + 1))
 done

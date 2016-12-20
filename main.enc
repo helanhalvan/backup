@@ -1,7 +1,6 @@
 import SDL.SDL_Main
 import SDL.SDL_Types
 import SDL.SDL_Primitives
-import Ped_util.Box
 import Ped_util.Agent_passive
 import Ped_util.Agent_active
 import Ped_util.UI
@@ -9,6 +8,7 @@ import Ped_util.Global_funs
 import Ped_util.List_driver
 import Ped_util.Bucket_driver
 import Ped_util.Matrix_driver
+import Ped_util.Regions
 import Data.Either
 class Main {
 --TODO
@@ -23,10 +23,10 @@ class Main {
                             Just 1 => true
                             _ => false}
        in {
-         print(args[2]);
+         --print(args[2]);
         if version==1 then this!baseline(agents,ui);
         if version==2 then bucket(agents,ui);
-        if version==3 then this!box(agents,ui);
+        if version==3 then regions(agents,ui);
         if version==4 then list(agents,ui);
         if version==5 then matrix(agents,ui);
        }
@@ -52,23 +52,7 @@ def list_loop(i:int,drivers:[List_driver],futures:[Fut void],ui:bool,sdl_main:SD
              };
          if i>0 then this!list_loop(i-1, drivers,futures,ui,sdl_main);
  }
-def box(agents: [Agent], ui:bool) : void {
-     let
-        sdl_main = if ui then make_UI() else null : SDL_Main
-        superbox = new_Box(agents)
-     in
-    this!box_loop(40000, superbox, ui,sdl_main)
-}
-def box_loop(i:int, superbox:Box, ui:bool,sdl_main:SDL_Main) : void {
-    get(superbox.move());
-    --print(i);
-    if ui then {
-        show(get(superbox.agents()),sdl_main);
-    };
-    if i>0 then this!box_loop(i-1,superbox,ui,sdl_main) else {
-        superbox.destroy() -- TODO implement
-    };
-}
+
 def baseline(agents: [Agent], ui:bool) : void {
      let
          i = 0

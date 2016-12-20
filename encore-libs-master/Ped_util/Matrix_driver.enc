@@ -41,9 +41,7 @@ class Lock_Man {
                     };
                     show(positions,sdl_main)
                 };
-                 if(i % 10000==0) then {
-                     print("{}\n",i);
-                 };
+                 --if(i % 10000==0) then {print("{}\n",i);};
              if i>0 then this!list_loop(i-1, drivers,futures,ui,sdl_main);
      }
 }
@@ -58,12 +56,14 @@ passive class Lock_Matrix {
                 this.origin_x=xmin;
                 this.origin_y=ymin;
                 this.x_len=xmax-xmin;
-                this.locks=new [Lock]((xmax-xmin)*(ymax-ymin));
-                for a in this.locks {a=new Lock()}
+                this.locks=new [Lock]((xmax-xmin+1)*(ymax-ymin+1));
+                --print( (xmin,ymin,this.x_len,|this.locks|) );
+                for i in [0..|this.locks|] {(this.locks)[i]=new Lock()}
             };
         }
     def aquire( pos:(int,int) ) : Fut bool {
         match pos with (x,y) => {
+        --print((x,y,(x-this.origin_x)+((y-this.origin_y)*this.x_len)));
         (this.locks[(x-this.origin_x)+((y-this.origin_y)*this.x_len) ]).aquire()
     }}
     def release( pos:(int,int) ) : Fut void {
@@ -100,7 +100,8 @@ class Matrix_driver {
             if ((get(this.matrix.aquire(desired)))==false) then { () } else
             {
                 this.matrix.release(this.agent.pos);
-                this.agent.move(desired)
+                this.agent.move(desired);
+                embed void {break;} end;
             }
         };
     }

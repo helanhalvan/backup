@@ -4,7 +4,7 @@
 
 #echo $w;
 #for i in {1,2,3,4}
-i=4
+i=3
 #do
 echo $i
 

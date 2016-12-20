@@ -68,10 +68,10 @@ def flatten(listlist:[[(int,int)]]): [(int,int)] {
             for b in a {
                 list[i]=b;
                 i=i+1;
-                print("merging {}\n",b);
+                --print("merging {}\n",b);
             }
         };
-        if(i==len) then print("fine\n");
+        unless (i==len) then print("BAD MERGE\n");
         list
     }
 def max(a:int,b:int) : int {
@@ -128,7 +128,8 @@ def parse_file(fname:String) : [Agent] {
            file= new XML_node()
         in {
            match sen.file_to_xml(fname) with
-           Just xml => {file=xml; print("\n\nWORKED!\n")}
+           Just xml => {file=xml; --print("\n\nWORKED!\n")
+                }
            Nothing => print("\n\nBADXML!\n");
         let
             xml_way = file.children_named("waypoint")
@@ -203,7 +204,7 @@ def parse_file(fname:String) : [Agent] {
                                    }
                                }};
                                --this print checks if waypoints are added correctly
-                                print("checking\n");
+                                --print("checking\n");
                                for a in agents {
                                    if (a!=null and |a.targets|==2 and |a.targets_size|==2) then
                                        ()--print(".")
