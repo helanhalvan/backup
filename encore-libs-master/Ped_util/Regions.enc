@@ -4,6 +4,9 @@ import Collections.HashMap
 import Global_funs
 import SDL.SDL_Main
 import Ped_util.UI
+--TODO merege Reg_manager and Multi_box into a Box_manager
+-- subdivides plane 4 times, genereting 4^4 regions, links them
+-- replace hashmap linked list (faster iterator, never use lookup)
 def regions(agents: [Agent],ui:bool) : void {
      let
          sdl_main = if ui then make_UI() else null : SDL_Main
@@ -63,16 +66,16 @@ class Multi_box {
                                         dx=dx/2;
                                       --else
                                         dy=dy/2;
-                                      print("{} {} {}\n",this.max,this.min,(xmax-dx,ymax-dy));
+                                      --print("{} {} {}\n",this.max,this.min,(xmax-dx,ymax-dy));
                                       this.top_right=new Box(this.max,(xmax-dx+1,ymax-dy+1 ) );
                                       this.bottom_left=new Box( (xmax-dx,ymax-dy),this.min);
                                       this.top_left= new Box( (xmax-dx,ymax),(xmin,ymax-dy+1) );
                                       this.bottom_right=new Box( (xmax,ymax-dy),(xmax-dx+1,ymin) );
                                       this.toplevel=new Box( (100000,100000), (-100000,-100000) );
-                                      print("tr {} {}\n",get(this.top_right.max()),get(this.top_right.min()) );
+                                      {-print("tr {} {}\n",get(this.top_right.max()),get(this.top_right.min()) );
                                       print("bl {} {}\n",get(this.bottom_left.max()),get(this.bottom_left.min()) );
                                       print("tl {} {}\n",get(this.top_left.max()),get(this.top_left.min()) );
-                                      print("br {} {}\n",get(this.bottom_right.max()),get(this.bottom_right.min()) );
+                                      print("br {} {}\n",get(this.bottom_right.max()),get(this.bottom_right.min()) );-}
                                       };
         --put each agent into exactly one box
 
@@ -101,7 +104,7 @@ class Multi_box {
         win=win and get (this.bottom_right.link(this.top_right));
         win=win and get (this.bottom_right.link(this.bottom_left));
 
-        print("WIN={}\n",win);
+        --print("WIN={}\n",win);
         }
     }
     --get corners of box
@@ -117,12 +120,12 @@ class Multi_box {
         c = this.bottom_right.move()
         d = this.bottom_left.move()
         in {
-        get(a);
-        get(b);
-        get(c);
-        get(d);
+        await(a);
+        await(b);
+        await(c);
+        await(d);
         -- SHORT CIRCUT DOES MAKE THIS RETURN BEFORE ALL DONE!
-        (get(a)) or (get(b)) or (get(c)) or (get(d))
+        --(get(a)) or (get(b)) or (get(c)) or (get(d))
         }
     }
     def agents() : [(int,int)] { flatten([get(this.top_right.agents()),
@@ -219,8 +222,6 @@ def default_link(a:Box) : void {
         this.left=a;
         this.right=a;
     }
-def alive(): bool { true }
-
  --moves all agents in the box once
  --returns true if there are some agents to move
  --otherwise false

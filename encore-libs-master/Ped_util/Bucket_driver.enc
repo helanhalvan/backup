@@ -73,7 +73,7 @@ class Bucket_driver {
     links : [Bucket_driver]
     manager : Bucket_manager
     def get_pos() : (int,int) {
-        this.agent.pos;
+        this.agent.pos();
     }
     def init(a:Agent,size:int,manager:Bucket_manager) : void {
         this.agent=a;
@@ -104,7 +104,7 @@ class Bucket_driver {
         ()
     }
     def request(d:Bucket_driver,reply_index:int) : void {
-        d!reply(reply_index,this.agent.pos)
+        d!reply(reply_index,this.agent.pos())
     }
     def reply(index:int,pos:(int,int)) : void {
         this.responses_left[index]=this.responses_left[index]-1;

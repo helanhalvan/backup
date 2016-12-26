@@ -88,7 +88,7 @@ class Matrix_driver {
     agent : Agent
     matrix : Lock_Matrix
     def get_pos() : (int,int) {
-        this.agent.pos;
+        this.agent.pos();
     }
     def init(a:Agent,matrix:Lock_Matrix) : void {
         this.agent=a;
@@ -99,7 +99,7 @@ class Matrix_driver {
         for desired in temp {
             if ((get(this.matrix.aquire(desired)))==false) then { () } else
             {
-                this.matrix.release(this.agent.pos);
+                this.matrix.release(this.agent.pos());
                 this.agent.move(desired);
                 embed void {break;} end;
             }

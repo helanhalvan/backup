@@ -10,8 +10,8 @@ def find_extreme(agents:[Agent]) : (int,int,int,int) {
         --print("{}\n",i);
         i=i+1;
         extreme=extreme_check(a.pos(),extreme);
-        for b in a.targets {
-            extreme=extreme_check(b,extreme);
+        for index in [0..|a.targets_size|] {
+            extreme=extreme_check( (a.targets_x[index],a.targets_y[index]),extreme);
         }
     };
     extreme
@@ -117,6 +117,9 @@ def distance(a:(int,int),b:(int,int)) : int {
         ((x1,y1),(x2,y2)) => rot(((x1-x2)*(x1-x2))+((y1-y2)*(y1-y2)))
          _ => { print("THIS WILL NEVER HAPPEN!"); 1/0 }
 }
+def distance_int(x1:int,y1:int,x2:int,y2:int) : int {
+    rot(((x1-x2)*(x1-x2))+((y1-y2)*(y1-y2)))
+}
 def equal(a:(int,int),b:(int,int)) : bool {
     match (a,b) with
     ((a1,a2),(b1,b2)) when (a1==b1 and a2==b2) => true
@@ -203,14 +206,5 @@ def parse_file(fname:String) : [Agent] {
                                             i=i+1
                                    }
                                }};
-                               --this print checks if waypoints are added correctly
-                                --print("checking\n");
-                               for a in agents {
-                                   if (a!=null and |a.targets|==2 and |a.targets_size|==2) then
-                                       ()--print(".")
-                                       else
-                                           print("AGENT HAVE {} WAYPOINTS\n",|a.targets|)
-                                       };
-                                --while true ();
                                        agents
                                    }}}}

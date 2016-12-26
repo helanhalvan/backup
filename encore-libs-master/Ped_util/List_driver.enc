@@ -79,7 +79,7 @@ class List_driver {
     moved : bool
 
     def get_pos() : (int,int) {
-        this.agent.pos;
+        this.agent.pos();
     }
     def init(a:Agent,size:int,id:int,manager:List_manager) : void {
         this.manager=manager;
@@ -134,7 +134,7 @@ class List_driver {
         ()
     }
     def request(d:List_driver,reply_index:int) : void {
-        d!reply(reply_index,this.agent.pos,this.id)
+        d!reply(reply_index,this.agent.pos(),this.id)
     }
     def reply(index:int, pos:(int,int),id:int) : void {
         this.responses_left[index]=this.responses_left[index]-1;

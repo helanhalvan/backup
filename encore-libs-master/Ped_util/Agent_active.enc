@@ -6,7 +6,7 @@ class Agent_driver {
     links : [Agent_driver]
     index : int
     def get_pos() : (int,int) {
-        this.agent.pos;
+        this.agent.pos();
     }
     def init(a:Agent,size:int) : void {
         this.agent=a;
