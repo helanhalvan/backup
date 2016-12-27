@@ -187,7 +187,7 @@ def parse_file(fname:String) : [Agent] {
                                        };
                                        j=j+1;
                                    };
-                                    print((x,y,dx_max,dy_max,dx,dy,max));
+                                    --print((x,y,dx_max,dy_max,dx,dy,max));
                                    --for each agent
                                    for unused in [0..max] {
                                        --for this to be safe, agent_waypoints need to be copied for every agent

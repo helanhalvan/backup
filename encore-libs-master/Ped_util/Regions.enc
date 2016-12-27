@@ -164,10 +164,39 @@ class Box {
  down : Box
  left : Box
  right : Box
- agents : Agent_struct
-
+ matrix : C_Matrix
+ agents : Item
+    passive class Item {
+        a : Agent
+        next : Item
+        init(a:Agent) {this.a=a;}
+    }
+    passive class C_Matrix {
+        origin_x : int
+        origin_y : int
+        locks : [bool]
+        x_len : int
+        def init(in_max:(int,int),in_min:(int,int)) : void {
+                match (in_max,in_min) with
+                    ((xmax,ymax),(xmin,ymin)) => {
+                    this.origin_x=xmin;
+                    this.origin_y=ymin;
+                    this.x_len=xmax-xmin;
+                    this.locks=new [int]((xmax-xmin+1)*(ymax-ymin+1));
+                    --print( (xmin,ymin,this.x_len,|this.locks|) );
+                    for i in [0..|this.locks|] {(this.locks)[i]=false}
+                };
+            }
+        def get_val( x:int,y:int ) : bool {
+            --print((x,y,(x-this.origin_x)+((y-this.origin_y)*this.x_len)));
+            (this.locks)[(x-this.origin_x)+((y-this.origin_y)*this.x_len)]
+        }
+        def set( x:int,y:int,val:bool ) : void {
+            (this.locks)[(x-this.origin_x)+((y-this.origin_y)*this.x_len)]=val
+        }
+    }
 def init(in_max:(int,int), in_min:(int,int) ) : void {
-    this.agents=new Agent_struct();
+    this.matrix= new C_Matrix(in_max,in_min);
     this.max=in_max;
     this.min=in_min;
     }
@@ -176,32 +205,26 @@ def min() : (int,int) {this.min}
 def max() : (int,int) {this.max}
 def agents() : [(int,int)] {
     let
-     b = new [(int,int)](this.agents.size())
-     hashmap = this.agents.get_data()
-     a = new HashMapIterator<Agent>(hashmap)
-     i = 0
+        cur= this.agents
+        i=0
     in {
-    while a.has_next() {
-        b[i]=match a.next() with Just entry => entry.value.pos();
-        i=i+1
+    while cur!=null { i=i+1; cur=cur.next };
+    let ret= new [(int,int)](i);
+    i=0;
+    while cur!=null {
+        ret[i]=cur;
+        i=i+1;
+        cur=cur.next
+        }
     };
-    if i < this.agents.size() then
-        {
-    let c = new [(int,int)](i);
-    for index in [0..i] {
-        c[index]=b[index];
-    };
-        c
+    ret
     }
-    else b
-    }}
-
---returns true if a is inside the box, and stores it. Otherwise returns false
---TODO, check if legal, not needed currently
+ -- TODO add bounds check here, ret false if not working
 def add(a:Agent) : bool {
-    match (a.pos(),this.max,this.min) with
-        ((x,y),(xmax,ymax),(xmin,ymin)) when x>xmax or x<xmin or y>ymax or y<ymin => false
-        _ => {this.agents.add(a); true}
+    this.matrix.set(a.x,a.y,true); --add to collison matrix
+    let cur = this.agents;
+    while cur.next!=null { cur=cur.next };
+    cur.next = new Item(a); --append linked list
 }
 --if the arguements shares a border with this box, it's added to the apropriate edge and returns true
 --otherwise returns false
@@ -224,63 +247,91 @@ def default_link(a:Box) : void {
         this.right=a;
     }
  --moves all agents in the box once
- --returns true if there are some agents to move
- --otherwise false
+ --returns true
 def move(): bool {
-   if (this.agents.size() == 0) then { false } else {
-        let iterator = new HashMapIterator<Agent>(this.agents.get_data());
-       while iterator.has_next() {
+        let cur = this.agents;
+        if cur!=null {
+       while cur.next!=null { --starts from second item in linked list for easy delete
             let
-                a = {match iterator.next() with Just entry => {entry.value}}
-                desired = a.next()
+                a = cur.next
+                desired = a.a.next()
                 i = 0
                 nejbor = null:Fut bool
                 stillhere = true
             in {
             while( i < |desired| and stillhere == true) {
-                --print(desired[i]);
+
                 match (desired[i],this.max,this.min) with
-                    --local collision
-                    _ when this.agents.isin(desired[i])  => {i=i+1; embed void { continue; } end; ()}
-                    --local move
-                    ((x,y),(x_max,y_max),(x_min,y_min)) when (x<=x_max and x>=x_min and y<=y_max and y>=y_min) => { a.move((x,y));
-                                                                                                                    embed void { break; } end
-                                                                                                                  }
-                    ((x,y),(x_max,y_max),(x_min,y_min)) when (x>x_max and (y<y_min or y>y_max) ) or (x<x_min and (y<y_min or y>y_max) ) => { print("this should never happen, agent way off"); 1/0; () }
                     --external move
                     ((x,y),(x_max,y_max),(x_min,y_min)) when (x>x_max) => { nejbor=this.right.external_move(a.copy(),(x,y) ); () }
                     ((x,y),(x_max,y_max),(x_min,y_min)) when (x<x_min) => { nejbor=this.left.external_move(a.copy(),(x,y) ); () }
                     ((x,y),(x_max,y_max),(x_min,y_min)) when (y>y_max) => { nejbor=this.up.external_move(a.copy(),(x,y) ); ()  }
-                    ((x,y),(x_max,y_max),(x_min,y_min)) when (y<y_min) => { nejbor=this.down.external_move(a.copy(),(x,y) ); () };
+                    ((x,y),(x_max,y_max),(x_min,y_min)) when (y<y_min) => { nejbor=this.down.external_move(a.copy(),(x,y) ); () }
+                    _ => { () };
+                if nejbor==null then {
+                    --local collision detection
+                    if matrix.get_val()==false then {
+                        matrix.set(a.x,a.y,false); --remove from old pos
+                        match desired[i] with (x,y) => matrix.set(x,y,true); --add to new pos
+                        a.move(desired[i]); --move
+                    }
+                } else {
+                        await(nejbor);
+                    if get(nejbor) then {
+                        matrix.set(a.x,a.y,false); --remove from old pos
+                        cur.next=a.next --remove from list
+                    }
+                };
+                    i=i+1;
+                };
+            }}
+         let --first item have it's own case
+             a = cur
+             desired = a.a.next()
+             i = 0
+             nejbor = null:Fut bool
+             stillhere = true
+         in {
+         while( i < |desired| and stillhere == true) {
 
-                await(nejbor);
-                if get(nejbor) then {
-                    stillhere=false;
-                    --print("ACCESS DENIED {} ##########################\n", a.i);
-                    embed void { break; } end
-                }
-                else {
-                    stillhere=true;
-                    i=i+1
-                };
-                };
-            if (stillhere == false) then {
-                    this.agents.remove(a);
-                }
-            }};
+             match (desired[i],this.max,this.min) with
+                 --external move
+                 ((x,y),(x_max,y_max),(x_min,y_min)) when (x>x_max) => { nejbor=this.right.external_move(a.copy(),(x,y) ); () }
+                 ((x,y),(x_max,y_max),(x_min,y_min)) when (x<x_min) => { nejbor=this.left.external_move(a.copy(),(x,y) ); () }
+                 ((x,y),(x_max,y_max),(x_min,y_min)) when (y>y_max) => { nejbor=this.up.external_move(a.copy(),(x,y) ); ()  }
+                 ((x,y),(x_max,y_max),(x_min,y_min)) when (y<y_min) => { nejbor=this.down.external_move(a.copy(),(x,y) ); () }
+                 _ => { () };
+             if nejbor==null then {
+                 --local collision detection
+                 if matrix.get_val()==false then {
+                     matrix.set(a.x,a.y,false); --remove from old pos
+                     match desired[i] with (x,y) => matrix.set(x,y,true); --add to new pos
+                     a.move(desired[i]); --move
+                 }
+             } else {
+                     await(nejbor);
+                 if get(nejbor) then {
+                     matrix.set(a.x,a.y,false); --remove from old pos
+                     this.agents=null --remove from list
+                 }
+             };
+                 i=i+1;
+             };
+         }
+        };
           true
          }
-      }
 
     --recives a Agent from another box
-def external_move(a:Agent, pos:(int,int) ) : bool {
-    if(this.agents.isin(pos)) then { false } else {
+def external_move(a:Agent, x:int,y:int ) : bool {
+    if(this.matrix.get_val(x,y) ) then { false } else {
         a.move(pos);
-        this.agents.add(a);
+        this.add(a);
         true
         }
     }
 }
+{-
 passive class Agent_struct {
     ss2 : HashMap<Agent>
     size : int
@@ -317,8 +368,6 @@ passive class Agent_struct {
     def get_data() : HashMap<Agent> {
         this.ss2
     }
-    passive class Item {
-        a : Agent
-        next : Item
-    }
+
 }
+-}
