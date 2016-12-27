@@ -112,6 +112,9 @@ def man_distance(a:(int,int),b:(int,int)) : int {
         ((x1,y1),(x2,y2)) => abs(x1-x2)+abs(y1-y2)
          _ => { print("THIS WILL NEVER HAPPEN!"); 1/0 }
 }
+def man_distance_int(x1:int,y1:int,x2:int,y2:int) : int {
+        abs(x1-x2)+abs(y1-y2)
+}
 def distance(a:(int,int),b:(int,int)) : int {
     match (a,b) with
         ((x1,y1),(x2,y2)) => rot(((x1-x2)*(x1-x2))+((y1-y2)*(y1-y2)))

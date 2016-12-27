@@ -4,6 +4,7 @@ import Collections.HashMap
 import Global_funs
 import SDL.SDL_Main
 import Ped_util.UI
+
 --TODO merege Reg_manager and Multi_box into a Box_manager
 -- subdivides plane 4 times, genereting 4^4 regions, links them
 -- replace hashmap linked list (faster iterator, never use lookup)
@@ -278,5 +279,46 @@ def external_move(a:Agent, pos:(int,int) ) : bool {
         this.agents.add(a);
         true
         }
+    }
+}
+passive class Agent_struct {
+    ss2 : HashMap<Agent>
+    size : int
+    def init() : void {
+        this.ss2= new HashMap<Agent>();
+        this.size=0
+    }
+    def isin(pos:(int,int)) : bool {
+            let
+                iterator= new HashMapIterator<Agent>(this.ss2)
+                found = false
+            in
+            {
+                while(found==false and iterator.has_next()) {
+                    found = {match iterator.next() with
+                                    Just item => { match (pos,item.value.pos()) with
+                                                        ((x1,y1),(x2,y2)) when x1==x2 and y1==y2 => true
+                                                            _ => false }}
+                };
+                found
+            }
+        }
+    def add(a:Agent) : void {
+            this.size=this.size+1;
+            this.ss2.set(a,a)
+        }
+    def remove(a:Agent) : void {
+            this.ss2.remove(a);
+            this.size=this.size-1
+        }
+    def size() : int {
+        this.size
+    }
+    def get_data() : HashMap<Agent> {
+        this.ss2
+    }
+    passive class Item {
+        a : Agent
+        next : Item
     }
 }

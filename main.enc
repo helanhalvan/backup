@@ -8,7 +8,7 @@ import Ped_util.Global_funs
 import Ped_util.List_driver
 import Ped_util.Bucket_driver
 import Ped_util.Matrix_driver
-import Ped_util.Regions
+--import Ped_util.Regions
 import Data.Either
 class Main {
 --TODO
@@ -26,7 +26,7 @@ class Main {
          --print(args[2]);
         if version==1 then this!baseline(agents,ui);
         if version==2 then bucket(agents,ui);
-        if version==3 then regions(agents,ui);
+        --if version==3 then regions(agents,ui);
         if version==4 then list(agents,ui);
         if version==5 then matrix(agents,ui);
        }
@@ -80,7 +80,7 @@ def baseline(agents: [Agent], ui:bool) : void {
  }
 def baseline_loop(i:int,drivers:[Agent_driver],futures:[Fut void],ui:bool,sdl_main:SDL_Main,last_time:int) : void {
              let j = 0;
-             let new_time = clock()-last_time;
+             --let new_time = clock()-last_time;
              for a in drivers {
                  futures[j]=a.move();
                  j=j+1;
@@ -95,9 +95,7 @@ def baseline_loop(i:int,drivers:[Agent_driver],futures:[Fut void],ui:bool,sdl_ma
                 };
                 show(positions,sdl_main)
             };
-             if(i % 1000==0) then {
-                 print("{} {}\n",i,new_time);
-             };
+             --if(i % 1000==0) then {print("{} {}\n",i,new_time);};
          if i>0 then this!baseline_loop(i-1, drivers,futures,ui,sdl_main,last_time);
  }
 }

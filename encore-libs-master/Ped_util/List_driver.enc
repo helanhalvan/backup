@@ -75,7 +75,8 @@ class List_driver {
     index : int
     responses_left : [int]
     full : [bool]
-    target : [(int,int)]
+    target_x : [int]
+    target_y : [int]
     moved : bool
 
     def get_pos() : (int,int) {
@@ -87,6 +88,10 @@ class List_driver {
         this.agent=a;
         this.links=new [List_driver](size);
         this.close=new [List_driver](size);
+        this.full = new [bool](2);
+        this.responses_left = new [int](2);
+        this.target_x = new [int](2);
+        this.target_y = new [int](2);
         this.d_list = new [int](size);
         for i in [0..size-1]
             (this.d_list)[i]=0;
@@ -114,14 +119,14 @@ class List_driver {
         let i=0;
         let temp = this.agent.next();
         let close_size = this.fix_close();
-        this.full = new [bool](|temp|);
-        this.responses_left = new [int](|temp|);
-        this.target = new [(int,int)](|temp|);
         this.moved=false;
         --print(close_size);
         for desired in temp {
             this.responses_left[i]= close_size;
-            this.target[i]=desired;
+            match desired with (x,y) => {
+                this.target_x[i]=x;
+                this.target_y[i]=y;
+            };
             for qq in [0..(close_size-1)] {
                 ((this.close)[qq])!request(this,i);
             };
@@ -134,18 +139,18 @@ class List_driver {
         ()
     }
     def request(d:List_driver,reply_index:int) : void {
-        d!reply(reply_index,this.agent.pos(),this.id)
+        d!reply(reply_index,this.agent.x,this.agent.y,this.id)
     }
-    def reply(index:int, pos:(int,int),id:int) : void {
+    def reply(index:int, x:int,y:int,id:int) : void {
         this.responses_left[index]=this.responses_left[index]-1;
-        this.d_list[id]=man_distance(pos,this.target[index])-1;
+        this.d_list[id]=man_distance_int(x,y,this.target_x[index],this.target_y[index])-1;
         --collision check
-        if( equal(pos,this.target[index]) ) then {
+        if( (x==(this.target_x)[index]) and (y==(this.target_y)[index]) ) then {
             this.full[index]=true;
         };
         if(this.responses_left[index]==0) then {
             if this.full[index]==false and this.moved==false then {
-                this.agent.move(this.target[index]);
+                this.agent.move_int(this.target_x[index],this.target_y[index]);
                 this.moved=true;
             };
             --check if last expected message

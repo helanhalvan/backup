@@ -67,7 +67,8 @@ class Bucket_driver {
     agent : Agent
     responses_left : [int]
     full : [bool]
-    target : [(int,int)]
+    target_x : [int]
+    target_y : [int]
     moved : bool
     link_index : int
     links : [Bucket_driver]
@@ -80,6 +81,11 @@ class Bucket_driver {
         this.links=new [Bucket_driver](size-1);
         this.link_index=0;
         this.manager=manager;
+        --2 is the largest possible number of desired positions for an agent
+        this.target_x = new [int](2);
+        this.target_y = new [int](2);
+        this.full = new [bool](2);
+        this.responses_left = new [int](2);
     }
     def link(a:Bucket_driver) : void {
         this.links[this.link_index]=a;
@@ -88,13 +94,13 @@ class Bucket_driver {
     def move() : void {
         let i=0;
         let temp = this.agent.next();
-        this.full = new [bool](|temp|);
-        this.responses_left = new [int](|temp|);
-        this.target = new [(int,int)](|temp|);
         this.moved=false;
         for desired in temp {
             this.responses_left[i]= this.link_index;
-            this.target[i]=desired;
+            match desired with (x,y) => {
+                this.target_x[i]=x;
+                this.target_y[i]=y;
+            };
             this.full[i]=false;
             for a in this.links {
                 a!request(this,i);
@@ -104,18 +110,17 @@ class Bucket_driver {
         ()
     }
     def request(d:Bucket_driver,reply_index:int) : void {
-        d!reply(reply_index,this.agent.pos())
+        d!reply(reply_index,this.agent.x,this.agent.y)
     }
-    def reply(index:int,pos:(int,int)) : void {
+    def reply(index:int,x:int,y:int) : void {
         this.responses_left[index]=this.responses_left[index]-1;
-        if( equal(pos,this.target[index]) ) then {
+        if( (x==(this.target_x)[index]) and (y==(this.target_y)[index]) ) then {
             this.full[index]=true;
         };
-
         --print("repyling {} {}\n",this.responses_left[index],index);
         if(this.responses_left[index]==0) then {
             if (((this.full)[index]==false) and (this.moved==false)) then {
-                this.agent.move(this.target[index]);
+                this.agent.move_int(this.target_x[index],this.target_y[index]);
                 this.moved=true;
             };
             --check if last expected message

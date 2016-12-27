@@ -28,7 +28,7 @@ if [ "$nr" == "5" ]; then
 fi
 nr=$((nr + 1))
 done
-<<C1
+
 { perf stat -a -d -d $w ; } 2> temporaryfiletxt
 #l=`cat temporaryfiletxt`
 l=`cat temporaryfiletxt | grep CPUs`
@@ -52,6 +52,6 @@ do
 #fi
 nr=$((nr + 1))
 done
-C1
+
 echo "\\\\"
 done

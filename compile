@@ -1,25 +1,25 @@
 #!/bin/bash
 
 if [[ $2 == "-s" ]]; then
-encorec $1 -o $1.run -I ./encore-libs-master/Collections:./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_image -ggdb" -g
+encorec $1 -o $1.run -I ./encore-libs-master/Collections:./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_image -ggdb -O3" -g
 fi
 
 if [[ $2 == "-r" ]]; then
-encorec $1 -o $1.run -I ./encore-libs-master/Collections:./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_image -ggdb" -g
+encorec $1 -o $1.run -I ./encore-libs-master/Collections:./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_image -ggdb -O3" -g
 ./$1.run 1 scenario.xml
 fi
 if [[ $2 == "-t" ]]; then
-encorec $1 -o $1.run -I ./encore-libs-master/Collections:./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_image -ggdb" -g
+encorec $1 -o $1.run -I ./encore-libs-master/Collections:./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_image -ggdb -O3" -g
 ./timming
 fi
 
 if [[ $2 == "-d" ]]; then
-encorec $1 -o $1.run --import ./encore-libs-master/Collections:./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_image -ggdb" -g
+encorec $1 -o $1.run --import ./encore-libs-master/Collections:./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_image -ggdb -O3" -g
 gdb $1.run
 fi
 
 if [[ $2 == "-c" ]]; then
-encorec $1 -o $1.run --import ./encore-libs-master/Collections:./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_image -ggdb" -g -c --debug
+encorec $1 -o $1.run --import ./encore-libs-master/Collections:./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_image -ggdb -O3" -g -c --debug
 fi
 #cd ./main_src
 #make CONFIG=debug
