@@ -19,6 +19,7 @@ def matrix(agents: [Agent],ui:bool) : void {
              i=i+1;
          };
          i=0;
+
         (new Lock_Man())!list_loop(40000,drivers,futures,ui,sdl_main);
      }
  }
@@ -57,7 +58,6 @@ passive class Lock_Matrix {
                 this.origin_y=ymin;
                 this.x_len=xmax-xmin;
                 this.locks=new [Lock]((xmax-xmin+1)*(ymax-ymin+1));
-                --print( (xmin,ymin,this.x_len,|this.locks|) );
                 for i in [0..|this.locks|] {(this.locks)[i]=new Lock()}
             };
         }
@@ -66,9 +66,9 @@ passive class Lock_Matrix {
         --print((x,y,(x-this.origin_x)+((y-this.origin_y)*this.x_len)));
         (this.locks[(x-this.origin_x)+((y-this.origin_y)*this.x_len) ]).aquire()
     }}
-    def release( pos:(int,int) ) : Fut void {
+    def release( pos:(int,int) ) : void {
         match pos with (x,y) => {
-        (this.locks[(x-this.origin_x)+((y-this.origin_y)*this.x_len) ]).release()
+        get((this.locks[(x-this.origin_x)+((y-this.origin_y)*this.x_len) ]).release())
     }}
 }
 class Lock {

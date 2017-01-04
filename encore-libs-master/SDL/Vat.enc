@@ -102,16 +102,16 @@ class Vat<t>
   }
 
   def executePreActions(new_val : t) : bool{
-    let current = this.pre_actions.first;
-    let old = null : Node<(Pre_action<t>)> ;
-    let success = true;
+    var current = this.pre_actions.first;
+    var old = null : Node<(Pre_action<t>)> ;
+    var success = true;
 
     if(current == null) then {
       ();
     }else{
       while ((current != null) and success ){
-        let keep = true;
-        let f = current.data;
+        var keep = true;
+        var f = current.data;
         match f(this.field, new_val) with
           (keep_,val_) => {keep = keep_; success = val_};
 
@@ -134,7 +134,7 @@ class Vat<t>
 
     };
     if success then{
-      let transformed = this.executeTransActions(new_val);
+      var transformed = this.executeTransActions(new_val);
       this.executePostOrFail(this.post_actions,transformed);
       this.field = Just transformed;
     }else{
@@ -144,17 +144,17 @@ class Vat<t>
   }
 
   def executeTransActions(new_val : t) : t {
-    let current = this.trans_actions.first;
-    let old = null : Node<(Transformation_action<t>)> ;
-
+    var current = this.trans_actions.first;
+    var old = null : Node<(Transformation_action<t>)> ;
+    var ret = new_val;
     if(current == null) then {
         ()
     }else{
       while ((current != null) ){
-        let f = current.data;
-        let keep = true;
-        match f(this.field, new_val) with
-          (keep_,val_) => {keep = keep_; new_val = val_};
+        var f = current.data;
+        var keep = true;
+        match f(this.field, ret) with
+          (keep_,val_) => {keep = keep_; ret = val_};
 
         if( not keep ) then{
           if(old == null) then {
@@ -172,19 +172,19 @@ class Vat<t>
         }
       }
     };
-    new_val
+    ret
   }
 
   def executePostOrFail(actions: Linked__List<(Post_Fail_action<t>)>, new_val: t): void{
-    let current = actions.first;
-    let old = null : Node<(Post_Fail_action<t>)> ;
+    var current = actions.first;
+    var old = null : Node<(Post_Fail_action<t>)> ;
 
     if(current == null) then {
       ()
     }else{
       while ((current != null) ){
-        let f = current.data;
-        let keep = f(this.field, new_val);
+        var f = current.data;
+        var keep = f(this.field, new_val);
         if( not keep ) then{
           if(old == null) then {
             actions.first = old

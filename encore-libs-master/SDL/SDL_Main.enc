@@ -62,12 +62,12 @@ class SDL_Main
 
   --Draws the outline of a rectangle onto the screen.
   def drawRectangle(rec: Rectangle) :void{
-    let sdl_settings = this.sdl_settings;
-    let sdl_texture = this.sdl_texture;
-    let x  = rec.x;
-    let y  = rec.y;
-    let w  = rec.w;
-    let h  = rec.h;
+    var sdl_settings = this.sdl_settings;
+    var sdl_texture = this.sdl_texture;
+    var x  = rec.x;
+    var y  = rec.y;
+    var w  = rec.w;
+    var h  = rec.h;
     embed void
       SDL_Rect rect;
       rect.x = #{x};
@@ -80,12 +80,12 @@ class SDL_Main
 
   -- Fills a rectangle.
   def fillRectangle(rec: Rectangle) :void{
-    let sdl_settings = this.sdl_settings;
-    let sdl_texture = this.sdl_texture;
-    let x  = rec.x;
-    let y  = rec.y;
-    let w  = rec.w;
-    let h  = rec.h;
+    var sdl_settings = this.sdl_settings;
+    var sdl_texture = this.sdl_texture;
+    var x  = rec.x;
+    var y  = rec.y;
+    var w  = rec.w;
+    var h  = rec.h;
     embed void
       SDL_Rect rect;
       rect.x = #{x};
@@ -100,12 +100,12 @@ class SDL_Main
   -- All objects (not counting text and images) will be
   -- drawed with this color untill this method is called again.
   def setRenderColor(c: ColorRGBA) : void{
-    let sdl_settings = this.sdl_settings;
-    let sdl_texture = this.sdl_texture;
-    let r = c.r;
-    let g = c.g;
-    let b = c.b;
-    let a = c.a;
+    var sdl_settings = this.sdl_settings;
+    var sdl_texture = this.sdl_texture;
+    var r = c.r;
+    var g = c.g;
+    var b = c.b;
+    var a = c.a;
     embed void
       SDL_SetRenderDrawColor(#{sdl_settings}->renderer,
                              #{r},
@@ -119,8 +119,8 @@ class SDL_Main
   -- The x and y parameters specifies the upper left corner of the image.
   -- The x_scale and y_scale parameters are used to scale the image.
   def drawImage(image_path : String, x : int, y : int, x_scale : real, y_scale : real): void{
-    let sdl_settings = this.sdl_settings;
-    let image_path = image_path.data;
+    var sdl_settings = this.sdl_settings;
+    var image_path = image_path.data;
     embed void
       SDL_Texture *img = NULL;
       int w, h;
@@ -142,12 +142,12 @@ class SDL_Main
 
   --Draws a line between the two points.
   def drawLine(p1: Point2D, p2: Point2D) : void{
-    let sdl_settings = this.sdl_settings;
-    let sdl_texture = this.sdl_texture;
-    let x1 = p1.x;
-    let y1 = p1.y;
-    let x2 = p2.x;
-    let y2 = p2.y;
+    var sdl_settings = this.sdl_settings;
+    var sdl_texture = this.sdl_texture;
+    var x1 = p1.x;
+    var y1 = p1.y;
+    var x2 = p2.x;
+    var y2 = p2.y;
     embed void
       SDL_RenderDrawLine(#{sdl_settings}->renderer,
                          #{x1},
@@ -159,7 +159,7 @@ class SDL_Main
 
   -- Clears the entire window (fills it with black.)
   def clearAll() : void {
-    let sdl_settings = this.sdl_settings;
+    var sdl_settings = this.sdl_settings;
     embed void
       SDL_SetRenderDrawColor(#{sdl_settings}->renderer,
                              0,
@@ -172,7 +172,7 @@ class SDL_Main
 
   -- Fills the enitre window with the current color.
   def fillAll() : void {
-    let sdl_settings = this.sdl_settings;
+    var sdl_settings = this.sdl_settings;
     embed void
       SDL_RenderClear(#{sdl_settings}->renderer);
     end
@@ -184,8 +184,8 @@ class SDL_Main
   -- if you want to change fonts during the execution of
   -- the program you will need to call this funtion every time you want to change the font.
   def initFont(font_name : String, size: int) : void{
-    let font = this.sdl_font;
-    let font_path = font_name.data;
+    var font = this.sdl_font;
+    var font_path = font_name.data;
     embed void
       #{font} = TTF_OpenFont(#{font_path}, #{size});
       if (#{font} == NULL) {
@@ -199,10 +199,10 @@ class SDL_Main
   -- Draws the text on the screen in the given color.
   -- Will use the font and size loaded with the initFont method.
   def drawText(text: String, x : int, y: int, color: ColorRGBA) : void{
-    let text_color = color.getCRepresentation();
-    let sdl_settings = this.sdl_settings;
-    let font = this.sdl_font;
-    let c_text = text.data;
+    var text_color = color.getCRepresentation();
+    var sdl_settings = this.sdl_settings;
+    var font = this.sdl_font;
+    var c_text = text.data;
     embed void
       if(#{font} == NULL){
         fputs("Tried to draw font with no font loaded!",stderr);
@@ -232,9 +232,9 @@ class SDL_Main
   -- The width and height will be the width and height of the window.
   def init(width : int, height : int) : void{
     this.quit = false;
-    let sdl_settings = this.sdl_settings;
-    let sdl_texture = this.sdl_texture;
-    let sdl_font = this.sdl_font;
+    var sdl_settings = this.sdl_settings;
+    var sdl_texture = this.sdl_texture;
+    var sdl_font = this.sdl_font;
     embed void
       #{sdl_font} = NULL;
       SDL_Init(SDL_INIT_VIDEO);
@@ -264,12 +264,12 @@ class SDL_Main
   }
 
   def getHeight() : int{
-    let sdl_settings = this.sdl_settings;
+    var sdl_settings = this.sdl_settings;
     embed int #{sdl_settings}->height; end;
   }
 
   def getWidth() : int{
-    let sdl_settings = this.sdl_settings;
+    var sdl_settings = this.sdl_settings;
     embed int #{sdl_settings}->width; end;
   }
 
@@ -277,9 +277,9 @@ class SDL_Main
   -- Refreshes the screen.
   -- Objects drawn will not be showed untill this method has been called.
   def refresh() : void {
-    let sdl_settings = this.sdl_settings;
-    let sdl_texture = this.sdl_texture;
-    let quit = this.quit;
+    var sdl_settings = this.sdl_settings;
+    var sdl_texture = this.sdl_texture;
+    var quit = this.quit;
     embed void
       SDL_RenderPresent(#{sdl_settings}->renderer);
     end;
@@ -289,7 +289,7 @@ class SDL_Main
   -- This is necessary since just passing along the pointer to the
   -- event object would cause race conditions.
   def event_clone() : SDL_Event{
-    let sdl_settings = this.sdl_settings;
+    var sdl_settings = this.sdl_settings;
     embed SDL_Event
       SDL_Event* copy = malloc(sizeof(SDL_Event));
       (SDL_Event*)memcpy(copy,#{sdl_settings}->event,sizeof(SDL_Event));
@@ -300,8 +300,8 @@ class SDL_Main
   -- Checks if an event is present and send the event to the event handler
   -- if such an event is present.
   def pollEvent(handler: SDL_Event_Handler) : void{
-    let sdl_settings = this.sdl_settings;
-    let event_present = 0;
+    var sdl_settings = this.sdl_settings;
+    var event_present = 0;
     embed void
       #{event_present} = SDL_PollEvent(#{sdl_settings}->event);
     end;
@@ -317,7 +317,7 @@ class SDL_Main
   -- WARNING: There is some confusion as to how this method behaves in the case when it
   -- times even though no new event was found.
   def waitForEvent(handler: SDL_Event_Handler, timeout : int) : void{
-    let sdl_settings = this.sdl_settings;
+    var sdl_settings = this.sdl_settings;
     if(timeout == 0) then {
       embed void
         SDL_WaitEvent(#{sdl_settings}->event);
@@ -394,7 +394,7 @@ class SDL_Event_Handler
   -- Note that the event object is just a "basic" copy the SDL_Event
   -- union. Therefore it will not be traced and must be freed manually.
   def handleEvent(main: SDL_Main, event : SDL_Event) : void{
-    let event_type = embed int #{event}->type; end;
+    var event_type = embed int #{event}->type; end;
     if(event_type == embed int SDL_QUIT; end) then{
       embed void exit(0); end;
     }else if (event_type == embed int SDL_MOUSEBUTTONDOWN; end) then{

@@ -1,6 +1,5 @@
 module Regions
 import Agent_passive
-import Collections.HashMap
 import Global_funs
 import SDL.SDL_Main
 import Ped_util.UI
@@ -8,17 +7,19 @@ import Ped_util.UI
 --TODO merege Reg_manager and Multi_box into a Box_manager
 -- subdivides plane 4 times, genereting 4^4 regions, links them
 -- replace hashmap linked list (faster iterator, never use lookup)
+--TODO FIX COMPILER CRASH CAUSED BY THIS FILE
 def regions(agents: [Agent],ui:bool) : void {
      let
-         sdl_main = if ui then make_UI() else null : SDL_Main
+         --sdl_main = if ui then make_UI() else null : SDL_Main
          box = new Multi_box(agents)
      in
      {
         (new Reg_manager())!loop(box,ui,sdl_main,40000)
      }
  }
+
 class Reg_manager {
-    def loop(box:Multi_box,ui:bool,sdl_main:SDL_Main,i:int) : void {
+    def loop( box:Multi_box,ui:bool,sdl_main:SDL_Main,i:int) : void {
         if(ui) then {
             show(get(box.agents()),sdl_main)
         };
@@ -26,6 +27,7 @@ class Reg_manager {
         if i>0 then this!loop(box,ui,sdl_main,i-1) else print("done!\n")
     }
 }
+
 --multi threaded 2D space container
 class Multi_box {
     --max x and y cords
@@ -33,15 +35,7 @@ class Multi_box {
     --min x and y cords
     min : (int,int)
     --4 sub-boxes, together covering all the space in Multi_box
-    {--
-    -----------------
-    |toplevel       |
-    |    |tl|tr|    |
-    |    -------    |
-    |    |bl|br|    |
-    |               |
-    -----------------
-    --}
+
     top_right : Box
     bottom_right : Box
     top_left : Box
@@ -73,10 +67,6 @@ class Multi_box {
                                       this.top_left= new Box( (xmax-dx,ymax),(xmin,ymax-dy+1) );
                                       this.bottom_right=new Box( (xmax,ymax-dy),(xmax-dx+1,ymin) );
                                       this.toplevel=new Box( (100000,100000), (-100000,-100000) );
-                                      {-print("tr {} {}\n",get(this.top_right.max()),get(this.top_right.min()) );
-                                      print("bl {} {}\n",get(this.bottom_left.max()),get(this.bottom_left.min()) );
-                                      print("tl {} {}\n",get(this.top_left.max()),get(this.top_left.min()) );
-                                      print("br {} {}\n",get(this.bottom_right.max()),get(this.bottom_right.min()) );-}
                                       };
         --put each agent into exactly one box
 
@@ -151,6 +141,7 @@ class Multi_box {
             ((x,y),(xmax,ymax,xmin,ymin)) => (max(x,xmax),max(y,ymax),min(x,xmin),min(y,ymin))
     }
 }
+
 --single threaded 2D space container
 --contains all Agents in a given 2D region of space
 --assumess cordnate system where Y is height and X is with, so increasing X means further to the right
@@ -158,51 +149,26 @@ class Box {
 -- min and max are inclusive
 -- max is the greatest X value and the greatest Y value box contains
 -- min is the smalles X and Y values
- max : (int,int)
- min : (int,int)
+ xmax : int
+ ymax : int
+ xmin : int
+ ymin : int
  up : Box
  down : Box
  left : Box
  right : Box
  matrix : C_Matrix
  agents : Item
-    passive class Item {
-        a : Agent
-        next : Item
-        init(a:Agent) {this.a=a;}
-    }
-    passive class C_Matrix {
-        origin_x : int
-        origin_y : int
-        locks : [bool]
-        x_len : int
-        def init(in_max:(int,int),in_min:(int,int)) : void {
-                match (in_max,in_min) with
-                    ((xmax,ymax),(xmin,ymin)) => {
-                    this.origin_x=xmin;
-                    this.origin_y=ymin;
-                    this.x_len=xmax-xmin;
-                    this.locks=new [int]((xmax-xmin+1)*(ymax-ymin+1));
-                    --print( (xmin,ymin,this.x_len,|this.locks|) );
-                    for i in [0..|this.locks|] {(this.locks)[i]=false}
-                };
-            }
-        def get_val( x:int,y:int ) : bool {
-            --print((x,y,(x-this.origin_x)+((y-this.origin_y)*this.x_len)));
-            (this.locks)[(x-this.origin_x)+((y-this.origin_y)*this.x_len)]
-        }
-        def set( x:int,y:int,val:bool ) : void {
-            (this.locks)[(x-this.origin_x)+((y-this.origin_y)*this.x_len)]=val
-        }
-    }
+
 def init(in_max:(int,int), in_min:(int,int) ) : void {
     this.matrix= new C_Matrix(in_max,in_min);
-    this.max=in_max;
-    this.min=in_min;
+    match in_max with (x,y) => {this.xmax=x;this.ymax=y};
+    match in_min with (x,y) => {this.xmin=x;this.ymin=y};
     }
 --getters for borders
-def min() : (int,int) {this.min}
-def max() : (int,int) {this.max}
+def min() : (int,int) { (this.xmin,this.ymin) }
+def max() : (int,int) { (this.xmax,this.ymax) }
+-- SLOW BUT ONLY USED BY UI
 def agents() : [(int,int)] {
     let
         cur= this.agents
@@ -212,19 +178,19 @@ def agents() : [(int,int)] {
     let ret= new [(int,int)](i);
     i=0;
     while cur!=null {
-        ret[i]=cur;
+        ret[i]=cur.a.pos();
         i=i+1;
         cur=cur.next
-        }
-    };
+        };
     ret
-    }
+    }}
  -- TODO add bounds check here, ret false if not working
 def add(a:Agent) : bool {
     this.matrix.set(a.x,a.y,true); --add to collison matrix
     let cur = this.agents;
     while cur.next!=null { cur=cur.next };
     cur.next = new Item(a); --append linked list
+    true
 }
 --if the arguements shares a border with this box, it's added to the apropriate edge and returns true
 --otherwise returns false
@@ -233,11 +199,11 @@ def link(a:Box) : bool {
     let d=a.min();
     await(c);
     await(d);
-    match (this.max,this.min,get(c),get(d) ) with
-        ( (x_max_1,y_max_1),(x_min_1,y_min_1),(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((x_max_1+1) == x_min_2) => {this.right=a;print("right\n");true }
-        ( (x_max_1,y_max_1),(x_min_1,y_min_1),(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_1+1) == y_min_2) => {this.up=a;   print("up\n"); true }
-        ( (x_max_1,y_max_1),(x_min_1,y_min_1),(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((x_max_2+1) == x_min_1) => {this.left=a; print("left\n");true }
-        ( (x_max_1,y_max_1),(x_min_1,y_min_1),(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_2+1) == y_min_1) => {this.down=a; print("down\n");true }
+    match (this.xmax,this.ymax,this.xmin,this.ymin,get(c),get(d)) with
+        ( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((x_max_1+1) == x_min_2) => {this.right=a;print("right\n");true }
+        ( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_1+1) == y_min_2) => {this.up=a;   print("up\n"); true }
+        ( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((x_max_2+1) == x_min_1) => {this.left=a; print("left\n");true }
+        ( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_2+1) == y_min_1) => {this.down=a; print("down\n");true }
         _ => { false }
     }
 def default_link(a:Box) : void {
@@ -250,7 +216,7 @@ def default_link(a:Box) : void {
  --returns true
 def move(): bool {
         let cur = this.agents;
-        if cur!=null {
+        if cur!=null then {
        while cur.next!=null { --starts from second item in linked list for easy delete
             let
                 a = cur.next
@@ -260,13 +226,12 @@ def move(): bool {
                 stillhere = true
             in {
             while( i < |desired| and stillhere == true) {
-
-                match (desired[i],this.max,this.min) with
+                match (desired[i],this.xmax,this.ymax,this.xmin,this.ymin) with
                     --external move
-                    ((x,y),(x_max,y_max),(x_min,y_min)) when (x>x_max) => { nejbor=this.right.external_move(a.copy(),(x,y) ); () }
-                    ((x,y),(x_max,y_max),(x_min,y_min)) when (x<x_min) => { nejbor=this.left.external_move(a.copy(),(x,y) ); () }
-                    ((x,y),(x_max,y_max),(x_min,y_min)) when (y>y_max) => { nejbor=this.up.external_move(a.copy(),(x,y) ); ()  }
-                    ((x,y),(x_max,y_max),(x_min,y_min)) when (y<y_min) => { nejbor=this.down.external_move(a.copy(),(x,y) ); () }
+                    ((x,y),x_max,y_max,x_min,y_min) when (x>x_max) => { nejbor=this.right.external_move(a.a.copy(),x,y ); () }
+                    ((x,y),x_max,y_max,x_min,y_min) when (x<x_min) => { nejbor=this.left.external_move(a.a.copy(),x,y ); () }
+                    ((x,y),x_max,y_max,x_min,y_min) when (y>y_max) => { nejbor=this.up.external_move(a.a.copy(),x,y ); ()  }
+                    ((x,y),x_max,y_max,x_min,y_min) when (y<y_min) => { nejbor=this.down.external_move(a.a.copy(),x,y ); () }
                     _ => { () };
                 if nejbor==null then {
                     --local collision detection
@@ -277,14 +242,14 @@ def move(): bool {
                     }
                 } else {
                         await(nejbor);
-                    if get(nejbor) then {
+                    if get(nejbor) then { --if left this box
                         matrix.set(a.x,a.y,false); --remove from old pos
                         cur.next=a.next --remove from list
                     }
                 };
                     i=i+1;
                 };
-            }}
+            }};
          let --first item have it's own case
              a = cur
              desired = a.a.next()
@@ -296,10 +261,10 @@ def move(): bool {
 
              match (desired[i],this.max,this.min) with
                  --external move
-                 ((x,y),(x_max,y_max),(x_min,y_min)) when (x>x_max) => { nejbor=this.right.external_move(a.copy(),(x,y) ); () }
-                 ((x,y),(x_max,y_max),(x_min,y_min)) when (x<x_min) => { nejbor=this.left.external_move(a.copy(),(x,y) ); () }
-                 ((x,y),(x_max,y_max),(x_min,y_min)) when (y>y_max) => { nejbor=this.up.external_move(a.copy(),(x,y) ); ()  }
-                 ((x,y),(x_max,y_max),(x_min,y_min)) when (y<y_min) => { nejbor=this.down.external_move(a.copy(),(x,y) ); () }
+                 ((x,y),(x_max,y_max),(x_min,y_min)) when (x>x_max) => { nejbor=this.right.external_move(a.a.copy(),x,y ); () }
+                 ((x,y),(x_max,y_max),(x_min,y_min)) when (x<x_min) => { nejbor=this.left.external_move(a.a.copy(),x,y ); () }
+                 ((x,y),(x_max,y_max),(x_min,y_min)) when (y>y_max) => { nejbor=this.up.external_move(a.a.copy(),x,y ); ()  }
+                 ((x,y),(x_max,y_max),(x_min,y_min)) when (y<y_min) => { nejbor=this.down.external_move(a.a.copy(),x,y ); () }
                  _ => { () };
              if nejbor==null then {
                  --local collision detection
@@ -331,43 +296,36 @@ def external_move(a:Agent, x:int,y:int ) : bool {
         }
     }
 }
-{-
-passive class Agent_struct {
-    ss2 : HashMap<Agent>
-    size : int
-    def init() : void {
-        this.ss2= new HashMap<Agent>();
-        this.size=0
-    }
-    def isin(pos:(int,int)) : bool {
-            let
-                iterator= new HashMapIterator<Agent>(this.ss2)
-                found = false
-            in
-            {
-                while(found==false and iterator.has_next()) {
-                    found = {match iterator.next() with
-                                    Just item => { match (pos,item.value.pos()) with
-                                                        ((x1,y1),(x2,y2)) when x1==x2 and y1==y2 => true
-                                                            _ => false }}
-                };
-                found
-            }
-        }
-    def add(a:Agent) : void {
-            this.size=this.size+1;
-            this.ss2.set(a,a)
-        }
-    def remove(a:Agent) : void {
-            this.ss2.remove(a);
-            this.size=this.size-1
-        }
-    def size() : int {
-        this.size
-    }
-    def get_data() : HashMap<Agent> {
-        this.ss2
-    }
 
-}
--}
+
+--UTIL CLASSES FOR Box
+    passive class Item {
+        a : Agent
+        next : Item
+        def init(a:Agent) : void {this.a=a;}
+    }
+    passive class C_Matrix {
+        origin_x : int
+        origin_y : int
+        locks : [bool]
+        x_len : int
+        def init(in_max:(int,int),in_min:(int,int)) : void {
+                match (in_max,in_min) with
+                    ((xmax,ymax),(xmin,ymin)) => {
+                    this.origin_x=xmin;
+                    this.origin_y=ymin;
+                    this.x_len=xmax-xmin;
+                    this.locks=new [bool]((xmax-xmin+1)*(ymax-ymin+1));
+                    --print( (xmin,ymin,this.x_len,|this.locks|) );
+                    for i in [0..|this.locks|] {(this.locks)[i]=false}
+                };
+            }
+        def get_val( x:int,y:int ) : bool {
+            --print((x,y,(x-this.origin_x)+((y-this.origin_y)*this.x_len)));
+            (this.locks)[(x-this.origin_x)+((y-this.origin_y)*this.x_len)]
+        }
+        def set( x:int,y:int,value:bool ) : void {
+            (this.locks)[(x-this.origin_x)+((y-this.origin_y)*this.x_len)]=value
+        }
+    }
+--}

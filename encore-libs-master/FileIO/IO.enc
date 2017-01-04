@@ -16,8 +16,8 @@ passive class File {
                 else mode;
     this.fname= fin;
 
-    let fin   = fin.data;
-    let mChar = this.mode.data;
+    var fin   = fin.data;
+    var mChar = this.mode.data;
     this.file = embed (embed FILE* end)
                   FILE *file = fopen(#{fin}, #{mChar});
                   if (!file) {
@@ -29,7 +29,7 @@ passive class File {
   }
 
   def close() : void {
-    let f = this.file;
+    var f = this.file;
     this.file = embed (embed FILE* end)
       if (!#{f}) {
         printf("Cannot close file, exiting.\n");
@@ -48,7 +48,7 @@ passive class File {
   }
 
   def writeChar(content:embed char* end) : void {
-    let file  = this.file;
+    var file  = this.file;
     embed void
       FILE *fout = #{file};
       if (!fout) {
@@ -67,7 +67,7 @@ passive class File {
   }
 
   def readlineChar() : embed char* end {
-    let f = this.file;
+    var f = this.file;
     embed (embed char* end)
       char* line = encore_alloc(*_ctx,255);
       fgets(line, 255, #{f});
@@ -76,7 +76,7 @@ passive class File {
   }
 
   def eof() : bool {
-    let f = this.file;
+    var f = this.file;
     embed bool feof(#{f}); end
   }
 }

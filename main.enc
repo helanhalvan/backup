@@ -5,11 +5,11 @@ import Ped_util.Agent_passive
 import Ped_util.Agent_active
 import Ped_util.UI
 import Ped_util.Global_funs
-import Ped_util.List_driver
-import Ped_util.Bucket_driver
-import Ped_util.Matrix_driver
+--import Ped_util.List_driver
+--import Ped_util.Bucket_driver
+--import Ped_util.Matrix_driver
 --import Ped_util.Regions
-import Data.Either
+--import Data.Either
 class Main {
 --TODO
 --REPLACE/INVESTIGATE HASHMAP IN BOX
@@ -23,44 +23,25 @@ class Main {
                             Just 1 => true
                             _ => false}
        in {
+        ();
          --print(args[2]);
+
         if version==1 then this!baseline(agents,ui);
-        if version==2 then bucket(agents,ui);
+        --if version==2 then bucket(agents,ui);
         --if version==3 then regions(agents,ui);
-        if version==4 then list(agents,ui);
-        if version==5 then matrix(agents,ui);
+        --if version==4 then list(agents,ui);
+        --if version==5 then matrix(agents,ui); --}
        }
    }
-def list_loop(i:int,drivers:[List_driver],futures:[Fut void],ui:bool,sdl_main:SDL_Main) : void {
-             let j = 0;
-             for a in drivers {
-                 futures[j]=a.move();
-                 j=j+1;
-             };
-             for a in futures {
-                 get(a);
-             };
-            if(ui) then {
-            let positions = new [(int,int)](|drivers|);
-                for w in [0..(|drivers|-1)] {
-                    positions[w]=get((drivers[w]).get_pos());
-                };
-                show(positions,sdl_main)
-            };
-             if(i % 10000==0) then {
-                 print("{}\n",i);
-             };
-         if i>0 then this!list_loop(i-1, drivers,futures,ui,sdl_main);
- }
 
 def baseline(agents: [Agent], ui:bool) : void {
-     let
-         i = 0
-         drivers= new [Agent_driver]( |agents| )
-         futures= new [Fut void](|agents|)
-         j = 0
-         sdl_main = if ui then make_UI() else null : SDL_Main
-     in
+     var
+         i = 0;
+        var  drivers= new [Agent_driver]( |agents| );
+        var  futures= new [Fut void](|agents|);
+         var j = 0;
+         var sdl_main = if ui then make_UI() else null : SDL_Main;
+
      {
          for a in agents {
              drivers[i]=new Agent_driver(a,|agents|);
@@ -79,7 +60,7 @@ def baseline(agents: [Agent], ui:bool) : void {
      }
  }
 def baseline_loop(i:int,drivers:[Agent_driver],futures:[Fut void],ui:bool,sdl_main:SDL_Main,last_time:int) : void {
-             let j = 0;
+             var j = 0;
              --let new_time = clock()-last_time;
              for a in drivers {
                  futures[j]=a.move();
@@ -89,7 +70,7 @@ def baseline_loop(i:int,drivers:[Agent_driver],futures:[Fut void],ui:bool,sdl_ma
                  get(a);
              };
             if(ui) then {
-            let positions = new [(int,int)](|drivers|);
+            var positions = new [(int,int)](|drivers|);
                 for w in [0..(|drivers|-1)] {
                     positions[w]=get((drivers[w]).get_pos());
                 };

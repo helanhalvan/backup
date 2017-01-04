@@ -20,10 +20,10 @@ passive class Linked__List<t>
     }
 
     def length() : int{
-        let
-            counter = 0
-            next = null : Node<t>
-        in{
+        var
+            counter = 0;
+            var next = null : Node<t>;
+        {
             if (this.first != null) then {
                 counter = 1;
                 next = this.first.next;
@@ -47,10 +47,10 @@ passive class Node<t>
     }
 
     def preppend(data : t) : void{
-        let
-            node = new Node<t>(data)
-            temp = null : Node<t>
-        in
+        var
+            node = new Node<t>(data);
+            var temp = null : Node<t>;
+
         {
             temp = this.next;
             this.next = node;
@@ -59,10 +59,10 @@ passive class Node<t>
     }
 
     def append(data : t) : void{
-        let
-            new_node = new Node<t>(data)
-            temp = this.next
-        in{
+        var
+            new_node = new Node<t>(data);
+            var temp = this.next;
+        {
 
             if (temp == null) then{
                 this.next = new_node

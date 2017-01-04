@@ -19,11 +19,11 @@ class Agent_driver {
     }
     def move() : void {
         for desired in this.agent.next() {
-            let
-                futures = new [Fut bool](|this.links|)
-                i = 0
-                full = false
-            in {
+            var
+                futures = new [Fut bool](|this.links|);
+            var     i = 0;
+                var full = false;
+            {
             for a in this.links {
                 --print("{},{},{}\n",i,futures[i],a);
                 futures[i]=a.there(desired);

@@ -13,14 +13,14 @@ passive class SDL_MouseButtonEvent
   y         : int  -- The y cordinate relative to the window.
 
   def init(event: SDL_Event) : void{
-    let timestamp =  this.timestamp;
-    let windowID  =  this.windowID;
-    let which     =  this.which;
-    let button    =  this.button;
-    let state     =  this.state;
-    let clicks    =  this.clicks;
-    let x         =  this.x;
-    let y         =  this.y;
+    var timestamp =  this.timestamp;
+    var windowID  =  this.windowID;
+    var which     =  this.which;
+    var button    =  this.button;
+    var state     =  this.state;
+    var clicks    =  this.clicks;
+    var x         =  this.x;
+    var y         =  this.y;
     embed void
       SDL_MouseButtonEvent* mouse_event = (SDL_MouseButtonEvent*)#{event};
       #{timestamp} =  mouse_event->timestamp;
@@ -53,14 +53,14 @@ passive class SDL_MouseMotionEvent
   yrel      : int   -- Y relative motion to the previous mouse event.
 
   def init(event: SDL_Event) : void{
-    let timestamp = this.timestamp;
-    let windowID  = this.windowID;
-    let which     = this.which;
-    let state     = this.state;
-    let x         = this.x;
-    let y         = this.y;
-    let xrel      = this.xrel;
-    let yrel      = this.yrel;
+    var timestamp = this.timestamp;
+    var windowID  = this.windowID;
+    var which     = this.which;
+    var state     = this.state;
+    var x         = this.x;
+    var y         = this.y;
+    var xrel      = this.xrel;
+    var yrel      = this.yrel;
     embed void
       SDL_MouseMotionEvent* mouse_event = (SDL_MouseMotionEvent*)#{event};
       #{timestamp} = mouse_event->timestamp;
@@ -94,11 +94,11 @@ passive class SDL_KeyboardEvent
                    -- Take note that this field stores the SDL_Keycode value.
 
   def init(event: SDL_Event) : void{
-    let timestamp = this.timestamp;
-    let windowID  = this.windowID;
-    let state     = this.state;
-    let repeated  = this.repeated;
-    let keycode   = this.keycode;
+    var timestamp = this.timestamp;
+    var windowID  = this.windowID;
+    var state     = this.state;
+    var repeated  = this.repeated;
+    var keycode   = this.keycode;
     embed void
       SDL_KeyboardEvent* key_event = (SDL_KeyboardEvent*)#{event};
         #{timestamp} = key_event->timestamp;

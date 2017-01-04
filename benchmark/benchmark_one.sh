@@ -6,7 +6,7 @@
 #850  0
 #900  80
 #echo $w;
-for i in 2000
+for i in {10,20,40,80}
 do
 echo $i
 echo "&"
@@ -46,6 +46,9 @@ echo "&"
 l=`cat temporaryfiletxt | grep branch-misses` #cut -d $'\n' -f 2
 echo $l
 echo "&"
+l=`cat temporaryfiletxt `
+echo $l
 
 echo "\\\\"
+
 done

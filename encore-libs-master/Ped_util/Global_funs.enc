@@ -4,13 +4,14 @@ import XML.XML
 
 --xmax ymax xmin ymin
 def find_extreme(agents:[Agent]) : (int,int,int,int) {
-    let extreme=(-10000,-10000,10000,10000);
-    let i=0;
+    var extreme=(-10000,-10000,10000,10000);
+    var i=0;
     for a in agents {
         --print("{}\n",i);
         i=i+1;
         extreme=extreme_check(a.pos(),extreme);
-        for index in [0..|a.targets_size|] {
+        for index in [0..|a.targets_x|-1] {
+            --print( (a.targets_x[index],a.targets_y[index],index) );
             extreme=extreme_check( (a.targets_x[index],a.targets_y[index]),extreme);
         }
     };
@@ -18,11 +19,11 @@ def find_extreme(agents:[Agent]) : (int,int,int,int) {
 }
 def extreme_check(a:(int,int),b:(int,int,int,int) ) : (int,int,int,int) {
     match (a,b) with
-        ((x,y),(xmax,ymax,xmin,ymin)) => (max(x,xmax),max(y,ymax),min(x,xmin),min(y,ymin))
+        ((x,y),(xmax,ymax,xmin,ymin)) => {(max(x,xmax),max(y,ymax),min(x,xmin),min(y,ymin))}
 }
 
 def clock() : int {
-    let x=0;
+    var x=0;
     embed void { #{x}=clock(); } end;
     x
 }
@@ -38,19 +39,18 @@ def inside(pos:(int,int),space:(int,int,int,int) ) : bool {
         _ => true
 }
 def copy_ar(arr:[int]) : [int] {
-    let a2=new[int](|arr|)
-        i=0
-    in {
+    var a2=new[int](|arr|);
+    var i=0;
     for a in arr {
         --print("{} \n", a);
         a2[i]=a;
         i=i+1
     };
-    a2}
+    a2
 }
 def copy_tr(arr:[(int,int)]) : [(int,int)] {
-        let a2=new [(int,int)](|arr|);
-        let i=0;
+        var a2=new [(int,int)](|arr|);
+        var i=0;
         for a in arr {
             a2[i]=a;
             i=i+1;
@@ -58,12 +58,12 @@ def copy_tr(arr:[(int,int)]) : [(int,int)] {
         a2
 }
 def flatten(listlist:[[(int,int)]]): [(int,int)] {
-        let len=0;
+        var len=0;
         for a in listlist {
             len=len+ |a| ;
         };
-        let list=new[(int,int)](len);
-        let i=0;
+        var list=new[(int,int)](len);
+        var i=0;
         for a in listlist {
             for b in a {
                 list[i]=b;
@@ -93,7 +93,7 @@ def string_or_empty( i: Maybe String ) : String {
             _ => {print("orEmpty\n");""}
     }
 def rand() : int {
-    let x=0;
+    var x=0;
     embed void { #{x}=rand(); } end;
     x
 }
@@ -129,20 +129,20 @@ def equal(a:(int,int),b:(int,int)) : bool {
     _ => false
 }
 def parse_file(fname:String) : [Agent] {
-       let
-           sen = new XML_lib()
-           file= new XML_node()
-        in {
+       var
+           sen = new XML_lib();
+           var file= new XML_node();
+        {
            match sen.file_to_xml(fname) with
            Just xml => {file=xml; --print("\n\nWORKED!\n")
                 }
            Nothing => print("\n\nBADXML!\n");
-        let
-            xml_way = file.children_named("waypoint")
-            waypoints=new [(int,int)] ( |xml_way| )
-            waypoints_distance=new [int] ( |xml_way| )
-            i=0
-        in {
+        var
+            xml_way = file.children_named("waypoint");
+            var waypoints=new [(int,int)] ( |xml_way| );
+            var waypoints_distance=new [int] ( |xml_way| );
+            var i=0;
+        {
             --print(|xml_way|);
             for a in xml_way {
                 waypoints[i]={
@@ -155,7 +155,7 @@ def parse_file(fname:String) : [Agent] {
                 i=i+1
             };
                                --print("SO MANY WAYPOINTS {}\n",|waypoints|);
-           let nr_agents=0;
+           var nr_agents=0;
            for a in file.children_named("agent") {
                    nr_agents=nr_agents+{
                        match a.attribute_value("n").to_int() with
@@ -163,21 +163,21 @@ def parse_file(fname:String) : [Agent] {
                        _ => {print("BADINT2!\n"); 0}
                    }
                };
-               let agents= new [Agent](nr_agents)
-                   i=0
-                in {
+               var agents= new [Agent](nr_agents);
+               var i=0;
+                {
                        for a in file.children_named("agent") {
-                           let
-                               max = int_or_0(a.attribute_value("n").to_int())
-                               x = int_or_0(a.attribute_value("xs").to_int())
-                               y = int_or_0(a.attribute_value("ys").to_int())
-                               dx_max = int_or_0(a.attribute_value("dx").to_int())
-                               dy_max = int_or_0(a.attribute_value("dy").to_int())
-                               agent_waypoints=new [(int,int)](|a.children_named("addway")|)
-                               dx=x
-                               dy=y
-                               j=0
-                               in {
+                           var
+                               max = int_or_0(a.attribute_value("n").to_int());
+                               var x = int_or_0(a.attribute_value("xs").to_int());
+                               var y = int_or_0(a.attribute_value("ys").to_int());
+                               var dx_max = int_or_0(a.attribute_value("dx").to_int());
+                               var dy_max = int_or_0(a.attribute_value("dy").to_int());
+                               var agent_waypoints=new [(int,int)](|a.children_named("addway")|);
+                               var dx=x;
+                               var dy=y;
+                               var j=0;
+                             {
                                    for b in a.children_named("addway") {
                                        agent_waypoints[j]=waypoints[int_or_0(string_or_empty(b.attribute_value("id").substring(1,2)).to_int())-1];
                                        --print(agent_waypoints[i]);
@@ -204,8 +204,7 @@ def parse_file(fname:String) : [Agent] {
                                         else {
                                             dy=dy+rand()%4
                                         };
-                                            --print("({})",dx);
-                                            agents[i]=new Agent((dx,dy),copy_tr(agent_waypoints),copy_ar(waypoints_distance),i,40000); --THIS NUMBER DECIDES HOW LONG SIMULATION WILL RUN
+                                            agents[i]=new Agent((dx,dy),copy_tr(agent_waypoints),copy_ar(waypoints_distance),i,40000);
                                             i=i+1
                                    }
                                }};

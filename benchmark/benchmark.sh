@@ -3,7 +3,7 @@
 
 
 #echo $w;
-for i in 4
+for i in {1,2,4,5}
 
 do
 echo $i

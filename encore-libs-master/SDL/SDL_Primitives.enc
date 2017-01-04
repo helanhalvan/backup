@@ -38,10 +38,10 @@ passive class ColorRGBA
   }
 
   def getCRepresentation() : SDL_Color{
-    let r = this.r;
-    let g = this.g;
-    let b = this.b;
-    let a = this.a;
+    var r = this.r;
+    var g = this.g;
+    var b = this.b;
+    var a = this.a;
     embed SDL_Color
       (SDL_Color){#{r}, #{g}, #{b}, #{a}};
     end

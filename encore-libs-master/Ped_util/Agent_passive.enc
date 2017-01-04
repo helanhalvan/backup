@@ -1,10 +1,10 @@
 module Agent_passive
-import Collections.HashMap
-import Collections.HashCode
+--import Collections.HashMap
+--import Collections.HashCode
 import Ped_util.Global_funs
 --import Collections.Map
 
-passive class Agent : HashCode {
+passive class Agent {
     hash_code : uint                --global unique id IMMUTABLE
     --pos : (int,int)         --current position MUTABLE
     x : int
