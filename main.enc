@@ -5,10 +5,10 @@ import Ped_util.Agent_passive
 import Ped_util.Agent_active
 import Ped_util.UI
 import Ped_util.Global_funs
---import Ped_util.List_driver
+import Ped_util.List_driver
 --import Ped_util.Bucket_driver
---import Ped_util.Matrix_driver
---import Ped_util.Regions
+import Ped_util.Matrix_driver
+import Ped_util.Regions
 --import Data.Either
 class Main {
 --TODO
@@ -28,9 +28,9 @@ class Main {
 
         if version==1 then this!baseline(agents,ui);
         --if version==2 then bucket(agents,ui);
-        --if version==3 then regions(agents,ui);
-        --if version==4 then list(agents,ui);
-        --if version==5 then matrix(agents,ui); --}
+        if version==3 then regions(agents,ui);
+        if version==4 then list(agents,ui);
+        if version==5 then matrix(agents,ui); --}
        }
    }
 

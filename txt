@@ -1,3 +1,0 @@
-Warning at "./encore-libs-master/Collections/LinkedList.enc" (line 82, column 47):
-Comparing polymorphic values is unstable. 
-Later versions of Encore will require type constraints for this to work

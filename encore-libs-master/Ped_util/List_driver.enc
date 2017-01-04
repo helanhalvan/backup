@@ -4,13 +4,11 @@ import Global_funs
 import SDL.SDL_Main
 import Ped_util.UI
 def list(agents: [Agent],ui:bool) : void {
-     let
-         i = 0
-         drivers= new [List_driver]( |agents| )
-         j = 0
-         sdl_main = if ui then make_UI() else null : SDL_Main
-         manager = new List_manager(40000,ui,sdl_main)
-     in
+     var i = 0;
+         var drivers= new [List_driver]( |agents| );
+         var j = 0;
+         var sdl_main = if ui then make_UI() else null : SDL_Main;
+         var manager = new List_manager(40000,ui,sdl_main);
      {
          for a in agents {
              drivers[i]=new List_driver(a,|agents|,a.hash_code,manager);
@@ -48,7 +46,7 @@ class List_manager {
         if this.i<1 then { () } else {
             if(this.i%10000==0) then print(this.i);
             if(this.ui) then {
-                let positions = new [(int,int)](|this.dr|);
+                var positions = new [(int,int)](|this.dr|);
                     for w in [0..(|this.dr|-1)] {
                         positions[w]=get((this.dr[w]).get_pos());
                     };
@@ -104,7 +102,7 @@ class List_driver {
     def id() : int { this.id }
 
     def fix_close() : int {
-        let close_size=0;
+        var close_size=0;
         for index in [0..(|this.d_list|-1)] {
             (this.d_list)[index]=(this.d_list)[index]-2;
             if ( ((this.d_list)[index])<1 ) then {
@@ -116,9 +114,9 @@ class List_driver {
         close_size
     }
     def move() : void {
-        let i=0;
-        let temp = this.agent.next();
-        let close_size = this.fix_close();
+        var i=0;
+        var temp = this.agent.next();
+        var close_size = this.fix_close();
         this.moved=false;
         --print(close_size);
         for desired in temp {
@@ -154,7 +152,7 @@ class List_driver {
                 this.moved=true;
             };
             --check if last expected message
-            let sum=0;
+            var sum=0;
             for a in this.responses_left {
                 --print("{}\n",a);
                 sum=sum+a;
