@@ -2,21 +2,15 @@ import Ped_util.Agent_passive
 import Ped_util.Global_funs
 class Main {
    def main(args: [String]) : void {
-       let
-            agents=parse_file("scenario.xml")
-            ui =false
-       in {
+       var agents=parse_file("scenario.xml");
+       var ui =false;
         this!baseline(agents,ui);
-       }
    }
 def baseline(agents: [Agent], ui:bool) : void {
-     let
-         i = 0
-         drivers= new [Agent_driver]( |agents| )
-         futures= new [Fut void](|agents|)
-         j = 0
-     in
-     {
+        var i = 0;
+        var drivers= new [Agent_driver]( |agents| );
+        var futures= new [Fut void](|agents|);
+        var j = 0;
          for a in agents {
              drivers[i]=new Agent_driver(a,|agents|);
              i=i+1;
@@ -29,13 +23,12 @@ def baseline(agents: [Agent], ui:bool) : void {
                  }
              }
          };
-         --print("baseline setup done {} ui=={}\n",|drivers|, ui);
          this!baseline_loop(40000,drivers,futures,ui,0);
-     }
  }
 def baseline_loop(i:int,drivers:[Agent_driver],futures:[Fut void],ui:bool,times:int) : void {
-             let j = 0;
-             let last_time=clock();
+             var j = 0;
+             var last_time=clock();
+             var t = times;
              for a in drivers {
                  futures[j]=a.move();
                  j=j+1;
@@ -44,12 +37,12 @@ def baseline_loop(i:int,drivers:[Agent_driver],futures:[Fut void],ui:bool,times:
                  get(a);
              };
              if(i % 1000==0) then {
-                 print("{} {}\n",i, times);
-                times=0;
+                 print("{} {}\n",i, t);
+                t=0;
              } else {
-                times=times+clock()-last_time;
+                t=t+clock()-last_time;
             };
-         if i>0 then this!baseline_loop(i-1, drivers,futures,ui,times:int);
+         if i>0 then this!baseline_loop(i-1, drivers,futures,ui,t);
  }
 }
 class Agent_driver {
@@ -57,7 +50,7 @@ class Agent_driver {
     links : [Agent_driver]
     index : int
     def get_pos() : (int,int) {
-        this.agent.pos;
+        this.agent.pos();
     }
     def init(a:Agent,size:int) : void {
         this.agent=a;
@@ -70,11 +63,10 @@ class Agent_driver {
     }
     def move() : void {
         for desired in this.agent.next() {
-            let
-                futures = new [Fut bool](|this.links|)
-                i = 0
-                full = false
-            in {
+            var futures = new [Fut bool](|this.links|);
+            var i = 0;
+            var full = false;
+            {
             for a in this.links {
                 --print("{},{},{}\n",i,futures[i],a);
                 futures[i]=a.there(desired);
