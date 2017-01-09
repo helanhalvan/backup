@@ -22,10 +22,10 @@ class Main {
             ui ={ match (args[3]).to_int() with
                             Just 1 => true
                             _ => false}
+            --box = new Multi_box(agents)
        in {
         ();
          --print(args[2]);
-
         if version==1 then this!baseline(agents,ui);
         --if version==2 then bucket(agents,ui);
         if version==3 then regions(agents,ui);

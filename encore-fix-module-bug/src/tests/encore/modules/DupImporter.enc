@@ -1,9 +1,0 @@
-import DupLib
-
-class Main
-  def main() : void
-    let
-      f = new FarFoo
-    in {
-      print (f.name())
-    }

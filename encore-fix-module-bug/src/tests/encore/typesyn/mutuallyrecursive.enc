@@ -1,6 +1,0 @@
-
-typedef A = B
-typedef B = Maybe A
-
-passive class C : A
-

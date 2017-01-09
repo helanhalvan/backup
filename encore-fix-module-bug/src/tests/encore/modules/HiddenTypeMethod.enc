@@ -1,8 +1,0 @@
-import Lib.SelectiveLib
-
-class Main
-  def main() : void {
-    let x = new Foo;
-    let y = x.foo();
-    y.bar();
-  }

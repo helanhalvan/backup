@@ -1,6 +1,0 @@
-class Foo {
-  number : int
-  def link(a:Foo) : void {
-    a.number
-  }
-}

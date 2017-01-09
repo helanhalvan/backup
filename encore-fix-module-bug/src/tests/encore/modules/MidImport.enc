@@ -1,6 +1,0 @@
-module MidImport
-import DeepLib
-
-passive class Bar
-  def name() : String
-     (new Foo).name()

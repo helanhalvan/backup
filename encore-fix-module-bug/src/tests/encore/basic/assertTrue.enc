@@ -1,5 +1,0 @@
-class Main
-  def main() : void {
-    assertTrue(true);
-    assertTrue(false, "Kingfisher")
-  }

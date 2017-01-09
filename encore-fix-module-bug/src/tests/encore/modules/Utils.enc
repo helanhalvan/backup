@@ -1,3 +1,0 @@
-module Utils
-def id(x: String): String
-  x

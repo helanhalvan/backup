@@ -11,19 +11,9 @@ import Ped_util.UI
 def regions(agents: [Agent],ui:bool) : void {
      var sdl_main = if ui then make_UI() else null : SDL_Main;
      var box = new Multi_box(agents);
-     (new Reg_manager())!loop(box,ui,sdl_main,40000);
+     --print(|agents|);
+    box!move(ui,sdl_main,40000); --40000
  }
-
-class Reg_manager {
-    def loop( box:Multi_box,ui:bool,sdl_main:SDL_Main,i:int) : void {
-        if(ui) then {
-            show(get(box.agents()),sdl_main)
-        };
-        get(box.move());
-        if i>0 then this!loop(box,ui,sdl_main,i-1) else print("done!\n")
-    }
-}
-
 --multi threaded 2D space container
 class Multi_box {
     --max x and y cords
@@ -39,12 +29,11 @@ class Multi_box {
 
     --TODO, adding a toplevel field where I can send agents that go out of bounds
     --currently I just create a massive box, and have agents in it never move
-    toplevel : Box
+    --toplevel : Box
 
     def init(agents:[Agent]) : void {
         var dx=0;
         var dy=0;
-        {
         --find global xmax, xmin, and ymin, use to create boundries for the 2D space.
         --looks at both starting positions and waypoints
         match this.find_extreme(agents) with
@@ -61,12 +50,10 @@ class Multi_box {
                                       this.bottom_left=new Box( (xmax-dx,ymax-dy),this.min);
                                       this.top_left= new Box( (xmax-dx,ymax),(xmin,ymax-dy+1) );
                                       this.bottom_right=new Box( (xmax,ymax-dy),(xmax-dx+1,ymin) );
-                                      this.toplevel=new Box( (100000,100000), (-100000,-100000) );
+                                      --this.toplevel=new Box(  );
                                       };
         --put each agent into exactly one box
-
         for a in agents {
-            -- adding agents into boxes
             if( get(this.top_right.add(a))) then { () }
             else if( get(this.top_left.add(a))) then { () }
             else if( get(this.bottom_right.add(a))) then { () }
@@ -74,11 +61,12 @@ class Multi_box {
             else { print("{} didn't get in \n", a.pos());}
         };
         --LINK to toplevel
-        this.top_right.default_link(this.toplevel);
-        this.top_left.default_link(this.toplevel);
-        this.bottom_right.default_link(this.toplevel);
-        this.bottom_left.default_link(this.toplevel);
-
+        {-
+        get(this.top_right.default_link(this.toplevel));
+        get(this.top_left.default_link(this.toplevel));
+        get(this.bottom_right.default_link(this.toplevel));
+        get(this.bottom_left.default_link(this.toplevel));
+        -}
         var win=true;
         --LINKING BOXES, to allow them to pass agents between eachother
         win=win and get (this.top_right.link(this.top_left));
@@ -89,32 +77,34 @@ class Multi_box {
         win=win and get (this.bottom_left.link(this.top_left));
         win=win and get (this.bottom_right.link(this.top_right));
         win=win and get (this.bottom_right.link(this.bottom_left));
-
-        print("WIN={}\n",win);
-        }
+        --print("WIN={}\n",win);
     }
     --get corners of box
     def max() : (int,int) {this.max}
     def min() : (int,int) {this.min}
     def center() : (int,int) {get(this.bottom_left.max()) }
     --moves all internal agents on step, returns true if any agents tried to move
-    def move () : bool {
+    def move (ui:bool,sdl_main:SDL_Main,i:int) : void {
         --debug check
+        --print("multi_move\n");
         let
         a = this.top_right.move()
         b = this.top_left.move()
         c = this.bottom_right.move()
         d = this.bottom_left.move()
         in {
+        --print("await\n");
         await(a);
         await(b);
         await(c);
         await(d);
-        -- SHORT CIRCUT DOES MAKE THIS RETURN BEFORE ALL DONE!
-        (get(a)) or (get(b)) or (get(c)) or (get(d))
+        --print("done_wait\n");
+        if(ui) then show(this.agents(),sdl_main);
+        if(i>1) then this!move(ui,sdl_main,i-1);
+        --print(|this.agents()|);
         }
     }
-    def agents() : [(int,int)] { flatten([get(this.top_right.agents()),
+    def agents() : [(int,int)] {flatten([get(this.top_right.agents()),
                              get(this.top_left.agents()),
                              get(this.bottom_right.agents()),
                              get(this.bottom_left.agents())]) }
@@ -154,36 +144,55 @@ class Box {
  right : Box
  matrix : C_Matrix
  agents : Item
-
+ last : Item
+ newcommers : Item
 def init(in_max:(int,int), in_min:(int,int) ) : void {
     this.matrix= new C_Matrix(in_max,in_min);
     match in_max with (x,y) => {this.xmax=x;this.ymax=y};
     match in_min with (x,y) => {this.xmin=x;this.ymin=y};
+    --print("done\n");
     }
 --getters for borders
 def min() : (int,int) { (this.xmin,this.ymin) }
 def max() : (int,int) { (this.xmax,this.ymax) }
 -- SLOW BUT ONLY USED BY UI
 def agents() : [(int,int)] {
+    this.merge();
+    --print("merge done\n");
+
+    if(this.agents==null) then {
+        var j=0;
+        for a in this.matrix.locks {if a==true then j=j+1;};
+        --print((0,j));
+        new [(int,int)](0); } else {
+    --print("allocating agents\n");
     var cur= this.agents;
     var i=0;
-    while cur!=null { i=i+1; cur=cur.next };
+    while cur!=null { i=i+1; cur=cur.next; };
+    var j=0;
+    for a in this.matrix.locks {if a==true then j=j+1;};
+    --print((i,j));
     var ret= new [(int,int)](i);
+    cur=this.agents;
     i=0;
     while cur!=null {
         ret[i]=cur.a.pos();
+        --print(i);
         i=i+1;
         cur=cur.next
         };
     ret
-    }
- -- TODO add bounds check here, ret false if not working
+    }}
+ --adds new agents to newcommers linked list
 def add(a:Agent) : bool {
-    this.matrix.set(a.x,a.y,true); --add to collison matrix
-    var cur = this.agents;
-    while cur.next!=null { cur=cur.next };
-    cur.next = new Item(a); --append linked list
-    true
+    if a.x>this.xmax or a.x<this.xmin or a.y>this.ymax or a.y<this.ymin then false else {
+        this.matrix.set(a.x,a.y,true); --add to collison matrix
+    if(this.newcommers == null) then {this.newcommers=new Item(a); this.last=this.newcommers;} else {
+        this.last.next=new Item(a);
+        this.last=this.last.next;
+    };
+    true;
+    }
 }
 --if the arguements shares a border with this box, it's added to the apropriate edge and returns true
 --otherwise returns false
@@ -193,10 +202,14 @@ def link(a:Box) : bool {
     await(c);
     await(d);
     match (this.xmax,this.ymax,this.xmin,this.ymin,get(c),get(d)) with
-        ( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((x_max_1+1) == x_min_2) => {this.right=a;print("right\n");true }
-        ( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_1+1) == y_min_2) => {this.up=a;   print("up\n"); true }
-        ( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((x_max_2+1) == x_min_1) => {this.left=a; print("left\n");true }
-        ( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_2+1) == y_min_1) => {this.down=a; print("down\n");true }
+        ( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((x_max_1+1) == x_min_2) => {this.right=a;--print("right\n");
+true }
+        ( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_1+1) == y_min_2) => {this.up=a;   --print("up\n");
+true }
+        ( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((x_max_2+1) == x_min_1) => {this.left=a; --print("left\n");
+true }
+        ( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_2+1) == y_min_1) => {this.down=a; --print("down\n");
+true }
         _ => { false }
     }
 def default_link(a:Box) : void {
@@ -205,85 +218,75 @@ def default_link(a:Box) : void {
         this.left=a;
         this.right=a;
     }
+def merge() : void {
+        if(this.newcommers!=null) then {
+            --print((this.last.next,this.last.a,this.agents));
+            this.last.next=this.agents; --append current agents to new agents list
+            this.agents=this.newcommers; -- replace current agents with new agents list
+            this.newcommers=null;
+            --this.last=null;
+        }
+    }
  --moves all agents in the box once
  --returns true
-def move(): bool {
-        var cur = this.agents;
-        if cur!=null then {
-       while cur.next!=null { --starts from second item in linked list for easy delete
-                var a = cur.next;
+def move() : bool {
+        --print("serial_move\n");
+        this.merge();
+        var parent = this.agents;
+        var a = this.agents;
+       while a!=null {
+            --print(this.agents);
                 var desired = a.a.next();
                 var i = 0;
                 var nejbor = null:Fut bool;
-                var stillhere = true;
-            {
-            while( i < |desired| and stillhere == true) {
-                match (desired[i],this.xmax,this.ymax,this.xmin,this.ymin) with
-                    --external move
-                    ((x,y),x_max,y_max,x_min,y_min) when (x>x_max) => { nejbor=this.right.external_move(a.a,x,y ); () }
-                    ((x,y),x_max,y_max,x_min,y_min) when (x<x_min) => { nejbor=this.left.external_move(a.a,x,y ); () }
-                    ((x,y),x_max,y_max,x_min,y_min) when (y>y_max) => { nejbor=this.up.external_move(a.a,x,y ); ()  }
-                    ((x,y),x_max,y_max,x_min,y_min) when (y<y_min) => { nejbor=this.down.external_move(a.a,x,y ); () }
-                    _ => { () };
-                if nejbor==null then {
-                    --local collision detection
-                    if this.matrix.get_val(a.a.x,a.a.y)==false then {
-                        this.matrix.set(a.a.x,a.a.y,false); --remove from old pos
-                        match desired[i] with (x,y) => this.matrix.set(x,y,true); --add to new pos
-                        a.a.move(desired[i]); --move
-                    }
-                } else {
-                        await(nejbor);
-                    if get(nejbor) then { --if left this box
-                        this.matrix.set(a.a.x,a.a.y,false); --remove from old pos
-                        cur.next=a.next --remove from list
-                    }
-                };
-                    i=i+1;
-                };
-            }};
-         --first item have it's own case
-             var a = cur;
-             var desired = a.a.next();
-             var i = 0;
-             var nejbor = null:Fut bool;
-             var stillhere = true;
-         {
-            while( i < |desired| and stillhere == true) {
-                match (desired[i],this.xmax,this.ymax,this.xmin,this.ymin) with
-                    --external move
-                    ((x,y),x_max,y_max,x_min,y_min) when (x>x_max) => { nejbor=this.right.external_move(a.a,x,y ); () }
-                    ((x,y),x_max,y_max,x_min,y_min) when (x<x_min) => { nejbor=this.left.external_move(a.a,x,y ); () }
-                    ((x,y),x_max,y_max,x_min,y_min) when (y>y_max) => { nejbor=this.up.external_move(a.a,x,y ); ()  }
-                    ((x,y),x_max,y_max,x_min,y_min) when (y<y_min) => { nejbor=this.down.external_move(a.a,x,y ); () }
-                    _ => { () };
-                if nejbor==null then {
-                    --local collision detection
-                    if this.matrix.get_val(a.a.x,a.a.y)==false then {
-                        this.matrix.set(a.a.x,a.a.y,false); --remove from old pos
-                        match desired[i] with (x,y) => this.matrix.set(x,y,true); --add to new pos
-                        a.a.move(desired[i]); --move
-                    }
-                } else {
-                        await(nejbor);
-                    if get(nejbor) then { --if left this box
-                        this.matrix.set(a.a.x,a.a.y,false); --remove from old pos
-                        cur.next=a.next --remove from list
-                    }
-                };
-                    i=i+1;
-                };
-            }
-         };
-          true
+                var moved = false;
+            --print("+");
+            while( i < |desired| and moved == false) {
+                    match desired[i] with (x,y) => {
+                        --print( ("go",desired[i],a.a.pos()) );
+                        nejbor=null;
+                        if x>this.xmax then nejbor=this.right.external_move(a.a,x,y);
+                        if y>this.ymax then nejbor=this.up.external_move(a.a,x,y);
+                        if x<this.xmin then nejbor=this.left.external_move(a.a,x,y);
+                        if y<this.ymin then nejbor=this.down.external_move(a.a,x,y);
+                        if nejbor==null then {
+                            --local collision detection
+                            if this.matrix.get_val(x,y)==false then {
+                                this.matrix.set(a.a.x,a.a.y,false); --remove from old pos
+                                this.matrix.set(x,y,true); --add to new pos
+                                a.a.move_int(x,y); --move
+                                moved=true;
+                                --print("moved\n");
+                            }
+                        } else {
+                            --print("border\n");
+                            await(nejbor);
+                            if get(nejbor) then { --if left this box
+                                this.matrix.set(a.a.x,a.a.y,false); --remove from old pos
+                                moved=true;
+                                --remove a from list
+                                if parent==a then {this.agents=a.next; parent=a.next;}--case for first item
+                                             else parent.next=a.next; --other item
+                            }
+                        };
+                            i=i+1;
+                        }};
+                if parent==a then a=a.next else {
+                    parent=parent.next;
+                    if parent!=null then a=parent.next else a=null}
+            };
+          --print("move done\n");
+          true;
          }
 
     --recives a Agent from another box
 def external_move(a:Agent, x:int,y:int ) : bool {
-    if(this.matrix.get_val(x,y) ) then { false } else {
+    --false;
+    if(this.matrix.get_val(x,y)==true ) then { false } else {
         a.move_int(x,y);
         this.add(a);
-        true
+        --print("ext_move\n");
+        true;
         }
     }
 }

@@ -1,5 +1,0 @@
-class Foo{}
-
-class Main
-  def main_disappear() : void
-    ()

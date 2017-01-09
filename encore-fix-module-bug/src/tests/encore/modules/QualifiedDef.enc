@@ -1,5 +1,0 @@
-import qualified Top
-
-class Main
-  def main() : void
-    print Top.top()

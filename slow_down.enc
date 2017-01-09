@@ -2,7 +2,7 @@ import Ped_util.Agent_passive
 import Ped_util.Global_funs
 class Main {
    def main(args: [String]) : void {
-       var agents=parse_file("scenario.xml");
+       var agents=parse_file("slow_down.xml");
        var ui =false;
         this!baseline(agents,ui);
    }
@@ -23,7 +23,7 @@ def baseline(agents: [Agent], ui:bool) : void {
                  }
              }
          };
-         this!baseline_loop(40000,drivers,futures,ui,0);
+         this!baseline_loop(4000,drivers,futures,ui,0);
  }
 def baseline_loop(i:int,drivers:[Agent_driver],futures:[Fut void],ui:bool,times:int) : void {
              var j = 0;
@@ -36,7 +36,7 @@ def baseline_loop(i:int,drivers:[Agent_driver],futures:[Fut void],ui:bool,times:
              for a in futures {
                  get(a);
              };
-             if(i % 1000==0) then {
+             if(i % 100==0) then {
                  print("{} {}\n",i, t);
                 t=0;
              } else {

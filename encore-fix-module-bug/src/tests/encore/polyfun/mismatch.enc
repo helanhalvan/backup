@@ -1,6 +1,0 @@
-def foo<a>(x : a, y : a) : a
-  x
-
-class Main
-  def main() : void
-    foo(42, "foo")

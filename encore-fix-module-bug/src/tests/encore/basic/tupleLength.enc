@@ -1,6 +1,0 @@
-def foo(t: (int, int)) : void
-  ()
-
-class Main
-  def main() : void
-    foo((1,2,3))

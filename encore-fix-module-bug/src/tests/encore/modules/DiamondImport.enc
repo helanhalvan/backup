@@ -1,6 +1,0 @@
-import Left
-import Right
-
-class Main
-  def main() : void
-      print("{}\n", left() + right())

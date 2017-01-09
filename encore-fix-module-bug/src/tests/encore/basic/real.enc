@@ -1,9 +1,0 @@
-def foo(x : real) : real
-  x
-
-class Main
-  def main() : void {
-    let pi = 3.141593;
-    println("Pi is something like {}", pi);
-    println("Ints can be promoted to reals: {}", foo(42))
-  }

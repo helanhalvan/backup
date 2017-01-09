@@ -1,5 +1,0 @@
-import RestrictedExport
-
-class Main
-  def main() : void
-    bar()
