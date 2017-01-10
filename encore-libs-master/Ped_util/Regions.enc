@@ -101,7 +101,7 @@ class Multi_box {
         --print("done_wait\n");
         if(ui) then show(this.agents(),sdl_main);
         if(i>1) then this!move(ui,sdl_main,i-1);
-        --print(|this.agents()|);
+        print(|this.agents()|);
         }
     }
     def agents() : [(int,int)] {flatten([get(this.top_right.agents()),
@@ -159,7 +159,6 @@ def max() : (int,int) { (this.xmax,this.ymax) }
 def agents() : [(int,int)] {
     this.merge();
     --print("merge done\n");
-
     if(this.agents==null) then {
         var j=0;
         for a in this.matrix.locks {if a==true then j=j+1;};
@@ -235,7 +234,7 @@ def move() : bool {
         var parent = this.agents;
         var a = this.agents;
        while a!=null {
-            --print(this.agents);
+            --print(a.a.next());
                 var desired = a.a.next();
                 var i = 0;
                 var nejbor = null:Fut bool;
@@ -259,35 +258,41 @@ def move() : bool {
                                 --print("moved\n");
                             }
                         } else {
-                            --print("border\n");
                             await(nejbor);
                             if get(nejbor) then { --if left this box
                                 this.matrix.set(a.a.x,a.a.y,false); --remove from old pos
                                 moved=true;
                                 --remove a from list
-                                if parent==a then {this.agents=a.next; parent=a.next;}--case for first item
-                                             else parent.next=a.next; --other item
+                                if parent==a then {
+                                    this.agents=a.next;
+                                    parent=a.next;
+                                }--case for first item
+                                 else {parent.next=a.next}; --other item
                             }
                         };
                             i=i+1;
                         }};
-                if parent==a then a=a.next else {
-                    parent=parent.next;
-                    if parent!=null then a=parent.next else a=null}
+                if parent==null then {a=null;} else { --case when list is empty
+                    if parent==a then { --case when a is the first item of list
+                        a=a.next
+                    } else {
+                        parent=parent.next;
+                        if parent!=null then a=parent.next else a=null}
+                }
             };
-          --print("move done\n");
           true;
          }
 
     --recives a Agent from another box
 def external_move(a:Agent, x:int,y:int ) : bool {
-    --false;
+    false;
     if(this.matrix.get_val(x,y)==true ) then { false } else {
         a.move_int(x,y);
         this.add(a);
         --print("ext_move\n");
         true;
-        }
+        };
+
     }
 }
 
