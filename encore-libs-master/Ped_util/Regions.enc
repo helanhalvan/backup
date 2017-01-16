@@ -4,18 +4,96 @@ import Global_funs
 import SDL.SDL_Main
 import Ped_util.UI
 
---TODO merege Reg_manager and Multi_box into a Box_manager
--- subdivides plane 4 times, genereting 4^4 regions, links them
--- replace hashmap linked list (faster iterator, never use lookup)
---TODO FIX COMPILER CRASH CAUSED BY THIS FILE
+
 def regions(agents: [Agent],ui:bool) : void {
      var sdl_main = if ui then make_UI() else null : SDL_Main;
-     var box = new Multi_box(agents);
+     var box = new Tiling_box(agents,3);
      --print(|agents|);
-    box!move(ui,sdl_main,40000); --40000
+     box!move(ui,sdl_main,40000); --40000
  }
+class Tiling_box {
+    boxes : [Box]
+    futures : [Fut bool]
+    def init(agents:[Agent],n:int) : void {
+        match find_extreme(agents) with
+            (xmax,ymax,xmin,ymin) => {
+                val dx= (xmax-xmin)/n;
+                val dy= (ymax-ymin)/n;
+                this.boxes = new [Box](n*n);
+                this.futures= new [Fut bool](|this.boxes|);
+                var x = xmin;
+                var y = ymin;
+                var i = 0;
+                var win = true;
+                for xindex in [0..n-1] { --creating and linking boxes
+                    for yindex in [0..n-2] {
+                        --print("new\n");
+                        this.boxes[i]= new Box( ((x+dx-1),(y+dy-1)),(x,y) );
+                        if(yindex!=0) then {
+                            print("link {} {}\n",i,i-1);
+                            win = link(this.boxes[i],this.boxes[i-1]);
+                        };
+                        if(xindex!=0) then {
+                            print("link {} {}\n",i,i-n);
+                            win = link(this.boxes[i],this.boxes[i-n]);
+                        };
+                        i=i+1;
+                        y=y+dy;
+                    };
+                    if xindex!=(n-1) then {
+                        --print("big\n");
+                        this.boxes[i]= new Box( (x+dx-1,ymax),(x,y) ); -- last box might be bigger, due to division rounding
+                        if(xindex!=0) then {
+                            print("link {} {}\n",i,i-n);
+                            win = link(this.boxes[i],this.boxes[i-n]);
+                        };
+                        print("link {} {}\n",i,i-1);
+                        win = link(this.boxes[i],this.boxes[i-1]);
+                        i=i+1;
+                        x=x+dx;
+                    } else {
+                        --print("last\n");
+                        this.boxes[i]=new Box( (xmax,ymax),(x,y) );
+                        win = link(this.boxes[i],this.boxes[i-1]);
+                        win = link(this.boxes[i],this.boxes[i-n]);
+                        print("link {} {}\n",i,i-1);
+                        print("link {} {}\n",i,i-n);
+                    };
+                    y=ymin;
+                };
+                print(win); -- if win is false something is of with linking/creation
+                for a in agents { --this is very slow, try sending each agent to one box at the time until it find one that fits
+                    for b in this.boxes {
+                        if( get(b.add(a)) ) then {
+                            embed void { break; } end;
+                        };
+                    };
+                };
+    }}
+    def move (ui:bool,sdl_main:SDL_Main,i:int) : void {
+        --print("multi_move\n");
+        for i in [0..|this.boxes|-1] {
+            this.futures[i]=(this.boxes[i]).move();
+        };
+        for f in this.futures {
+            await(f);
+        };
+        --print("done_wait\n");
+        if(ui) then show(this.agents(),sdl_main);
+        if(i>1) then this!move(ui,sdl_main,i-1);
+        --print(|this.agents()|);
+        }
+    def agents() : [(int,int)] {
+        val temp = new [[(int,int)]](|this.boxes|);
+            for i in [0..|this.boxes|-1] {
+                temp[i]=get(((this.boxes)[i]).agents());
+            };
+            flatten(temp)
+        }
+}
+
 --multi threaded 2D space container
-class Multi_box {
+class Multi_box { --container of 4 boxes
     --max x and y cords
     max : (int,int)
     --min x and y cords
@@ -27,16 +105,12 @@ class Multi_box {
     top_left : Box
     bottom_left : Box
 
-    --TODO, adding a toplevel field where I can send agents that go out of bounds
-    --currently I just create a massive box, and have agents in it never move
-    --toplevel : Box
-
     def init(agents:[Agent]) : void {
         var dx=0;
         var dy=0;
         --find global xmax, xmin, and ymin, use to create boundries for the 2D space.
         --looks at both starting positions and waypoints
-        match this.find_extreme(agents) with
+        match find_extreme(agents) with
             (xmax,ymax,xmin,ymin) => {this.max=(xmax,ymax);
                                       this.min=(xmin,ymin);
                                       dx=xmax-xmin;
@@ -60,13 +134,6 @@ class Multi_box {
             else if( get(this.bottom_left.add(a))) then { () }
             else { print("{} didn't get in \n", a.pos());}
         };
-        --LINK to toplevel
-        {-
-        get(this.top_right.default_link(this.toplevel));
-        get(this.top_left.default_link(this.toplevel));
-        get(this.bottom_right.default_link(this.toplevel));
-        get(this.bottom_left.default_link(this.toplevel));
-        -}
         var win=true;
         --LINKING BOXES, to allow them to pass agents between eachother
         win=win and get (this.top_right.link(this.top_left));
@@ -101,30 +168,14 @@ class Multi_box {
         --print("done_wait\n");
         if(ui) then show(this.agents(),sdl_main);
         if(i>1) then this!move(ui,sdl_main,i-1);
-        print(|this.agents()|);
+        --print(|this.agents()|);
         }
     }
     def agents() : [(int,int)] {flatten([get(this.top_right.agents()),
                              get(this.top_left.agents()),
                              get(this.bottom_right.agents()),
                              get(this.bottom_left.agents())]) }
-    def find_extreme(agents:[Agent]) : (int,int,int,int) {
-        var extreme=(-10000,-10000,10000,10000);
-        var i=0;
-        for a in agents {
-            --print("{}\n",i);
-            i=i+1;
-            extreme=this.extreme_check(a.pos(),extreme);
-            for index in [0..|a.targets_x|-1] {
-                extreme=this.extreme_check( (a.targets_x[index],a.targets_y[index]),extreme);
-            }
-        };
-        extreme
-    }
-    def extreme_check(a:(int,int),b:(int,int,int,int) ) : (int,int,int,int) {
-        match (a,b) with
-            ((x,y),(xmax,ymax,xmin,ymin)) => (max(x,xmax),max(y,ymax),min(x,xmin),min(y,ymin))
-    }
+
 }
 
 --single threaded 2D space container
@@ -160,17 +211,19 @@ def agents() : [(int,int)] {
     this.merge();
     --print("merge done\n");
     if(this.agents==null) then {
-        var j=0;
-        for a in this.matrix.locks {if a==true then j=j+1;};
-        --print((0,j));
+    --    var j=0;
+    --    for a in this.matrix.locks {if a==true then j=j+1;};
+    --    print((0,j));
+    --    if( j != 0 ) then { while true { () }; };
         new [(int,int)](0); } else {
     --print("allocating agents\n");
     var cur= this.agents;
     var i=0;
     while cur!=null { i=i+1; cur=cur.next; };
-    var j=0;
-    for a in this.matrix.locks {if a==true then j=j+1;};
+    --var j=0;
+    --for a in this.matrix.locks {if a==true then j=j+1;};
     --print((i,j));
+    --if( i != j ) then { while true { () }; };
     var ret= new [(int,int)](i);
     cur=this.agents;
     i=0;
@@ -201,13 +254,13 @@ def link(a:Box) : bool {
     await(c);
     await(d);
     match (this.xmax,this.ymax,this.xmin,this.ymin,get(c),get(d)) with
-        ( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((x_max_1+1) == x_min_2) => {this.right=a;--print("right\n");
+        ( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((x_max_1+1) == x_min_2) and (y_max_1==y_max_2) and (this.right==null) => {this.right=a;--print("right\n");
 true }
-        ( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_1+1) == y_min_2) => {this.up=a;   --print("up\n");
+        ( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_1+1) == y_min_2) and (x_max_1==x_max_2) and (this.up==null) => {this.up=a;   --print("up\n");
 true }
-        ( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((x_max_2+1) == x_min_1) => {this.left=a; --print("left\n");
+        ( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((x_max_2+1) == x_min_1) and (y_max_1==y_max_2) and (this.left==null) => {this.left=a; --print("left\n");
 true }
-        ( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_2+1) == y_min_1) => {this.down=a; --print("down\n");
+        ( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_2+1) == y_min_1) and (x_max_1==x_max_2) and (this.down==null) => {this.down=a; --print("down\n");
 true }
         _ => { false }
     }
@@ -239,18 +292,21 @@ def move() : bool {
                 var i = 0;
                 var nejbor = null:Fut bool;
                 var moved = false;
+                var x2 =0;
+                var y2 =0;
             --print("+");
             while( i < |desired| and moved == false) {
                     match desired[i] with (x,y) => {
                         --print( ("go",desired[i],a.a.pos()) );
                         nejbor=null;
-                        if x>this.xmax then nejbor=this.right.external_move(a.a,x,y);
-                        if y>this.ymax then nejbor=this.up.external_move(a.a,x,y);
-                        if x<this.xmin then nejbor=this.left.external_move(a.a,x,y);
-                        if y<this.ymin then nejbor=this.down.external_move(a.a,x,y);
+                        if x>this.xmax then { x2=a.a.x; y2=a.a.y; nejbor=this.right.external_move(a.a,x,y)};
+                        if y>this.ymax then { x2=a.a.x; y2=a.a.y; nejbor=this.up.external_move(a.a,x,y)};
+                        if x<this.xmin then { x2=a.a.x; y2=a.a.y; nejbor=this.left.external_move(a.a,x,y)};
+                        if y<this.ymin then { x2=a.a.x; y2=a.a.y; if(this.down==null) then { }; nejbor=this.down.external_move(a.a,x,y)};
                         if nejbor==null then {
                             --local collision detection
                             if this.matrix.get_val(x,y)==false then {
+                                --print(this.matrix.get_val(a.a.x,a.a.y));
                                 this.matrix.set(a.a.x,a.a.y,false); --remove from old pos
                                 this.matrix.set(x,y,true); --add to new pos
                                 a.a.move_int(x,y); --move
@@ -260,7 +316,8 @@ def move() : bool {
                         } else {
                             await(nejbor);
                             if get(nejbor) then { --if left this box
-                                this.matrix.set(a.a.x,a.a.y,false); --remove from old pos
+                                --print(this.matrix.get_val(x2,y2));
+                                this.matrix.set(x2,y2,false); --remove from old pos
                                 moved=true;
                                 --remove a from list
                                 if parent==a then {
@@ -327,3 +384,8 @@ def external_move(a:Agent, x:int,y:int ) : bool {
         }
     }
 --}
+def link(a:Box,b:Box) : bool {
+    var aa=a.link(b);
+    var bb=b.link(a);
+    (get(aa)) and get(bb);
+}

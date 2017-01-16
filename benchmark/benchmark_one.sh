@@ -12,6 +12,7 @@ echo $i
 echo "&"
 #w==command
 w="./main.enc.run $1 ${i}_scenario.xml 0"
+<<COMENT
 { time $w ; } 2> temporaryfiletxt
 l=`cat temporaryfiletxt | cut -d $' ' -f 2`
 nr=0
@@ -32,9 +33,19 @@ fi
 nr=$((nr + 1))
 done
 
+{ ./memusg.sh $w; } 2> temporaryfiletxt
+
+l=`cat temporaryfiletxt`
+echo $l
+echo "&"
+COMENT
+
 { perf stat -x -a -d -d $w ; } 2> temporaryfiletxt
-#l=`cat temporaryfiletxt`
-l=`cat temporaryfiletxt | grep atask-clock`
+
+l=`cat temporaryfiletxt | grep acycles`
+echo $l
+echo "&"
+l=`cat temporaryfiletxt | grep task-clock`
 echo $l
 echo "&"
 l=`cat temporaryfiletxt | grep LLC-load-misses` #cut -d $'\n' -f 2

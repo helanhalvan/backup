@@ -1,23 +1,23 @@
-failed to read counter stalled-cycles-frontend
-failed to read counter stalled-cycles-backend
-failed to read counter L1-icache-loads
-456461,023231-a-atask-clock-a456461023231-a100,00
-62934-a-acontext-switches-a456461023231-a100,00
-6-a-acpu-migrations-a456461023231-a100,00
-372888-a-apage-faults-a456461023231-a100,00
-1095469256246-a-acycles-a140143559838-a30,74
+bash: cannot set terminal process group (3589): Inappropriate ioctl for device
+bash: no job control in this shell
+r L1-icache-loads
+500723,014118-a-atask-clock-a500723014118-a100,00
+52716-a-acontext-switches-a500723014118-a100,00
+5-a-acpu-migrations-a500723014118-a100,00
+451136-a-apage-faults-a500723014118-a100,00
+1304356777900-a-acycles-a153927300438-a30,78
 <not supported>-a-astalled-cycles-frontend-a0-a100,00
 <not supported>-a-astalled-cycles-backend-a0-a100,00
-525923051792-a-ainstructions-a175138473675-a38,42
-122690768167-a-abranches-a175143253478-a38,42
-2300285968-a-abranch-misses-a175223631987-a38,44
-117068450086-a-aL1-dcache-loads-a175224072083-a38,44
-16595091096-a-aL1-dcache-load-misses-a70126143296-a15,38
-6384347839-a-aLLC-loads-a70138316301-a15,39
-4485928681-a-aLLC-load-misses-a105237581703-a23,09
+609952187353-a-ainstructions-a192405146825-a38,48
+141423541039-a-abranches-a192373729788-a38,47
+2935458791-a-abranch-misses-a192353244130-a38,46
+132522465561-a-aL1-dcache-loads-a192359972901-a38,47
+19569430210-a-aL1-dcache-load-misses-a76957591777-a15,39
+7267852850-a-aLLC-loads-a76880256110-a15,37
+5204806917-a-aLLC-load-misses-a115314128324-a23,06
 <not supported>-a-aL1-icache-loads-a0-a100,00
-205401789-a-aL1-icache-load-misses-a140389158992-a30,80
-116625541739-a-adTLB-loads-a140382872739-a30,79
-158526782-a-adTLB-load-misses-a70222607143-a15,40
-5323168-a-aiTLB-loads-a70127669039-a15,38
-9064324-a-aiTLB-load-misses-a105135483300-a23,06
+216504388-a-aL1-icache-load-misses-a153786291285-a30,76
+132509950064-a-adTLB-loads-a153777839212-a30,75
+228430933-a-adTLB-load-misses-a76970111178-a15,39
+5578284-a-aiTLB-loads-a76989584464-a15,40
+8421756-a-aiTLB-load-misses-a115435767307-a23,09

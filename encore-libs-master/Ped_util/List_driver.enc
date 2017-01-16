@@ -44,7 +44,7 @@ class List_manager {
     def move() : void {
         this.i=this.i-1;
         if this.i<1 then { () } else {
-            if(this.i%10000==0) then print(this.i);
+            --if(this.i%10000==0) then print(this.i);
             if(this.ui) then {
                 var positions = new [(int,int)](|this.dr|);
                     for w in [0..(|this.dr|-1)] {

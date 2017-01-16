@@ -1,430 +1,250 @@
  *** Error during typechecking *** 
-"./encore-libs-master/Ped_util/Regions.enc" (line 239, column 25)
-Wrong number of arguments to print. Format string expects 5 arguments. Found 4
+"./encore-libs-master/Ped_util/Regions.enc" (line 34, column 40)
+Operator 'and' is only defined for boolean types
+   Left type: bool
+   Right type: Fut bool
 In expression: 
-  print("collision {} {} {} {}\n", 
-        x, 
-        y, 
-        desired[i], 
-        moved, 
-        this.matrix.get_val(x, y))
+  win and (this.boxes[i]).link(this.boxes[i - 1])
 In expression: 
-  let cur = this.agents
+  win = win and (this.boxes[i]).link(this.boxes[i - 1])
 In expression: 
-  let cur = this.agents
+  {win = win and (this.boxes[i]).link(this.boxes[i - 1]);
+   win = win and (this.boxes[i - 1]).link(this.boxes[i])}
 In expression: 
-  {let cur = this.agents;
-   print("collision {} {} {} {}\n", 
-         x, 
-         y, 
-         desired[i], 
-         moved, 
-         this.matrix.get_val(x, y));
-   while cur != null
-     {println((x, y, cur.a.pos()));
-      cur = cur.next}}
+  if yindex != 0 then
+    {win = win and (this.boxes[i]).link(this.boxes[i - 1]);
+     win = win and (this.boxes[i - 1]).link(this.boxes[i])}
 In expression: 
-  if this.matrix.get_val(x, y) == false then
-    {this.matrix.set(a.a.x, a.a.y, false);
-     this.matrix.set(x, y, true);
-     a.a.move_int(x, y);
-     moved = true}
-  else
-    {let cur = this.agents;
-     print("collision {} {} {} {}\n", 
-           x, 
-           y, 
-           desired[i], 
-           moved, 
-           this.matrix.get_val(x, y));
-     while cur != null
-       {println((x, y, cur.a.pos()));
-        cur = cur.next}}
+  {print("new\n");
+   this.boxes[i] = new Box((x + dx - 1, y + dy - 1), (x, y));
+   if yindex != 0 then
+     {win = win and (this.boxes[i]).link(this.boxes[i - 1]);
+      win = win and (this.boxes[i - 1]).link(this.boxes[i])};
+   if xindex != 0 then
+     {win = win and (this.boxes[i]).link(this.boxes[i - n]);
+      win = win and (this.boxes[i - n]).link(this.boxes[i])};
+   i = i + 1;
+   y = y + dy}
 In expression: 
-  if this.matrix.get_val(x, y) == false then
-    {this.matrix.set(a.a.x, a.a.y, false);
-     this.matrix.set(x, y, true);
-     a.a.move_int(x, y);
-     moved = true}
-  else
-    {let cur = this.agents;
-     print("collision {} {} {} {}\n", 
-           x, 
-           y, 
-           desired[i], 
-           moved, 
-           this.matrix.get_val(x, y));
-     while cur != null
-       {println((x, y, cur.a.pos()));
-        cur = cur.next}}
+  for yindex in [ 0 , n - 2 by 1 ]
+    {print("new\n");
+     this.boxes[i] = new Box((x + dx - 1, y + dy - 1), (x, y));
+     if yindex != 0 then
+       {win = win and (this.boxes[i]).link(this.boxes[i - 1]);
+        win = win and (this.boxes[i - 1]).link(this.boxes[i])};
+     if xindex != 0 then
+       {win = win and (this.boxes[i]).link(this.boxes[i - n]);
+        win = win and (this.boxes[i - n]).link(this.boxes[i])};
+     i = i + 1;
+     y = y + dy}
 In expression: 
-  if nejbor == null then
-    if this.matrix.get_val(x, y) == false then
-      {this.matrix.set(a.a.x, a.a.y, false);
-       this.matrix.set(x, y, true);
-       a.a.move_int(x, y);
-       moved = true}
-    else
-      {let cur = this.agents;
-       print("collision {} {} {} {}\n", 
-             x, 
-             y, 
-             desired[i], 
-             moved, 
-             this.matrix.get_val(x, y));
-       while cur != null
-         {println((x, y, cur.a.pos()));
-          cur = cur.next}}
-  else
-    {await nejbor;
-     if get nejbor then
-       {this.matrix.set(a.a.x, a.a.y, false);
-        if parent != a then
-          parent.next = a.next
-        else
-          {print("removed last element\n");
-           this.agents = null};
-        moved = true}}
-In expression: 
-  {println(("go", desired[i], a.a.pos()));
-   nejbor = null;
-   if x > this.xmax then
-     nejbor = this.right.external_move(a.a, x, y);
-   if y > this.ymax then
-     nejbor = this.up.external_move(a.a, x, y);
-   if x < this.xmin then
-     nejbor = this.left.external_move(a.a, x, y);
-   if y < this.ymin then
-     nejbor = this.down.external_move(a.a, x, y);
-   if nejbor == null then
-     if this.matrix.get_val(x, y) == false then
-       {this.matrix.set(a.a.x, a.a.y, false);
-        this.matrix.set(x, y, true);
-        a.a.move_int(x, y);
-        moved = true}
-     else
-       {let cur = this.agents;
-        print("collision {} {} {} {}\n", 
-              x, 
-              y, 
-              desired[i], 
-              moved, 
-              this.matrix.get_val(x, y));
-        while cur != null
-          {println((x, y, cur.a.pos()));
-           cur = cur.next}}
+  {for yindex in [ 0 , n - 2 by 1 ]
+     {print("new\n");
+      this.boxes[i] = new Box((x + dx - 1, y + dy - 1), (x, y));
+      if yindex != 0 then
+        {win = win and (this.boxes[i]).link(this.boxes[i - 1]);
+         win = win and (this.boxes[i - 1]).link(this.boxes[i])};
+      if xindex != 0 then
+        {win = win and (this.boxes[i]).link(this.boxes[i - n]);
+         win = win and (this.boxes[i - n]).link(this.boxes[i])};
+      i = i + 1;
+      y = y + dy};
+   if xindex != n - 1 then
+     {println(ymax - y);
+      print("big\n");
+      this.boxes[i] = new Box((x + dx - 1, ymax), (x, y));
+      if xindex != 0 then
+        {win = win and (this.boxes[i]).link(this.boxes[i - n]);
+         win = win and (this.boxes[i - n]).link(this.boxes[i]);
+         win = win and (this.boxes[i]).link(this.boxes[i - 1]);
+         win = win and (this.boxes[i - 1]).link(this.boxes[i])};
+      i = i + 1;
+      x = x + dx}
    else
-     {await nejbor;
-      if get nejbor then
-        {this.matrix.set(a.a.x, a.a.y, false);
-         if parent != a then
-           parent.next = a.next
-         else
-           {print("removed last element\n");
-            this.agents = null};
-         moved = true}}}
+     {print("last\n");
+      this.boxes[i] = new Box((xmax, ymax), (x, y));
+      win = win and (this.boxes[i]).link(this.boxes[i - n]);
+      win = win and (this.boxes[i - n]).link(this.boxes[i]);
+      win = win and (this.boxes[i]).link(this.boxes[i - 1]);
+      win = win and (this.boxes[i - 1]).link(this.boxes[i])};
+   y = ymin}
 In expression: 
-  match desired[i] with
-    (x, y) => {println(("go", desired[i], a.a.pos()));
-               nejbor = null;
-               if x > this.xmax then
-                 nejbor = this.right.external_move(a.a, x, y);
-               if y > this.ymax then
-                 nejbor = this.up.external_move(a.a, x, y);
-               if x < this.xmin then
-                 nejbor = this.left.external_move(a.a, x, y);
-               if y < this.ymin then
-                 nejbor = this.down.external_move(a.a, x, y);
-               if nejbor == null then
-                 if this.matrix.get_val(x, y) == false then
-                   {this.matrix.set(a.a.x, a.a.y, false);
-                    this.matrix.set(x, y, true);
-                    a.a.move_int(x, y);
-                    moved = true}
-                 else
-                   {let cur = this.agents;
-                    print("collision {} {} {} {}\n", 
-                          x, 
-                          y, 
-                          desired[i], 
-                          moved, 
-                          this.matrix.get_val(x, y));
-                    while cur != null
-                      {println((x, y, cur.a.pos()));
-                       cur = cur.next}}
-               else
-                 {await nejbor;
-                  if get nejbor then
-                    {this.matrix.set(a.a.x, a.a.y, false);
-                     if parent != a then
-                       parent.next = a.next
-                     else
-                       {print("removed last element\n");
-                        this.agents = null};
-                     moved = true}}}
+  for xindex in [ 0 , n - 1 by 1 ]
+    {for yindex in [ 0 , n - 2 by 1 ]
+       {print("new\n");
+        this.boxes[i] = new Box((x + dx - 1, y + dy - 1), (x, y));
+        if yindex != 0 then
+          {win = win and (this.boxes[i]).link(this.boxes[i - 1]);
+           win = win and (this.boxes[i - 1]).link(this.boxes[i])};
+        if xindex != 0 then
+          {win = win and (this.boxes[i]).link(this.boxes[i - n]);
+           win = win and (this.boxes[i - n]).link(this.boxes[i])};
+        i = i + 1;
+        y = y + dy};
+     if xindex != n - 1 then
+       {println(ymax - y);
+        print("big\n");
+        this.boxes[i] = new Box((x + dx - 1, ymax), (x, y));
+        if xindex != 0 then
+          {win = win and (this.boxes[i]).link(this.boxes[i - n]);
+           win = win and (this.boxes[i - n]).link(this.boxes[i]);
+           win = win and (this.boxes[i]).link(this.boxes[i - 1]);
+           win = win and (this.boxes[i - 1]).link(this.boxes[i])};
+        i = i + 1;
+        x = x + dx}
+     else
+       {print("last\n");
+        this.boxes[i] = new Box((xmax, ymax), (x, y));
+        win = win and (this.boxes[i]).link(this.boxes[i - n]);
+        win = win and (this.boxes[i - n]).link(this.boxes[i]);
+        win = win and (this.boxes[i]).link(this.boxes[i - 1]);
+        win = win and (this.boxes[i - 1]).link(this.boxes[i])};
+     y = ymin}
+In expression: 
+  let win = true
+In expression: 
+  let win = true
+In expression: 
+  let i = 0
+In expression: 
+  let i = 0
+In expression: 
+  let y = ymin
+In expression: 
+  let y = ymin
+In expression: 
+  let x = xmin
+In expression: 
+  let x = xmin
+In expression: 
+  let dy = ymax - ymin / n
+In expression: 
+  let dy = ymax - ymin / n
+In expression: 
+  let dx = xmax - xmin / n
+In expression: 
+  let dx = xmax - xmin / n
+In expression: 
+  {let dx = xmax - xmin / n;
+   let dy = ymax - ymin / n;
+   this.boxes = new [Box](n * n);
+   let x = xmin;
+   let y = ymin;
+   let i = 0;
+   let win = true;
+   for xindex in [ 0 , n - 1 by 1 ]
+     {for yindex in [ 0 , n - 2 by 1 ]
+        {print("new\n");
+         this.boxes[i] = new Box((x + dx - 1, y + dy - 1), (x, y));
+         if yindex != 0 then
+           {win = win and (this.boxes[i]).link(this.boxes[i - 1]);
+            win = win and (this.boxes[i - 1]).link(this.boxes[i])};
+         if xindex != 0 then
+           {win = win and (this.boxes[i]).link(this.boxes[i - n]);
+            win = win and (this.boxes[i - n]).link(this.boxes[i])};
+         i = i + 1;
+         y = y + dy};
+      if xindex != n - 1 then
+        {println(ymax - y);
+         print("big\n");
+         this.boxes[i] = new Box((x + dx - 1, ymax), (x, y));
+         if xindex != 0 then
+           {win = win and (this.boxes[i]).link(this.boxes[i - n]);
+            win = win and (this.boxes[i - n]).link(this.boxes[i]);
+            win = win and (this.boxes[i]).link(this.boxes[i - 1]);
+            win = win and (this.boxes[i - 1]).link(this.boxes[i])};
+         i = i + 1;
+         x = x + dx}
+      else
+        {print("last\n");
+         this.boxes[i] = new Box((xmax, ymax), (x, y));
+         win = win and (this.boxes[i]).link(this.boxes[i - n]);
+         win = win and (this.boxes[i - n]).link(this.boxes[i]);
+         win = win and (this.boxes[i]).link(this.boxes[i - 1]);
+         win = win and (this.boxes[i - 1]).link(this.boxes[i])};
+      y = ymin}}
+In expression: 
+  match find_extreme(agents) with
+    (xmax, ymax, xmin, ymin) => {let dx = xmax - xmin / n;
+                                 let dy = ymax - ymin / n;
+                                 this.boxes = new [Box](n * n);
+                                 let x = xmin;
+                                 let y = ymin;
+                                 let i = 0;
+                                 let win = true;
+                                 for xindex in [ 0 , n - 1 by 1 ]
+                                   {for yindex in [ 0 , n - 2 by 1 ]
+                                      {print("new\n");
+                                       this.boxes[i] = new Box((x + dx - 1, y + dy - 1), (x, y));
+                                       if yindex != 0 then
+                                         {win = win and (this.boxes[i]).link(this.boxes[i - 1]);
+                                          win = win and (this.boxes[i - 1]).link(this.boxes[i])};
+                                       if xindex != 0 then
+                                         {win = win and (this.boxes[i]).link(this.boxes[i - n]);
+                                          win = win and (this.boxes[i - n]).link(this.boxes[i])};
+                                       i = i + 1;
+                                       y = y + dy};
+                                    if xindex != n - 1 then
+                                      {println(ymax - y);
+                                       print("big\n");
+                                       this.boxes[i] = new Box((x + dx - 1, ymax), (x, y));
+                                       if xindex != 0 then
+                                         {win = win and (this.boxes[i]).link(this.boxes[i - n]);
+                                          win = win and (this.boxes[i - n]).link(this.boxes[i]);
+                                          win = win and (this.boxes[i]).link(this.boxes[i - 1]);
+                                          win = win and (this.boxes[i - 1]).link(this.boxes[i])};
+                                       i = i + 1;
+                                       x = x + dx}
+                                    else
+                                      {print("last\n");
+                                       this.boxes[i] = new Box((xmax, ymax), (x, y));
+                                       win = win and (this.boxes[i]).link(this.boxes[i - n]);
+                                       win = win and (this.boxes[i - n]).link(this.boxes[i]);
+                                       win = win and (this.boxes[i]).link(this.boxes[i - 1]);
+                                       win = win and (this.boxes[i - 1]).link(this.boxes[i])};
+                                    y = ymin}}
   
 In expression: 
-  {match desired[i] with
-     (x, y) => {println(("go", desired[i], a.a.pos()));
-                nejbor = null;
-                if x > this.xmax then
-                  nejbor = this.right.external_move(a.a, x, y);
-                if y > this.ymax then
-                  nejbor = this.up.external_move(a.a, x, y);
-                if x < this.xmin then
-                  nejbor = this.left.external_move(a.a, x, y);
-                if y < this.ymin then
-                  nejbor = this.down.external_move(a.a, x, y);
-                if nejbor == null then
-                  if this.matrix.get_val(x, y) == false then
-                    {this.matrix.set(a.a.x, a.a.y, false);
-                     this.matrix.set(x, y, true);
-                     a.a.move_int(x, y);
-                     moved = true}
-                  else
-                    {let cur = this.agents;
-                     print("collision {} {} {} {}\n", 
-                           x, 
-                           y, 
-                           desired[i], 
-                           moved, 
-                           this.matrix.get_val(x, y));
-                     while cur != null
-                       {println((x, y, cur.a.pos()));
-                        cur = cur.next}}
-                else
-                  {await nejbor;
-                   if get nejbor then
-                     {this.matrix.set(a.a.x, a.a.y, false);
-                      if parent != a then
-                        parent.next = a.next
-                      else
-                        {print("removed last element\n");
-                         this.agents = null};
-                      moved = true}}}
-   ;
-   i = i + 1}
-In expression: 
-  while i < |desired| and a != null and moved == false
-    {match desired[i] with
-       (x, y) => {println(("go", desired[i], a.a.pos()));
-                  nejbor = null;
-                  if x > this.xmax then
-                    nejbor = this.right.external_move(a.a, x, y);
-                  if y > this.ymax then
-                    nejbor = this.up.external_move(a.a, x, y);
-                  if x < this.xmin then
-                    nejbor = this.left.external_move(a.a, x, y);
-                  if y < this.ymin then
-                    nejbor = this.down.external_move(a.a, x, y);
-                  if nejbor == null then
-                    if this.matrix.get_val(x, y) == false then
-                      {this.matrix.set(a.a.x, a.a.y, false);
-                       this.matrix.set(x, y, true);
-                       a.a.move_int(x, y);
-                       moved = true}
-                    else
-                      {let cur = this.agents;
-                       print("collision {} {} {} {}\n", 
-                             x, 
-                             y, 
-                             desired[i], 
-                             moved, 
-                             this.matrix.get_val(x, y));
-                       while cur != null
-                         {println((x, y, cur.a.pos()));
-                          cur = cur.next}}
-                  else
-                    {await nejbor;
-                     if get nejbor then
-                       {this.matrix.set(a.a.x, a.a.y, false);
-                        if parent != a then
-                          parent.next = a.next
-                        else
-                          {print("removed last element\n");
-                           this.agents = null};
-                        moved = true}}}
-     ;
-     i = i + 1}
-In expression: 
-  let moved = false
-In expression: 
-  let moved = false
-In expression: 
-  let nejbor = null : Fut bool
-In expression: 
-  let nejbor = null : Fut bool
-In expression: 
-  let i = 0
-In expression: 
-  let i = 0
-In expression: 
-  let desired = a.a.next()
-In expression: 
-  let desired = a.a.next()
-In expression: 
-  {let desired = a.a.next();
-   let i = 0;
-   let nejbor = null : Fut bool;
-   let moved = false;
-   while i < |desired| and a != null and moved == false
-     {match desired[i] with
-        (x, y) => {println(("go", desired[i], a.a.pos()));
-                   nejbor = null;
-                   if x > this.xmax then
-                     nejbor = this.right.external_move(a.a, x, y);
-                   if y > this.ymax then
-                     nejbor = this.up.external_move(a.a, x, y);
-                   if x < this.xmin then
-                     nejbor = this.left.external_move(a.a, x, y);
-                   if y < this.ymin then
-                     nejbor = this.down.external_move(a.a, x, y);
-                   if nejbor == null then
-                     if this.matrix.get_val(x, y) == false then
-                       {this.matrix.set(a.a.x, a.a.y, false);
-                        this.matrix.set(x, y, true);
-                        a.a.move_int(x, y);
-                        moved = true}
-                     else
-                       {let cur = this.agents;
-                        print("collision {} {} {} {}\n", 
-                              x, 
-                              y, 
-                              desired[i], 
-                              moved, 
-                              this.matrix.get_val(x, y));
-                        while cur != null
-                          {println((x, y, cur.a.pos()));
-                           cur = cur.next}}
-                   else
-                     {await nejbor;
-                      if get nejbor then
-                        {this.matrix.set(a.a.x, a.a.y, false);
-                         if parent != a then
-                           parent.next = a.next
-                         else
-                           {print("removed last element\n");
-                            this.agents = null};
-                         moved = true}}}
-      ;
-      i = i + 1};
-   parent = parent.next;
-   if parent != null then
-     a = parent.next}
-In expression: 
-  while a != null
-    {let desired = a.a.next();
-     let i = 0;
-     let nejbor = null : Fut bool;
-     let moved = false;
-     while i < |desired| and a != null and moved == false
-       {match desired[i] with
-          (x, y) => {println(("go", desired[i], a.a.pos()));
-                     nejbor = null;
-                     if x > this.xmax then
-                       nejbor = this.right.external_move(a.a, x, y);
-                     if y > this.ymax then
-                       nejbor = this.up.external_move(a.a, x, y);
-                     if x < this.xmin then
-                       nejbor = this.left.external_move(a.a, x, y);
-                     if y < this.ymin then
-                       nejbor = this.down.external_move(a.a, x, y);
-                     if nejbor == null then
-                       if this.matrix.get_val(x, y) == false then
-                         {this.matrix.set(a.a.x, a.a.y, false);
-                          this.matrix.set(x, y, true);
-                          a.a.move_int(x, y);
-                          moved = true}
-                       else
-                         {let cur = this.agents;
-                          print("collision {} {} {} {}\n", 
-                                x, 
-                                y, 
-                                desired[i], 
-                                moved, 
-                                this.matrix.get_val(x, y));
-                          while cur != null
-                            {println((x, y, cur.a.pos()));
-                             cur = cur.next}}
-                     else
-                       {await nejbor;
-                        if get nejbor then
-                          {this.matrix.set(a.a.x, a.a.y, false);
-                           if parent != a then
-                             parent.next = a.next
-                           else
-                             {print("removed last element\n");
-                              this.agents = null};
-                           moved = true}}}
-        ;
-        i = i + 1};
-     parent = parent.next;
-     if parent != null then
-       a = parent.next}
-In expression: 
-  let a = this.agents
-In expression: 
-  let a = this.agents
-In expression: 
-  let parent = this.agents
-In expression: 
-  let parent = this.agents
-In expression: 
-  {if this.newcommers != null then
-     {this.last.next = this.agents;
-      this.agents = this.newcommers};
-   let parent = this.agents;
-   let a = this.agents;
-   while a != null
-     {let desired = a.a.next();
-      let i = 0;
-      let nejbor = null : Fut bool;
-      let moved = false;
-      while i < |desired| and a != null and moved == false
-        {match desired[i] with
-           (x, y) => {println(("go", desired[i], a.a.pos()));
-                      nejbor = null;
-                      if x > this.xmax then
-                        nejbor = this.right.external_move(a.a, x, y);
-                      if y > this.ymax then
-                        nejbor = this.up.external_move(a.a, x, y);
-                      if x < this.xmin then
-                        nejbor = this.left.external_move(a.a, x, y);
-                      if y < this.ymin then
-                        nejbor = this.down.external_move(a.a, x, y);
-                      if nejbor == null then
-                        if this.matrix.get_val(x, y) == false then
-                          {this.matrix.set(a.a.x, a.a.y, false);
-                           this.matrix.set(x, y, true);
-                           a.a.move_int(x, y);
-                           moved = true}
-                        else
-                          {let cur = this.agents;
-                           print("collision {} {} {} {}\n", 
-                                 x, 
-                                 y, 
-                                 desired[i], 
-                                 moved, 
-                                 this.matrix.get_val(x, y));
-                           while cur != null
-                             {println((x, y, cur.a.pos()));
-                              cur = cur.next}}
-                      else
-                        {await nejbor;
-                         if get nejbor then
-                           {this.matrix.set(a.a.x, a.a.y, false);
-                            if parent != a then
-                              parent.next = a.next
-                            else
-                              {print("removed last element\n");
-                               this.agents = null};
-                            moved = true}}}
-         ;
-         i = i + 1};
-      parent = parent.next;
-      if parent != null then
-        a = parent.next};
-   true}
-In method 'move' of type 'bool'
-In class 'Regions.Box'
+  match find_extreme(agents) with
+    (xmax, ymax, xmin, ymin) => {let dx = xmax - xmin / n;
+                                 let dy = ymax - ymin / n;
+                                 this.boxes = new [Box](n * n);
+                                 let x = xmin;
+                                 let y = ymin;
+                                 let i = 0;
+                                 let win = true;
+                                 for xindex in [ 0 , n - 1 by 1 ]
+                                   {for yindex in [ 0 , n - 2 by 1 ]
+                                      {print("new\n");
+                                       this.boxes[i] = new Box((x + dx - 1, y + dy - 1), (x, y));
+                                       if yindex != 0 then
+                                         {win = win and (this.boxes[i]).link(this.boxes[i - 1]);
+                                          win = win and (this.boxes[i - 1]).link(this.boxes[i])};
+                                       if xindex != 0 then
+                                         {win = win and (this.boxes[i]).link(this.boxes[i - n]);
+                                          win = win and (this.boxes[i - n]).link(this.boxes[i])};
+                                       i = i + 1;
+                                       y = y + dy};
+                                    if xindex != n - 1 then
+                                      {println(ymax - y);
+                                       print("big\n");
+                                       this.boxes[i] = new Box((x + dx - 1, ymax), (x, y));
+                                       if xindex != 0 then
+                                         {win = win and (this.boxes[i]).link(this.boxes[i - n]);
+                                          win = win and (this.boxes[i - n]).link(this.boxes[i]);
+                                          win = win and (this.boxes[i]).link(this.boxes[i - 1]);
+                                          win = win and (this.boxes[i - 1]).link(this.boxes[i])};
+                                       i = i + 1;
+                                       x = x + dx}
+                                    else
+                                      {print("last\n");
+                                       this.boxes[i] = new Box((xmax, ymax), (x, y));
+                                       win = win and (this.boxes[i]).link(this.boxes[i - n]);
+                                       win = win and (this.boxes[i - n]).link(this.boxes[i]);
+                                       win = win and (this.boxes[i]).link(this.boxes[i - 1]);
+                                       win = win and (this.boxes[i - 1]).link(this.boxes[i])};
+                                    y = ymin}}
+  
+In method '_init' of type 'void'
+In class 'Regions.Tiling_box'
 
