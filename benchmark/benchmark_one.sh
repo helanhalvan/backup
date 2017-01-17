@@ -6,60 +6,70 @@
 #850  0
 #900  80
 #echo $w;
-for i in {10,20,40,80}
+for i in {1,3,4,5}
 do
-echo $i
-echo "&"
 #w==command
-w="./main.enc.run $1 ${i}_scenario.xml 0"
-<<COMENT
-{ time $w ; } 2> temporaryfiletxt
-l=`cat temporaryfiletxt | cut -d $' ' -f 2`
-nr=0
-for a in $l
-do
-if [ "$nr" == "1" ]; then
-    echo $a
-    echo "&"
-fi
-if [ "$nr" == "3" ]; then
-    echo $a
-    echo "&"
-fi
-if [ "$nr" == "5" ]; then
-    echo $a
-    echo "&"
-fi
-nr=$((nr + 1))
+w="./main.enc.run $i ${1}_scenario.xml 0"
+
+{ perf stat -x -a -d -d $w ; } 2> temporaryfiletxt_${i}
 done
 
-{ ./memusg.sh $w; } 2> temporaryfiletxt
-
-l=`cat temporaryfiletxt`
+for i in {1,3,4,5}
+do
+l=`cat temporaryfiletxt_${i} | grep acycles`
 echo $l
+if [ "$i" != 5 ]; then
 echo "&"
-COMENT
-
-{ perf stat -x -a -d -d $w ; } 2> temporaryfiletxt
-
-l=`cat temporaryfiletxt | grep acycles`
-echo $l
-echo "&"
-l=`cat temporaryfiletxt | grep task-clock`
-echo $l
-echo "&"
-l=`cat temporaryfiletxt | grep LLC-load-misses` #cut -d $'\n' -f 2
-echo $l
-echo "&"
-l=`cat temporaryfiletxt | grep L1-dcache-load-misses` #cut -d $'\n' -f 2
-echo $l
-echo "&"
-l=`cat temporaryfiletxt | grep branch-misses` #cut -d $'\n' -f 2
-echo $l
-echo "&"
-l=`cat temporaryfiletxt `
-echo $l
+fi
+done
 
 echo "\\\\"
 
+for i in {1,3,4,5}
+do
+l=`cat temporaryfiletxt_${i} | grep task-clock`
+echo $l
+if [ "$i" != 5 ]; then
+echo "&"
+fi
+done
+
+echo "\\\\"
+
+for i in {1,3,4,5}
+do
+l=`cat temporaryfiletxt_${i} | grep LLC-load-misses` #cut -d $'\n' -f 2
+echo $l
+if [ "$i" != 5 ]; then
+echo "&"
+fi
+done
+
+echo "\\\\"
+
+for i in {1,3,4,5}
+do
+l=`cat temporaryfiletxt_${i} | grep L1-dcache-load-misses` #cut -d $'\n' -f 2
+echo $l
+if [ "$i" != 5 ]; then
+echo "&"
+fi
+done
+
+for i in {1,3,4,5}
+do
+l=`cat temporaryfiletxt_${i} | grep branch-misses` #cut -d $'\n' -f 2
+echo $l
+if [ "$i" != 5 ]; then
+echo "&"
+fi
+done
+
+for i in {1,3,4,5}
+do
+l=`cat temporaryfiletxt_${i} `
+echo $l
+if [ "$i" != 5 ]; then
+echo "&"
+fi
 done

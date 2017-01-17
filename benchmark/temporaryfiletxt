@@ -1,23 +1,24 @@
-bash: cannot set terminal process group (3589): Inappropriate ioctl for device
-bash: no job control in this shell
-r L1-icache-loads
-500723,014118-a-atask-clock-a500723014118-a100,00
-52716-a-acontext-switches-a500723014118-a100,00
-5-a-acpu-migrations-a500723014118-a100,00
-451136-a-apage-faults-a500723014118-a100,00
-1304356777900-a-acycles-a153927300438-a30,78
+./main.enc.run: Interrupt
+failed to read counter stalled-cycles-frontend
+failed to read counter stalled-cycles-backend
+failed to read counter L1-icache-loads
+47,439412-a-atask-clock-a47439412-a100,00
+22-a-acontext-switches-a47439412-a100,00
+8-a-acpu-migrations-a47439412-a100,00
+701-a-apage-faults-a47439412-a100,00
+20734965-a-acycles-a7273543-a100,00
 <not supported>-a-astalled-cycles-frontend-a0-a100,00
 <not supported>-a-astalled-cycles-backend-a0-a100,00
-609952187353-a-ainstructions-a192405146825-a38,48
-141423541039-a-abranches-a192373729788-a38,47
-2935458791-a-abranch-misses-a192353244130-a38,46
-132522465561-a-aL1-dcache-loads-a192359972901-a38,47
-19569430210-a-aL1-dcache-load-misses-a76957591777-a15,39
-7267852850-a-aLLC-loads-a76880256110-a15,37
-5204806917-a-aLLC-load-misses-a115314128324-a23,06
+41200668-a-ainstructions-a23299411-a100,00
+12819174-a-abranches-a39313524-a100,00
+148901-a-abranch-misses-a47320420-a100,00
+13032613-a-aL1-dcache-loads-a8006896-a17,04
+<not counted>-a-aL1-dcache-load-misses-a0-a0,00
+<not counted>-a-aLLC-loads-a0-a0,00
+<not counted>-a-aLLC-load-misses-a0-a0,00
 <not supported>-a-aL1-icache-loads-a0-a100,00
-216504388-a-aL1-icache-load-misses-a153786291285-a30,76
-132509950064-a-adTLB-loads-a153777839212-a30,75
-228430933-a-adTLB-load-misses-a76970111178-a15,39
-5578284-a-aiTLB-loads-a76989584464-a15,40
-8421756-a-aiTLB-load-misses-a115435767307-a23,09
+<not counted>-a-aL1-icache-load-misses-a0-a0,00
+<not counted>-a-adTLB-loads-a0-a0,00
+<not counted>-a-adTLB-load-misses-a0-a0,00
+<not counted>-a-aiTLB-loads-a0-a0,00
+<not counted>-a-aiTLB-load-misses-a0-a0,00

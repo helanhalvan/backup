@@ -1,13 +1,13 @@
+
 module Regions
 import Agent_passive
 import Global_funs
 import SDL.SDL_Main
 import Ped_util.UI
 
-
 def regions(agents: [Agent],ui:bool) : void {
      var sdl_main = if ui then make_UI() else null : SDL_Main;
-     var box = new Tiling_box(agents,3);
+     var box = new Tiling_box(agents,5);
      --print(|agents|);
      box!move(ui,sdl_main,40000); --40000
  }
@@ -19,6 +19,7 @@ class Tiling_box {
             (xmax,ymax,xmin,ymin) => {
                 val dx= (xmax-xmin)/n;
                 val dy= (ymax-ymin)/n;
+                --print((xmax,ymax));
                 this.boxes = new [Box](n*n);
                 this.futures= new [Fut bool](|this.boxes|);
                 var x = xmin;
@@ -30,38 +31,44 @@ class Tiling_box {
                         --print("new\n");
                         this.boxes[i]= new Box( ((x+dx-1),(y+dy-1)),(x,y) );
                         if(yindex!=0) then {
-                            print("link {} {}\n",i,i-1);
-                            win = link(this.boxes[i],this.boxes[i-1]);
+                            win = win and link(this.boxes[i],this.boxes[i-1]);
+                            --print("link {} {} {}\n",i,i-1,win);
                         };
                         if(xindex!=0) then {
-                            print("link {} {}\n",i,i-n);
-                            win = link(this.boxes[i],this.boxes[i-n]);
+                            win = win and link(this.boxes[i],this.boxes[i-n]);
+                            --print("link {} {} {}\n",i,i-n,win);
                         };
                         i=i+1;
                         y=y+dy;
                     };
-                    if xindex!=(n-1) then {
-                        --print("big\n");
-                        this.boxes[i]= new Box( (x+dx-1,ymax),(x,y) ); -- last box might be bigger, due to division rounding
-                        if(xindex!=0) then {
-                            print("link {} {}\n",i,i-n);
-                            win = link(this.boxes[i],this.boxes[i-n]);
-                        };
-                        print("link {} {}\n",i,i-1);
-                        win = link(this.boxes[i],this.boxes[i-1]);
-                        i=i+1;
-                        x=x+dx;
-                    } else {
-                        --print("last\n");
-                        this.boxes[i]=new Box( (xmax,ymax),(x,y) );
-                        win = link(this.boxes[i],this.boxes[i-1]);
-                        win = link(this.boxes[i],this.boxes[i-n]);
-                        print("link {} {}\n",i,i-1);
-                        print("link {} {}\n",i,i-n);
+                    --print("big\n");
+                    this.boxes[i]= new Box( (x+dx-1,ymax),(x,y) ); -- last box might be bigger, due to division rounding
+                    if(xindex!=0) then {
+                        win = win and link(this.boxes[i],this.boxes[i-n]);
+                        --print("link {} {} {}\n",i,i-n,win);
                     };
+                    win = win and link(this.boxes[i],this.boxes[i-1]);
+                    --print("link {} {} {}\n",i,i-1,win);
+                    i=i+1;
+                    x=x+dx;
                     y=ymin;
-                };
-                print(win); -- if win is false something is of with linking/creation
+                };--creating and linking boxes
+                for yindex in [0..n-2] {
+                        --print("new\n");
+                        this.boxes[i]= new Box( (xmax,(y+dy-1)),(x,y) );
+                        if(yindex!=0) then {
+                            win = win and link(this.boxes[i],this.boxes[i-1]);
+                            --print("link {} {} {}\n",i,i-1,win);
+                        };
+                            win = win and link(this.boxes[i],this.boxes[i-n]);
+                        i=i+1;
+                        y=y+dy;
+                    };
+                    --print("big\n");
+                    this.boxes[i]= new Box( (xmax,ymax),(x,y) ); -- last box might be bigger, due to division rounding
+                    win = win and link(this.boxes[i],this.boxes[i-n]);
+                    win = win and link(this.boxes[i],this.boxes[i-1]);
+                --print(win); -- if win is false something is of with linking/creation
                 for a in agents { --this is very slow, try sending each agent to one box at the time until it find one that fits
                     for b in this.boxes {
                         if( get(b.add(a)) ) then {
@@ -302,7 +309,7 @@ def move() : bool {
                         if x>this.xmax then { x2=a.a.x; y2=a.a.y; nejbor=this.right.external_move(a.a,x,y)};
                         if y>this.ymax then { x2=a.a.x; y2=a.a.y; nejbor=this.up.external_move(a.a,x,y)};
                         if x<this.xmin then { x2=a.a.x; y2=a.a.y; nejbor=this.left.external_move(a.a,x,y)};
-                        if y<this.ymin then { x2=a.a.x; y2=a.a.y; if(this.down==null) then { }; nejbor=this.down.external_move(a.a,x,y)};
+                        if y<this.ymin then { x2=a.a.x; y2=a.a.y; if(this.down==null) then { print((x,y,this.xmin,this.ymin));}; nejbor=this.down.external_move(a.a,x,y)};
                         if nejbor==null then {
                             --local collision detection
                             if this.matrix.get_val(x,y)==false then {
