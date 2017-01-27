@@ -6,70 +6,92 @@
 #850  0
 #900  80
 #echo $w;
-for i in {1,3,4,5}
+# {2,3,4,5,6,7,8,9,10} #
+for i in 3
 do
-#w==command
-w="./main.enc.run $i ${1}_scenario.xml 0"
-
-{ perf stat -x -a -d -d $w ; } 2> temporaryfiletxt_${i}
+#rm temporaryfiletxt_${i}
+#rm temptimes_${i}
+#w="./main.enc.run $i ${1}_scenario.xml 0"
+w="./main.enc.run ${1}_scenario.xml 0"
+{ { perf stat -x -a -d -d $w ; } 2> temporaryfiletxt_${i} ; } > temptimes_${i}
 done
 
-for i in {1,3,4,5}
+w="./demo ${1}_scenario.xml --timing-mode"
+{ { perf stat -x -a -d -d $w ; } 2> temporaryfiletxt_4 ; } > temptimes_4
+
+#echo "SETUP DONE"
+
+for i in {3,4} # {2,3,4,5,6,7,8,9,10}
+do
+l=`cat temptimes_${i}`
+echo $l
+if [ "$i" != 4 ]; then
+echo "&"
+fi
+done
+
+echo "\\\\"
+
+for i in {3,4}
 do
 l=`cat temporaryfiletxt_${i} | grep acycles`
 echo $l
-if [ "$i" != 5 ]; then
+if [ "$i" != 4 ]; then
 echo "&"
 fi
 done
 
 echo "\\\\"
 
-for i in {1,3,4,5}
+for i in {3,4}
 do
 l=`cat temporaryfiletxt_${i} | grep task-clock`
 echo $l
-if [ "$i" != 5 ]; then
+if [ "$i" != 4 ]; then
 echo "&"
 fi
 done
 
 echo "\\\\"
 
-for i in {1,3,4,5}
+for i in {3,4}
 do
 l=`cat temporaryfiletxt_${i} | grep LLC-load-misses` #cut -d $'\n' -f 2
 echo $l
-if [ "$i" != 5 ]; then
+if [ "$i" != 4 ]; then
 echo "&"
 fi
 done
 
 echo "\\\\"
 
-for i in {1,3,4,5}
+for i in {3,4}
 do
 l=`cat temporaryfiletxt_${i} | grep L1-dcache-load-misses` #cut -d $'\n' -f 2
 echo $l
-if [ "$i" != 5 ]; then
+if [ "$i" != 4 ]; then
 echo "&"
 fi
 done
 
-for i in {1,3,4,5}
+echo "\\\\"
+
+for i in {3,4}
 do
 l=`cat temporaryfiletxt_${i} | grep branch-misses` #cut -d $'\n' -f 2
 echo $l
-if [ "$i" != 5 ]; then
+if [ "$i" != 4 ]; then
 echo "&"
 fi
 done
 
-for i in {1,3,4,5}
+echo "\\\\"
+
+for i in {3,4}
 do
 l=`cat temporaryfiletxt_${i} `
 echo $l
-if [ "$i" != 5 ]; then
+if [ "$i" != 4 ]; then
 echo "&"
 fi
 done

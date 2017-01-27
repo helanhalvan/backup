@@ -1,0 +1,23 @@
+failed to read counter stalled-cycles-frontend
+failed to read counter stalled-cycles-backend
+failed to read counter L1-icache-loads
+5,537490-a-atask-clock-a5537490-a100,00
+17-a-acontext-switches-a5537490-a100,00
+7-a-acpu-migrations-a5537490-a100,00
+329-a-apage-faults-a5537490-a100,00
+205861-a-acycles-a79297-a100,00
+<not supported>-a-astalled-cycles-frontend-a0-a100,00
+<not supported>-a-astalled-cycles-backend-a0-a100,00
+10099894-a-ainstructions-a5557831-a100,00
+2207234-a-abranches-a5557831-a100,00
+33746-a-abranch-misses-a5557831-a100,00
+<not counted>-a-aL1-dcache-loads-a0-a0,00
+<not counted>-a-aL1-dcache-load-misses-a0-a0,00
+<not counted>-a-aLLC-loads-a0-a0,00
+<not counted>-a-aLLC-load-misses-a0-a0,00
+<not supported>-a-aL1-icache-loads-a0-a100,00
+<not counted>-a-aL1-icache-load-misses-a0-a0,00
+<not counted>-a-adTLB-loads-a0-a0,00
+<not counted>-a-adTLB-load-misses-a0-a0,00
+<not counted>-a-aiTLB-loads-a0-a0,00
+<not counted>-a-aiTLB-load-misses-a0-a0,00

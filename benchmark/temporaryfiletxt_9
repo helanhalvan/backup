@@ -1,0 +1,23 @@
+failed to read counter stalled-cycles-frontend
+failed to read counter stalled-cycles-backend
+failed to read counter L1-icache-loads
+716876,701055-a-atask-clock-a716876701055-a100,00
+436713-a-acontext-switches-a716876701055-a100,00
+9-a-acpu-migrations-a716876701055-a100,00
+266520-a-apage-faults-a716876701055-a100,00
+1759786258658-a-acycles-a220533822162-a30,76
+<not supported>-a-astalled-cycles-frontend-a0-a100,00
+<not supported>-a-astalled-cycles-backend-a0-a100,00
+2340431792420-a-ainstructions-a275841231676-a38,47
+520825813101-a-abranches-a275847949266-a38,47
+7317336156-a-abranch-misses-a275762658466-a38,46
+432693014302-a-aL1-dcache-loads-a275833946490-a38,47
+28868757100-a-aL1-dcache-load-misses-a110348229824-a15,39
+13116993867-a-aLLC-loads-a110253352129-a15,38
+4618635174-a-aLLC-load-misses-a165377713348-a23,07
+<not supported>-a-aL1-icache-loads-a0-a100,00
+723717200-a-aL1-icache-load-misses-a220495625920-a30,75
+432094231527-a-adTLB-loads-a220441493734-a30,75
+682423412-a-adTLB-load-misses-a110251008473-a15,38
+13025356-a-aiTLB-loads-a110410451029-a15,40
+23381096-a-aiTLB-load-misses-a165529716159-a23,09

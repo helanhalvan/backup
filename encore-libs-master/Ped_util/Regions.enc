@@ -5,11 +5,11 @@ import Global_funs
 import SDL.SDL_Main
 import Ped_util.UI
 
-def regions(agents: [Agent],ui:bool) : void {
+def regions(agents: [Agent],ui:bool,boxes:int) : void {
      var sdl_main = if ui then make_UI() else null : SDL_Main;
-     var box = new Tiling_box(agents,5);
+     var box = new Tiling_box(agents,boxes);
      --print(|agents|);
-     box!move(ui,sdl_main,40000); --40000
+     box!move(ui,sdl_main,10000,clock()); --40000
  }
 class Tiling_box {
     boxes : [Box]
@@ -68,6 +68,7 @@ class Tiling_box {
                     this.boxes[i]= new Box( (xmax,ymax),(x,y) ); -- last box might be bigger, due to division rounding
                     win = win and link(this.boxes[i],this.boxes[i-n]);
                     win = win and link(this.boxes[i],this.boxes[i-1]);
+                unless win then print("WIN IS BAD!\n");
                 --print(win); -- if win is false something is of with linking/creation
                 for a in agents { --this is very slow, try sending each agent to one box at the time until it find one that fits
                     for b in this.boxes {
@@ -77,8 +78,7 @@ class Tiling_box {
                     };
                 };
     }}
-    def move (ui:bool,sdl_main:SDL_Main,i:int) : void {
-        --print("multi_move\n");
+    def move (ui:bool,sdl_main:SDL_Main,i:int,start_time:int) : void {
         for i in [0..|this.boxes|-1] {
             this.futures[i]=(this.boxes[i]).move();
         };
@@ -86,8 +86,9 @@ class Tiling_box {
             await(f);
         };
         --print("done_wait\n");
+        --if(i%1000==0) then {print(time); time=0};
         if(ui) then show(this.agents(),sdl_main);
-        if(i>1) then this!move(ui,sdl_main,i-1);
+        if(i>1) then this!move(ui,sdl_main,i-1,start_time) else {printtime(clock()-start_time);}
         --print(|this.agents()|);
         }
     def agents() : [(int,int)] {
@@ -161,6 +162,7 @@ class Multi_box { --container of 4 boxes
     def move (ui:bool,sdl_main:SDL_Main,i:int) : void {
         --debug check
         --print("multi_move\n");
+        print("derp");
         let
         a = this.top_right.move()
         b = this.top_left.move()
@@ -175,6 +177,7 @@ class Multi_box { --container of 4 boxes
         --print("done_wait\n");
         if(ui) then show(this.agents(),sdl_main);
         if(i>1) then this!move(ui,sdl_main,i-1);
+        if(i%10 == 0) then print(i);
         --print(|this.agents()|);
         }
     }
@@ -227,10 +230,10 @@ def agents() : [(int,int)] {
     var cur= this.agents;
     var i=0;
     while cur!=null { i=i+1; cur=cur.next; };
-    --var j=0;
-    --for a in this.matrix.locks {if a==true then j=j+1;};
+    var j=0;
+    for a in this.matrix.locks {if a==true then j=j+1;};
     --print((i,j));
-    --if( i != j ) then { while true { () }; };
+    if( i != j ) then { print((i,j)); while true { () }; };
     var ret= new [(int,int)](i);
     cur=this.agents;
     i=0;
@@ -245,6 +248,7 @@ def agents() : [(int,int)] {
  --adds new agents to newcommers linked list
 def add(a:Agent) : bool {
     if a.x>this.xmax or a.x<this.xmin or a.y>this.ymax or a.y<this.ymin then false else {
+        if(this.matrix.get_val(a.x,a.y)==true) then print("#"); --print("agents stacked on eachother\n");
         this.matrix.set(a.x,a.y,true); --add to collison matrix
     if(this.newcommers == null) then {this.newcommers=new Item(a); this.last=this.newcommers;} else {
         this.last.next=new Item(a);
@@ -309,7 +313,7 @@ def move() : bool {
                         if x>this.xmax then { x2=a.a.x; y2=a.a.y; nejbor=this.right.external_move(a.a,x,y)};
                         if y>this.ymax then { x2=a.a.x; y2=a.a.y; nejbor=this.up.external_move(a.a,x,y)};
                         if x<this.xmin then { x2=a.a.x; y2=a.a.y; nejbor=this.left.external_move(a.a,x,y)};
-                        if y<this.ymin then { x2=a.a.x; y2=a.a.y; if(this.down==null) then { print((x,y,this.xmin,this.ymin));}; nejbor=this.down.external_move(a.a,x,y)};
+                        if y<this.ymin then { x2=a.a.x; y2=a.a.y; nejbor=this.down.external_move(a.a,x,y)};
                         if nejbor==null then {
                             --local collision detection
                             if this.matrix.get_val(x,y)==false then {
@@ -342,7 +346,8 @@ def move() : bool {
                     } else {
                         parent=parent.next;
                         if parent!=null then a=parent.next else a=null}
-                }
+                };
+                suspend;
             };
           true;
          }

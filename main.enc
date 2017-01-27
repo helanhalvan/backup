@@ -18,19 +18,22 @@ class Main {
             version={     match (args[1]).to_int() with
                             Just result => result
                             Nothing     => { 0 };}
-            agents=parse_file(args[2])
-            ui ={ match (args[3]).to_int() with
+            agents=parse_file(args[1])
+            ui ={ match (args[2]).to_int() with
                             Just 1 => true
                             _ => false}
-            --box = new Multi_box(agents)
+            boxes = { if(args[3]==null) then {5} else {match (args[4]).to_int() with
+                            Just x => x
+                            _ => 9}}
        in {
-        ();
+        --print("boxes={}\n",boxes);
          --print(args[2]);
-        if version==1 then this!baseline(agents,ui);
+        --this!baseline(agents,ui);
         --if version==2 then bucket(agents,ui);
-        if version==3 then regions(agents,ui);
-        if version==4 then list(agents,ui);
-        if version==5 then matrix(agents,ui); --}
+        regions(agents,ui,boxes); --if version==3 then
+        --if version==4 then list(agents,ui);
+        --if version==5 then matrix(agents,ui); --}
+        --matrix(agents,ui);
        }
    }
 

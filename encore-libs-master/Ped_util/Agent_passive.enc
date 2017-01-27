@@ -39,6 +39,24 @@ passive class Agent {
     -- --can => an agent can only go up, down, left or right
     -- --want => an agent only want to go closer to their next waypoint
     -- lowers TTL
+
+{-
+  int diffX = pDesired.first - agent->getX();
+  int diffY = pDesired.second - agent->getY();
+  if (diffX == 0 || diffY == 0)
+  {
+    // Agent wants to walk straight to North, South, West or East
+    p1 = std::make_pair(pDesired.first + diffY, pDesired.second + diffX); //WALK straight there
+    p2 = std::make_pair(pDesired.first - diffY, pDesired.second - diffX); //walk in opposite direction
+    //p2 = std::make_pair(agent->getX(),agent->getY());
+  }
+  else {
+    // Agent wants to walk diagonally
+    p1 = std::make_pair(pDesired.first, agent->getY());
+    p2 = std::make_pair(agent->getX(), pDesired.second);
+  }
+-}
+
     def next() : [(int,int)] {
             if distance_int( this.x,this.y, (this.targets_x)[this.i], (this.targets_y)[this.i] )<this.targets_size[this.i] then
                 {this.i=this.i+1;};
@@ -49,14 +67,24 @@ passive class Agent {
                 y1=this.y
                 x2=this.targets_x[this.i]
                 y2=this.targets_y[this.i]
+                dx=x1-x2
+                dy=y1-y2
             in {
                 if x1>x2 and y1>y2 then { [(x1-1,y1),(x1,y1-1)] } else {
                 if x1<x2 and y1<y2 then { [(x1+1,y1),(x1,y1+1)] } else {
                 if x1<x2 and y1>y2 then { [(x1+1,y1),(x1,y1-1)] } else {
-                if x1>x2           then { [(x1-1,y1)] } else {
-                if y1>y2           then { [(x1,y1-1)] } else {
-                if x1<x2           then { [(x1+1,y1)] } else {
-                if y1<y2           then { [(x1,y1+1)] } else { new [(int,int)](0) }}}}}}}
+
+                if x1>x2           then { [(x1-1,y1) ] } else {
+                if y1>y2           then { [(x1,y1-1) ] } else {
+                if x1<x2           then { [(x1+1,y1) ] } else {
+                if y1<y2           then { [(x1,y1+1) ] } else { new [(int,int)](0) }}}}}}}
+ --}
+{-
+                if x1>x2           then { [(x1-1,y1),(x1+1,y1) ] } else {
+                if y1>y2           then { [(x1,y1-1),(x1,y1+1) ] } else {
+                if x1<x2           then { [(x1+1,y1),(x1-1,y1) ] } else {
+                if y1<y2           then { [(x1,y1+1),(x1,y1-1) ] } else { new [(int,int)](0) }}}}}}}
+--}
             }}
             {-
             match (this.pos, this.targets[this.i]) with

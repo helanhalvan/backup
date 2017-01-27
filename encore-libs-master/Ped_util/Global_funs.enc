@@ -15,7 +15,7 @@ def find_extreme(agents:[Agent]) : (int,int,int,int) {
             extreme=extreme_check( (a.targets_x[index],a.targets_y[index]),extreme);
         }
     };
-    extreme
+    match extreme with (xmax,ymax,xmin,ymin) => (xmax+100,ymax+100,xmin-100,ymin-100)
 }
 def extreme_check(a:(int,int),b:(int,int,int,int) ) : (int,int,int,int) {
     match (a,b) with
@@ -26,6 +26,9 @@ def clock() : int {
     var x=0;
     embed void { #{x}=clock(); } end;
     x
+}
+def printtime(x:int) : void {
+   embed void { printf("%i seconds\n%i cycles\n", #{x}/CLOCKS_PER_SEC, #{x}); } end;
 }
 def mk_Future(n : bool) : Fut bool
  embed Fut bool
@@ -171,11 +174,11 @@ def parse_file(fname:String) : [Agent] {
                                max = int_or_0(a.attribute_value("n").to_int());
                                var x = int_or_0(a.attribute_value("xs").to_int());
                                var y = int_or_0(a.attribute_value("ys").to_int());
-                               var dx_max = int_or_0(a.attribute_value("dx").to_int());
-                               var dy_max = int_or_0(a.attribute_value("dy").to_int());
+                               var dx_max = int_or_0(a.attribute_value("dx").to_int())/2;
+                               var dy_max = int_or_0(a.attribute_value("dy").to_int())/2;
                                var agent_waypoints=new [(int,int)](|a.children_named("addway")|);
-                               var dx=x;
-                               var dy=y;
+                               var dx=x-dx_max;
+                               var dy=y-dy_max;
                                var j=0;
                              {
                                    for b in a.children_named("addway") {
@@ -191,18 +194,17 @@ def parse_file(fname:String) : [Agent] {
                                    --for each agent
                                    for unused in [0..max] {
                                        --for this to be safe, agent_waypoints need to be copied for every agent
-                                       --in the future, I can make it immutable instead
-                                       --also distributes agents in a packed ball around (x,y) with some collisions
-                                       --this should to be fixed in the future
+                                       --in the future, I can make it immutable instead?
                                         if(dx>x+dx_max) then {
+                                            print("out of space\n");
                                             dx=x-dx_max
                                         }
                                         else if(dy>y+dy_max) then {
                                             dy=y-dy_max;
-                                            dx=dx+rand()%4
+                                            dx=dx+1-- +rand()%2
                                         }
                                         else {
-                                            dy=dy+rand()%4
+                                            dy=dy+1 --+rand()%2
                                         };
                                             agents[i]=new Agent((dx,dy),copy_tr(agent_waypoints),copy_ar(waypoints_distance),i,40000);
                                             i=i+1

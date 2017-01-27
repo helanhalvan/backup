@@ -1,0 +1,24 @@
+./main.enc.run: Segmentation fault
+failed to read counter stalled-cycles-frontend
+failed to read counter stalled-cycles-backend
+failed to read counter L1-icache-loads
+26,780704-a-atask-clock-a26780704-a100,00
+136-a-acontext-switches-a26780704-a100,00
+9-a-acpu-migrations-a26780704-a100,00
+1082-a-apage-faults-a26780704-a100,00
+23197549-a-acycles-a9574870-a100,00
+<not supported>-a-astalled-cycles-frontend-a0-a100,00
+<not supported>-a-astalled-cycles-backend-a0-a100,00
+51802735-a-ainstructions-a23683220-a100,00
+13042465-a-abranches-a27008894-a100,00
+135057-a-abranch-misses-a27008894-a100,00
+<not counted>-a-aL1-dcache-loads-a0-a0,00
+<not counted>-a-aL1-dcache-load-misses-a0-a0,00
+<not counted>-a-aLLC-loads-a0-a0,00
+<not counted>-a-aLLC-load-misses-a0-a0,00
+<not supported>-a-aL1-icache-loads-a0-a100,00
+<not counted>-a-aL1-icache-load-misses-a0-a0,00
+<not counted>-a-adTLB-loads-a0-a0,00
+<not counted>-a-adTLB-load-misses-a0-a0,00
+<not counted>-a-aiTLB-loads-a0-a0,00
+<not counted>-a-aiTLB-load-misses-a0-a0,00

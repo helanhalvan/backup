@@ -1,0 +1,5 @@
+ 11:57:47 up  2:17,  3 users,  load average: 3,31, 1,76, 1,23
+USER     TTY      FROM             LOGIN@   IDLE   JCPU   PCPU WHAT
+sten     :0       :0               09:41   ?xdm?  18:37   0.21s init --user
+sten     pts/0    :0.0             10:28   40.00s  0.39s  0.00s w
+sten     pts/11   :0               10:46   20:00  60.23s 60.20s htop

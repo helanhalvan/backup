@@ -23,7 +23,7 @@ def list(agents: [Agent],ui:bool) : void {
              }
          };
         --print("starting!\n");
-         manager.start(drivers);
+         manager.start(drivers,clock());
      }
  }
 class List_manager {
@@ -32,18 +32,20 @@ class List_manager {
     dr : [List_driver]
     ui : bool
     sdl_main : SDL_Main
+    start: int
     def init(iterations:int,ui:bool,sdl_main:SDL_Main) : void {
         this.i=iterations;
         this.ui=ui;
         this.sdl_main=sdl_main;
     }
-    def start(drivers:[List_driver]) : void {
+    def start(drivers:[List_driver],time:int) : void {
         this.dr=drivers;
+        this.start=time;
         this!move();
     }
     def move() : void {
         this.i=this.i-1;
-        if this.i<1 then { () } else {
+        if this.i<1 then { print(clock()-this.start); } else {
             --if(this.i%10000==0) then print(this.i);
             if(this.ui) then {
                 var positions = new [(int,int)](|this.dr|);
