@@ -4,6 +4,10 @@ import Agent_passive
 import Global_funs
 import SDL.SDL_Main
 import Ped_util.UI
+import Quad_tree
+
+
+--TODO FIX DOUBLE MOVE BUG!!!
 
 def regions(agents: [Agent],ui:bool,boxes:int) : void {
      var sdl_main = if ui then make_UI() else null : SDL_Main;
@@ -203,12 +207,12 @@ class Box {
  down : Box
  left : Box
  right : Box
- matrix : C_Matrix
+ matrix : Quad_tree --Best name for this data structure ever
  agents : Item
  last : Item
  newcommers : Item
 def init(in_max:(int,int), in_min:(int,int) ) : void {
-    this.matrix= new C_Matrix(in_max,in_min);
+    this.matrix= new Quad_tree(in_max,in_min);
     match in_max with (x,y) => {this.xmax=x;this.ymax=y};
     match in_min with (x,y) => {this.xmin=x;this.ymin=y};
     --print("done\n");
@@ -230,9 +234,7 @@ def agents() : [(int,int)] {
     var cur= this.agents;
     var i=0;
     while cur!=null { i=i+1; cur=cur.next; };
-    var j=0;
-    for a in this.matrix.locks {if a==true then j=j+1;};
-    --print((i,j));
+    var j=this.matrix.size();
     if( i != j ) then { print((i,j)); while true { () }; };
     var ret= new [(int,int)](i);
     cur=this.agents;
@@ -248,14 +250,14 @@ def agents() : [(int,int)] {
  --adds new agents to newcommers linked list
 def add(a:Agent) : bool {
     if a.x>this.xmax or a.x<this.xmin or a.y>this.ymax or a.y<this.ymin then false else {
-        if(this.matrix.get_val(a.x,a.y)==true) then print("#"); --print("agents stacked on eachother\n");
+        if(this.matrix.get_val(a.x,a.y)==true) then {print("#"); true} else { --print("agents stacked on eachother\n");
         this.matrix.set(a.x,a.y,true); --add to collison matrix
     if(this.newcommers == null) then {this.newcommers=new Item(a); this.last=this.newcommers;} else {
         this.last.next=new Item(a);
         this.last=this.last.next;
     };
     true;
-    }
+    }}
 }
 --if the arguements shares a border with this box, it's added to the apropriate edge and returns true
 --otherwise returns false
@@ -310,10 +312,10 @@ def move() : bool {
                     match desired[i] with (x,y) => {
                         --print( ("go",desired[i],a.a.pos()) );
                         nejbor=null;
-                        if x>this.xmax then { x2=a.a.x; y2=a.a.y; nejbor=this.right.external_move(a.a,x,y)};
-                        if y>this.ymax then { x2=a.a.x; y2=a.a.y; nejbor=this.up.external_move(a.a,x,y)};
-                        if x<this.xmin then { x2=a.a.x; y2=a.a.y; nejbor=this.left.external_move(a.a,x,y)};
-                        if y<this.ymin then { x2=a.a.x; y2=a.a.y; nejbor=this.down.external_move(a.a,x,y)};
+                        if x>this.xmax then { x2=a.a.x; y2=a.a.y; if(this.right==null) then {nejbor=mk_Future(false)} else {nejbor=this.right.external_move(a.a,x,y)}};
+                        if y>this.ymax then { x2=a.a.x; y2=a.a.y; if(this.up==null) then {nejbor=mk_Future(false)} else {nejbor=this.up.external_move(a.a,x,y)}};
+                        if x<this.xmin then { x2=a.a.x; y2=a.a.y; if(this.left==null) then {nejbor=mk_Future(false)} else {nejbor=this.left.external_move(a.a,x,y)}};
+                        if y<this.ymin then { x2=a.a.x; y2=a.a.y; if(this.down==null) then {nejbor=mk_Future(false)} else {nejbor=this.down.external_move(a.a,x,y)}};
                         if nejbor==null then {
                             --local collision detection
                             if this.matrix.get_val(x,y)==false then {
@@ -371,6 +373,7 @@ def external_move(a:Agent, x:int,y:int ) : bool {
         next : Item
         def init(a:Agent) : void {this.a=a;}
     }
+    {--
     passive class C_Matrix {
         origin_x : int
         origin_y : int
@@ -395,7 +398,7 @@ def external_move(a:Agent, x:int,y:int ) : bool {
             (this.locks)[(x-this.origin_x)+((y-this.origin_y)*this.x_len)]=value
         }
     }
---}
+    --}
 def link(a:Box,b:Box) : bool {
     var aa=a.link(b);
     var bb=b.link(a);

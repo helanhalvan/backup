@@ -73,13 +73,13 @@ passive class Agent {
                 if x1>x2 and y1>y2 then { [(x1-1,y1),(x1,y1-1)] } else {
                 if x1<x2 and y1<y2 then { [(x1+1,y1),(x1,y1+1)] } else {
                 if x1<x2 and y1>y2 then { [(x1+1,y1),(x1,y1-1)] } else {
-
+{-
                 if x1>x2           then { [(x1-1,y1) ] } else {
                 if y1>y2           then { [(x1,y1-1) ] } else {
                 if x1<x2           then { [(x1+1,y1) ] } else {
                 if y1<y2           then { [(x1,y1+1) ] } else { new [(int,int)](0) }}}}}}}
  --}
-{-
+
                 if x1>x2           then { [(x1-1,y1),(x1+1,y1) ] } else {
                 if y1>y2           then { [(x1,y1-1),(x1,y1+1) ] } else {
                 if x1<x2           then { [(x1+1,y1),(x1-1,y1) ] } else {

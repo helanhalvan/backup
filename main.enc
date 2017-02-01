@@ -9,12 +9,15 @@ import Ped_util.List_driver
 --import Ped_util.Bucket_driver
 import Ped_util.Matrix_driver
 import Ped_util.Regions
+import Ped_util.Quad_tree
 --import Data.Either
 class Main {
 --TODO
 --REPLACE/INVESTIGATE HASHMAP IN BOX
    def main(args: [String]) : void {
+
        let
+{-
             version={     match (args[1]).to_int() with
                             Just result => result
                             Nothing     => { 0 };}
@@ -25,12 +28,22 @@ class Main {
             boxes = { if(args[3]==null) then {5} else {match (args[4]).to_int() with
                             Just x => x
                             _ => 9}}
-       in {
+-}
+            tree = new Quad_tree( (100,100),(0,0))
+       in
+        {
+        for a in [0..100] {
+            for b in [0..100] {
+                tree.set(a,b,true);
+            };
+        };
+        --tree.set(0,0,true);
+        ();
         --print("boxes={}\n",boxes);
          --print(args[2]);
         --this!baseline(agents,ui);
         --if version==2 then bucket(agents,ui);
-        regions(agents,ui,boxes); --if version==3 then
+        --regions(agents,ui,boxes); --if version==3 then
         --if version==4 then list(agents,ui);
         --if version==5 then matrix(agents,ui); --}
         --matrix(agents,ui);

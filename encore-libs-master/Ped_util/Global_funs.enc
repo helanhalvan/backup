@@ -15,7 +15,7 @@ def find_extreme(agents:[Agent]) : (int,int,int,int) {
             extreme=extreme_check( (a.targets_x[index],a.targets_y[index]),extreme);
         }
     };
-    match extreme with (xmax,ymax,xmin,ymin) => (xmax+100,ymax+100,xmin-100,ymin-100)
+    match extreme with (xmax,ymax,xmin,ymin) => (xmax,ymax,xmin,ymin)
 }
 def extreme_check(a:(int,int),b:(int,int,int,int) ) : (int,int,int,int) {
     match (a,b) with
