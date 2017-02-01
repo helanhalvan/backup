@@ -19,7 +19,7 @@ import Global_funs
                 this.max_y=max_y;
                 this.min_x=min_x;
                 this.min_y=min_y;
-                this.size=1;
+                this.size=0;
             }
         def add(x:int,y:int) : void {
             if(x<=this.max_x and x>=this.min_x and y<=this.max_y and y>=this.min_y) then

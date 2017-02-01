@@ -1,0 +1,87 @@
+--multi threaded 2D space container
+class Multi_box { --container of 4 boxes
+    --max x and y cords
+    max : (int,int)
+    --min x and y cords
+    min : (int,int)
+    --4 sub-boxes, together covering all the space in Multi_box
+
+    top_right : Box
+    bottom_right : Box
+    top_left : Box
+    bottom_left : Box
+
+    def init(agents:[Agent]) : void {
+        var dx=0;
+        var dy=0;
+        --find global xmax, xmin, and ymin, use to create boundries for the 2D space.
+        --looks at both starting positions and waypoints
+        match find_extreme(agents) with
+            (xmax,ymax,xmin,ymin) => {this.max=(xmax,ymax);
+                                      this.min=(xmin,ymin);
+                                      dx=xmax-xmin;
+                                      dy=ymax-ymin;
+                                      --if(dx%2==0) then
+                                        dx=dx/2;
+                                      --else
+                                        dy=dy/2;
+                                      --print("{} {} {}\n",this.max,this.min,(xmax-dx,ymax-dy));
+                                      this.top_right=new Box(this.max,(xmax-dx+1,ymax-dy+1 ) );
+                                      this.bottom_left=new Box( (xmax-dx,ymax-dy),this.min);
+                                      this.top_left= new Box( (xmax-dx,ymax),(xmin,ymax-dy+1) );
+                                      this.bottom_right=new Box( (xmax,ymax-dy),(xmax-dx+1,ymin) );
+                                      --this.toplevel=new Box(  );
+                                      };
+        --put each agent into exactly one box
+        for a in agents {
+            if( get(this.top_right.add(a))) then { () }
+            else if( get(this.top_left.add(a))) then { () }
+            else if( get(this.bottom_right.add(a))) then { () }
+            else if( get(this.bottom_left.add(a))) then { () }
+            else { print("{} didn't get in \n", a.pos());}
+        };
+        var win=true;
+        --LINKING BOXES, to allow them to pass agents between eachother
+        win=win and get (this.top_right.link(this.top_left));
+        win=win and get (this.top_right.link(this.bottom_right));
+        win=win and get (this.top_left.link(this.top_right));
+        win=win and get (this.top_left.link(this.bottom_left));
+        win=win and get (this.bottom_left.link(this.bottom_right));
+        win=win and get (this.bottom_left.link(this.top_left));
+        win=win and get (this.bottom_right.link(this.top_right));
+        win=win and get (this.bottom_right.link(this.bottom_left));
+        --print("WIN={}\n",win);
+    }
+    --get corners of box
+    def max() : (int,int) {this.max}
+    def min() : (int,int) {this.min}
+    def center() : (int,int) {get(this.bottom_left.max()) }
+    --moves all internal agents on step, returns true if any agents tried to move
+    def move (ui:bool,sdl_main:SDL_Main,i:int) : void {
+        --debug check
+        --print("multi_move\n");
+        print("derp");
+        let
+        a = this.top_right.move()
+        b = this.top_left.move()
+        c = this.bottom_right.move()
+        d = this.bottom_left.move()
+        in {
+        --print("await\n");
+        await(a);
+        await(b);
+        await(c);
+        await(d);
+        --print("done_wait\n");
+        if(ui) then show(this.agents(),sdl_main);
+        if(i>1) then this!move(ui,sdl_main,i-1);
+        if(i%10 == 0) then print(i);
+        --print(|this.agents()|);
+        }
+    }
+    def agents() : [(int,int)] {flatten([get(this.top_right.agents()),
+                             get(this.top_left.agents()),
+                             get(this.bottom_right.agents()),
+                             get(this.bottom_left.agents())]) }
+
+}

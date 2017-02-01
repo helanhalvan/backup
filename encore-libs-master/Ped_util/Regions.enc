@@ -41,6 +41,11 @@ class Tiling_box {
                             win = win and link(this.boxes[i],this.boxes[i-n]);
                             --print("link {} {} {}\n",i,i-n,win);
                         };
+                        if(xindex!=0 and yindex!=0) then {
+                            win = win and link(this.boxes[i],this.boxes[(i-n)+1]);
+                            win = win and link(this.boxes[i],this.boxes[(i-n)-1]);
+                            ();
+                        };
                         i=i+1;
                         y=y+dy;
                     };
@@ -48,7 +53,8 @@ class Tiling_box {
                     this.boxes[i]= new Box( (x+dx-1,ymax),(x,y) ); -- last box might be bigger, due to division rounding
                     if(xindex!=0) then {
                         win = win and link(this.boxes[i],this.boxes[i-n]);
-                        --print("link {} {} {}\n",i,i-n,win);
+                        ..win = win and link(this.boxes[i],this.boxes[(i-n)-1]);
+                        --win = win and link(this.boxes[i],this.boxes[(i-n)+1]);
                     };
                     win = win and link(this.boxes[i],this.boxes[i-1]);
                     --print("link {} {} {}\n",i,i-1,win);
@@ -61,7 +67,7 @@ class Tiling_box {
                         this.boxes[i]= new Box( (xmax,(y+dy-1)),(x,y) );
                         if(yindex!=0) then {
                             win = win and link(this.boxes[i],this.boxes[i-1]);
-                            --print("link {} {} {}\n",i,i-1,win);
+                            --win = win and link(this.boxes[i],this.boxes[i-n-1]);
                         };
                             win = win and link(this.boxes[i],this.boxes[i-n]);
                         i=i+1;
@@ -71,6 +77,7 @@ class Tiling_box {
                     this.boxes[i]= new Box( (xmax,ymax),(x,y) ); -- last box might be bigger, due to division rounding
                     win = win and link(this.boxes[i],this.boxes[i-n]);
                     win = win and link(this.boxes[i],this.boxes[i-1]);
+                    --win = win and link(this.boxes[i],this.boxes[i-n-1]);
                 unless win then print("WIN IS BAD!\n");
                 --print(win); -- if win is false something is of with linking/creation
                 for a in agents { --this is very slow, try sending each agent to one box at the time until it find one that fits
@@ -103,94 +110,6 @@ class Tiling_box {
         }
 }
 
---multi threaded 2D space container
-class Multi_box { --container of 4 boxes
-    --max x and y cords
-    max : (int,int)
-    --min x and y cords
-    min : (int,int)
-    --4 sub-boxes, together covering all the space in Multi_box
-
-    top_right : Box
-    bottom_right : Box
-    top_left : Box
-    bottom_left : Box
-
-    def init(agents:[Agent]) : void {
-        var dx=0;
-        var dy=0;
-        --find global xmax, xmin, and ymin, use to create boundries for the 2D space.
-        --looks at both starting positions and waypoints
-        match find_extreme(agents) with
-            (xmax,ymax,xmin,ymin) => {this.max=(xmax,ymax);
-                                      this.min=(xmin,ymin);
-                                      dx=xmax-xmin;
-                                      dy=ymax-ymin;
-                                      --if(dx%2==0) then
-                                        dx=dx/2;
-                                      --else
-                                        dy=dy/2;
-                                      --print("{} {} {}\n",this.max,this.min,(xmax-dx,ymax-dy));
-                                      this.top_right=new Box(this.max,(xmax-dx+1,ymax-dy+1 ) );
-                                      this.bottom_left=new Box( (xmax-dx,ymax-dy),this.min);
-                                      this.top_left= new Box( (xmax-dx,ymax),(xmin,ymax-dy+1) );
-                                      this.bottom_right=new Box( (xmax,ymax-dy),(xmax-dx+1,ymin) );
-                                      --this.toplevel=new Box(  );
-                                      };
-        --put each agent into exactly one box
-        for a in agents {
-            if( get(this.top_right.add(a))) then { () }
-            else if( get(this.top_left.add(a))) then { () }
-            else if( get(this.bottom_right.add(a))) then { () }
-            else if( get(this.bottom_left.add(a))) then { () }
-            else { print("{} didn't get in \n", a.pos());}
-        };
-        var win=true;
-        --LINKING BOXES, to allow them to pass agents between eachother
-        win=win and get (this.top_right.link(this.top_left));
-        win=win and get (this.top_right.link(this.bottom_right));
-        win=win and get (this.top_left.link(this.top_right));
-        win=win and get (this.top_left.link(this.bottom_left));
-        win=win and get (this.bottom_left.link(this.bottom_right));
-        win=win and get (this.bottom_left.link(this.top_left));
-        win=win and get (this.bottom_right.link(this.top_right));
-        win=win and get (this.bottom_right.link(this.bottom_left));
-        --print("WIN={}\n",win);
-    }
-    --get corners of box
-    def max() : (int,int) {this.max}
-    def min() : (int,int) {this.min}
-    def center() : (int,int) {get(this.bottom_left.max()) }
-    --moves all internal agents on step, returns true if any agents tried to move
-    def move (ui:bool,sdl_main:SDL_Main,i:int) : void {
-        --debug check
-        --print("multi_move\n");
-        print("derp");
-        let
-        a = this.top_right.move()
-        b = this.top_left.move()
-        c = this.bottom_right.move()
-        d = this.bottom_left.move()
-        in {
-        --print("await\n");
-        await(a);
-        await(b);
-        await(c);
-        await(d);
-        --print("done_wait\n");
-        if(ui) then show(this.agents(),sdl_main);
-        if(i>1) then this!move(ui,sdl_main,i-1);
-        if(i%10 == 0) then print(i);
-        --print(|this.agents()|);
-        }
-    }
-    def agents() : [(int,int)] {flatten([get(this.top_right.agents()),
-                             get(this.top_left.agents()),
-                             get(this.bottom_right.agents()),
-                             get(this.bottom_left.agents())]) }
-
-}
-
 --single threaded 2D space container
 --contains all Agents in a given 2D region of space
 --assumess cordnate system where Y is height and X is with, so increasing X means further to the right
@@ -206,6 +125,11 @@ class Box {
  down : Box
  left : Box
  right : Box
+ top_right : Box
+ top_left : Box
+ bottom_left : Box
+ bottom_right : Box
+
  matrix : Quad_tree --Best name for this data structure ever
  agents : Item
  last : Item
@@ -227,8 +151,9 @@ def agents() : [(int,int)] {
     var i=0;
     while cur!=null { i=i+1; cur=cur.next; };
     var j=this.matrix.size();
-    if( i != j ) then { print((i,j,this.agents.a.x,this.xmax,this.xmin,this.agents.a.y,this.ymax,this.ymin,this.matrix.tree.isin(this.agents.a.x,this.agents.a.y) )); --while true { () };
-};
+    --check channeling between Quad_tree and linked lists
+    if( i != j ) then { print((i,j,this.agents.a.x,this.xmax,this.xmin,this.agents.a.y,this.ymax,this.ymin,this.matrix.tree.isin(this.agents.a.x,this.agents.a.y) ));
+                        while true { () };};
     var ret= new [(int,int)](i);
     cur=this.agents;
     i=0;
@@ -260,21 +185,33 @@ def link(a:Box) : bool {
     await(c);
     await(d);
     match (this.xmax,this.ymax,this.xmin,this.ymin,get(c),get(d)) with
-        ( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((x_max_1+1) == x_min_2) and (y_max_1==y_max_2) and (this.right==null) => {this.right=a;--print("right\n");
-true }
-        ( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_1+1) == y_min_2) and (x_max_1==x_max_2) and (this.up==null) => {this.up=a;   --print("up\n");
-true }
-        ( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((x_max_2+1) == x_min_1) and (y_max_1==y_max_2) and (this.left==null) => {this.left=a; --print("left\n");
-true }
-        ( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_2+1) == y_min_1) and (x_max_1==x_max_2) and (this.down==null) => {this.down=a; --print("down\n");
-true }
-        _ => { false }
-    }
-def default_link(a:Box) : void {
-        this.up=a;
-        this.down=a;
-        this.left=a;
-        this.right=a;
+        ( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) => {
+            var top = (y_max_1+1 == y_min_2);
+            var bottom = (y_min_1-1 == y_max_2);
+            var right = (x_max_1+1 == x_min_2);
+            var left = (x_min_1-1 == x_max_2);
+            if not(left or right or top or bottom) then false else {
+                if top then {
+                    if right then {
+                        if this.top_right==null then {this.top_right=a;true} else false
+                    } else if left then {
+                        if this.top_left==null then {this.top_left=a;true} else false
+                    } else {
+                        if this.up==null then {this.up=a;true} else false
+                    }
+                } else
+                if bottom then {
+                    if right then {
+                        if this.bottom_right==null then {this.bottom_right=a;true} else false
+                    } else if left then {
+                        if this.bottom_left==null then {this.bottom_left=a;true} else false
+                    } else {
+                        if this.down==null then {this.down=a;true} else false
+                    }
+                } else if right then { if this.right==null then {this.right=a; true} else false }
+                else {if this.left==null then {this.left=a; true} else false }
+            }
+        }
     }
 def merge() : void {
         if(this.newcommers!=null) then {
@@ -393,7 +330,24 @@ def external_move(a:Agent, x:int,y:int ) : bool {
     }
     --}
 def link(a:Box,b:Box) : bool {
-    var aa=a.link(b);
-    var bb=b.link(a);
-    (get(aa)) and get(bb);
+    val aa=a.link(b);
+    val bb=b.link(a);
+    val aaa = get(aa);
+    val bbb = get(bb);
+    unless aaa==bbb then print("ONE_WAY_LINK\n");
+    aaa
 }
+{-when ((y_max_2+1) == y_min_1) and (x_max_1+1==x_min_2) and (this.bottom_right==null) => {this.bottom_right=a; true}
+( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_min_1-1) == y_max_1) and (x_min_1==x_min_2-1) and (this.bottom_left==null) => {this.bottom_left=a; true}
+( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_1+1) == y_min_2) and (x_min_1==x_max_2-1) and (this.top_left==null) => {this.top_left=a; true }
+( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_1+1) == y_min_2) and (x_max_1+1==x_min_2) and (this.top_right==null) => {this.top_right=a; true }
+( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((x_max_1+1) == x_min_2) and (y_max_1==y_max_2) and (this.right==null) => {this.right=a;--print("right\n");
+true }
+( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_1+1) == y_min_2) and (x_max_1==x_max_2) and (this.up==null) => {this.up=a;   --print("up\n");
+true }
+( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((x_max_2+1) == x_min_1) and (y_max_1==y_max_2) and (this.left==null) => {this.left=a; --print("left\n");
+true }
+( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_2+1) == y_min_1) and (x_max_1==x_max_2) and (this.down==null) => {this.down=a; --print("down\n");
+true }
+
+_ => { false }-}
