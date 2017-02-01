@@ -13,11 +13,20 @@ import Ped_util.Quad_tree
 --import Data.Either
 class Main {
 --TODO
---REPLACE/INVESTIGATE HASHMAP IN BOX
+--Test that quad-tree based implementation works
+--check for easy memory optimizations in Quad_tree
+--Test if timmer does proper timing, seems of by some big factor
+--FIX DOUBLE MOVE BUG!!!
+--fix agent move
+--add links to support 8 dir move
+
+--TODO LATER
+-- remove redundant checks
+-- test
    def main(args: [String]) : void {
 
        let
-{-
+
             version={     match (args[1]).to_int() with
                             Just result => result
                             Nothing     => { 0 };}
@@ -28,22 +37,30 @@ class Main {
             boxes = { if(args[3]==null) then {5} else {match (args[4]).to_int() with
                             Just x => x
                             _ => 9}}
--}
-            tree = new Quad_tree( (100,100),(0,0))
+            tree = new Quad_tree((100,100),(0,0))
        in
         {
-        for a in [0..100] {
-            for b in [0..100] {
+{--
+        print(tree.size());
+        var i = 0;
+        for a in [5..85] {
+            for b in [0..9] {
                 tree.set(a,b,true);
-            };
-        };
-        --tree.set(0,0,true);
+        }};
+        --print(i);
+        print(tree.size());
+        for b in [0..9] {
+            for a in [5..85] {
+                tree.set(a,b,false);
+        }};
+        print(tree.size());
+--}
         ();
         --print("boxes={}\n",boxes);
          --print(args[2]);
         --this!baseline(agents,ui);
         --if version==2 then bucket(agents,ui);
-        --regions(agents,ui,boxes); --if version==3 then
+        regions(agents,ui,boxes); --if version==3 then
         --if version==4 then list(agents,ui);
         --if version==5 then matrix(agents,ui); --}
         --matrix(agents,ui);

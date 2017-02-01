@@ -13,12 +13,13 @@ import Global_funs
         max_y : int
         min_x : int
         min_y : int
-        size : int
+        size : int --used to determine if its time to become a leaf
         def init(max_x:int,max_y:int,min_x:int,min_y:int) : void {
                 this.max_x=max_x;
                 this.max_y=max_y;
                 this.min_x=min_x;
                 this.min_y=min_y;
+                this.size=1;
             }
         def add(x:int,y:int) : void {
             if(x<=this.max_x and x>=this.min_x and y<=this.max_y and y>=this.min_y) then
@@ -27,10 +28,10 @@ import Global_funs
                 this.agent = new [int](2);
                 this.agent[0]=x;
                 this.agent[1]=y;
+                this.size=1;
                 --print( (x,y) );
             } else {
-
-                if(this.top_right==null) then { --if quadtree have no leaves yet
+                if(this.top_right==null) then { --if node have no leaves yet
                     val dx = (this.max_x-this.min_x)/2;
                     val dy = (this.max_y-this.min_y)/2;
                     --make leaves
@@ -38,7 +39,7 @@ import Global_funs
                     this.top_left=new Quad(this.min_x+dx,this.max_y,this.min_x,this.min_y+dy+1);
                     this.bottom_right=new Quad(this.max_x,this.min_y+dy,this.min_x+dx+1,this.min_y);
                     this.bottom_left=new Quad(this.min_x+dx,this.min_y+dy,this.min_x,this.min_y);
-                    this.size=0;
+                    this.size=1;
                     --print( (this.max_x,this.min_x,this.max_y,this.min_y,dx,dy) );
                     --add agent to leaves
                     this.recur(this.agent[0],this.agent[1]).add(this.agent[0],this.agent[1]);
@@ -54,6 +55,7 @@ import Global_funs
             if (this.top_right==null) then {
                 if this.same(x,y) then {
                     this.agent=null;
+                    this.size=0;
                     true;
                 } else {
                     false;
@@ -81,7 +83,8 @@ import Global_funs
         def same(x:int, y:int) : bool { --leaf equal comparison, null -> false
             if (this.agent!=null and this.agent[0]==x and this.agent[1]==y) then true else false
         }
-        def recur (x:int, y:int) : Quad { --POSSIBLY BUG ED
+        --traverse down the tree one level
+        def recur (x:int, y:int) : Quad {
         val top = y> ((this.max_y-this.min_y)/2)+this.min_y;
         val right = x> ((this.max_x-this.min_x)/2)+this.min_x;
             if top then {
@@ -123,12 +126,16 @@ passive class Quad_tree {
             this.tree.isin(x,y);
         }
         def set( x:int,y:int,value:bool ) : void {
-            if(x>this.xmax or y>this.ymax or y<this.ymin or x<this.xmin) then print("TRYING TO STORE VALUE OUTSIDE OF \n") else {
+            if(x>this.xmax or y>this.ymax or y<this.ymin or x<this.xmin) then print("TRYING TO STORE VALUE OUTSIDE OF THIS TREE\n") else {
             if value then this.tree.add(x,y) else this.tree.remove(x,y);
             };
             ()
         }
+        def remove(x:int,y:int) : bool {
+            this.tree.remove(x,y);
+        }
         def size() : int {
+            if(this.tree.agent==null and this.tree.top_right==null and this.tree.size!=0) then print("BAD BAD BAD BAD \n");
             this.tree.size;
         }
     }

@@ -6,7 +6,6 @@ import SDL.SDL_Main
 import Ped_util.UI
 import Quad_tree
 
-
 --TODO FIX DOUBLE MOVE BUG!!!
 
 def regions(agents: [Agent],ui:bool,boxes:int) : void {
@@ -223,19 +222,13 @@ def max() : (int,int) { (this.xmax,this.ymax) }
 -- SLOW BUT ONLY USED BY UI
 def agents() : [(int,int)] {
     this.merge();
-    --print("merge done\n");
-    if(this.agents==null) then {
-    --    var j=0;
-    --    for a in this.matrix.locks {if a==true then j=j+1;};
-    --    print((0,j));
-    --    if( j != 0 ) then { while true { () }; };
-        new [(int,int)](0); } else {
-    --print("allocating agents\n");
+    if(this.agents==null) then { new [(int,int)](0); } else {
     var cur= this.agents;
     var i=0;
     while cur!=null { i=i+1; cur=cur.next; };
     var j=this.matrix.size();
-    if( i != j ) then { print((i,j)); while true { () }; };
+    if( i != j ) then { print((i,j,this.agents.a.x,this.xmax,this.xmin,this.agents.a.y,this.ymax,this.ymin,this.matrix.tree.isin(this.agents.a.x,this.agents.a.y) )); --while true { () };
+};
     var ret= new [(int,int)](i);
     cur=this.agents;
     i=0;
@@ -320,7 +313,7 @@ def move() : bool {
                             --local collision detection
                             if this.matrix.get_val(x,y)==false then {
                                 --print(this.matrix.get_val(a.a.x,a.a.y));
-                                this.matrix.set(a.a.x,a.a.y,false); --remove from old pos
+                                unless this.matrix.remove(a.a.x,a.a.y) then { print("remove failed\n") }; --remove from old pos
                                 this.matrix.set(x,y,true); --add to new pos
                                 a.a.move_int(x,y); --move
                                 moved=true;
@@ -330,7 +323,7 @@ def move() : bool {
                             await(nejbor);
                             if get(nejbor) then { --if left this box
                                 --print(this.matrix.get_val(x2,y2));
-                                this.matrix.set(x2,y2,false); --remove from old pos
+                                unless this.matrix.remove(x2,y2) then print("remove failed 2\n"); --remove from old pos
                                 moved=true;
                                 --remove a from list
                                 if parent==a then {
@@ -349,7 +342,7 @@ def move() : bool {
                         parent=parent.next;
                         if parent!=null then a=parent.next else a=null}
                 };
-                suspend;
+                --suspend;
             };
           true;
          }
