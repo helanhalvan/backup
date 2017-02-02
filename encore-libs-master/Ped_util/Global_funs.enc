@@ -15,7 +15,7 @@ def find_extreme(agents:[Agent]) : (int,int,int,int) {
             extreme=extreme_check( (a.targets_x[index],a.targets_y[index]),extreme);
         }
     };
-    match extreme with (xmax,ymax,xmin,ymin) => (xmax,ymax,xmin,ymin)
+    match extreme with (xmax,ymax,xmin,ymin) => (xmax+10,ymax+10,xmin-10,ymin-10)
 }
 def extreme_check(a:(int,int),b:(int,int,int,int) ) : (int,int,int,int) {
     match (a,b) with
@@ -118,12 +118,17 @@ def man_distance(a:(int,int),b:(int,int)) : int {
 def man_distance_int(x1:int,y1:int,x2:int,y2:int) : int {
         abs(x1-x2)+abs(y1-y2)
 }
+def round(x:real) : int {
+    val i=0;
+    embed void { #{i}=round(#{x}); } end;
+    i
+}
 def distance(a:(int,int),b:(int,int)) : int {
     match (a,b) with
         ((x1,y1),(x2,y2)) => rot(((x1-x2)*(x1-x2))+((y1-y2)*(y1-y2)))
          _ => { print("THIS WILL NEVER HAPPEN!"); 1/0 }
 }
-def distance_int(x1:int,y1:int,x2:int,y2:int) : int {
+def distance_int(x1:int,y1:int,x2:int,y2:int) : real {
     rot(((x1-x2)*(x1-x2))+((y1-y2)*(y1-y2)))
 }
 def equal(a:(int,int),b:(int,int)) : bool {

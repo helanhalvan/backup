@@ -58,7 +58,9 @@ passive class Agent {
 -}
 
     def next() : [(int,int)] {
-            if distance_int( this.x,this.y, (this.targets_x)[this.i], (this.targets_y)[this.i] )<this.targets_size[this.i] then
+            var ret = new [(int,int)](3);
+            val len=distance_int( this.x,this.y, (this.targets_x)[this.i], (this.targets_y)[this.i] );
+            if len<this.targets_size[this.i] then
                 {this.i=this.i+1;};
             if |this.targets_size| == this.i then
                 {this.i=0;};
@@ -67,36 +69,52 @@ passive class Agent {
                 y1=this.y
                 x2=this.targets_x[this.i]
                 y2=this.targets_y[this.i]
-                dx=x1-x2
-                dy=y1-y2
+                dx=round((x1-x2)/len)
+                dy=round((y1-y2)/len)
+                next_x=x1-dx
+                next_y=y1-dy
             in {
-                if x1>x2 and y1>y2 then { [(x1-1,y1),(x1,y1-1)] } else {
-                if x1<x2 and y1<y2 then { [(x1+1,y1),(x1,y1+1)] } else {
-                if x1<x2 and y1>y2 then { [(x1+1,y1),(x1,y1-1)] } else {
-{-
-                if x1>x2           then { [(x1-1,y1) ] } else {
-                if y1>y2           then { [(x1,y1-1) ] } else {
-                if x1<x2           then { [(x1+1,y1) ] } else {
-                if y1<y2           then { [(x1,y1+1) ] } else { new [(int,int)](0) }}}}}}}
- --}
-
-                if x1>x2           then { [(x1-1,y1),(x1+1,y1) ] } else {
-                if y1>y2           then { [(x1,y1-1),(x1,y1+1) ] } else {
-                if x1<x2           then { [(x1+1,y1),(x1-1,y1) ] } else {
-                if y1<y2           then { [(x1,y1+1),(x1,y1-1) ] } else { new [(int,int)](0) }}}}}}}
---}
+                ret[0]=(next_x,next_y);
+                if(dx==0 or dy==0) then {
+                ret[1]=(next_x+dy,next_y+dx);
+                ret[2]=(next_x-dy,next_y-dx);
+                } else {
+                ret[1]=(next_x,y1);
+                ret[2]=(x1,next_y);
+                };
+                ret
             }}
+{-
+        if x1>x2 and y1>y2 then { [(x1-1,y1-1),(x1-1,y1),(x1,y1-1)] }
+        else if x1<x2 and y1<y2 then { [(x1+1,y1+1),(x1+1,y1),(x1,y1+1)] }
+        else if x1<x2 and y1>y2 then { [(x1+1,y1-1),(x1+1,y1),(x1,y1-1)] }
+        else if x1>x2 and y1<y2 then { [(x1-1,y1+1),(x1-1,y1),(x1,y1+1)] }
+        else if x1>x2           then { [(x1-1,y1),(x1-1,y1+1),(x1-1,y1-1) ] }
+        else if y1>y2           then { [(x1,y1-1),(x1-1,y1-1),(x1+1,y1-1) ] }
+        else if x1<x2           then { [(x1+1,y1),(x1+1,y1+1),(x1+1,y1-1) ] }
+        else if y1<y2           then { [(x1,y1+1),(x1+1,y1+1),(x1-1,y1+1) ] } else { print("AGENT HAVE STOPPED, THIS SHOULD NEVER HAPPEN!\n"); new [(int,int)](0) }
+-}
             {-
-            match (this.pos, this.targets[this.i]) with
-                ((x1,y1), (x2,y2)) when x1>x2 and y1>y2 => { [(x1-1,y1),(x1,y1-1)] }
-                ((x1,y1), (x2,y2)) when x1<x2 and y1<y2 => { [(x1+1,y1),(x1,y1+1)] }
-                ((x1,y1), (x2,y2)) when x1>x2 and y1<y2 => { [(x1-1,y1),(x1,y1+1)] }
-                ((x1,y1), (x2,y2)) when x1<x2 and y1>y2 => { [(x1+1,y1),(x1,y1-1)] }
-                ((x1,y1), (x2,y2)) when x1>x2           => { [(x1-1,y1)] }
-                ((x1,y1), (x2,y2)) when y1>y2           => { [(x1,y1-1)] }
-                ((x1,y1), (x2,y2)) when x1<x2           => { [(x1+1,y1)] }
-                ((x1,y1), (x2,y2)) when y1<y2           => { [(x1,y1+1)] }
-                _ => { print("THIS SHOULD NEVER HAPPEN, |targets| = {} ", |this.targets|); new [(int,int)](0) }
+  double diffX = destination->getx() - x;
+  double diffY = destination->gety() - y;
+  double len = sqrt(diffX * diffX + diffY * diffY);
+  desiredPositionX = round(x + diffX / len);
+  desiredPositionY = round(y + diffY / len);
+
+prioritizedAlternatives.push_back(pDesired);
+
+  if (diffX == 0 || diffY == 0)
+  {
+    // Agent wants to walk straight to North, South, West or East
+    p1 = std::make_pair(pDesired.first + diffY, pDesired.second + diffX);
+    p2 = std::make_pair(pDesired.first - diffY, pDesired.second - diffX);
+  }
+  else {
+    // Agent wants to walk diagonally
+    p1 = std::make_pair(pDesired.first, agent->getY());
+    p2 = std::make_pair(agent->getX(), pDesired.second);
+  }
+
             -}
                             --updates the current position
                             --agents have no agency and check nothing when it comes to their own position

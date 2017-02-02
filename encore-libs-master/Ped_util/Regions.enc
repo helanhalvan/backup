@@ -53,8 +53,7 @@ class Tiling_box {
                     this.boxes[i]= new Box( (x+dx-1,ymax),(x,y) ); -- last box might be bigger, due to division rounding
                     if(xindex!=0) then {
                         win = win and link(this.boxes[i],this.boxes[i-n]);
-                        ..win = win and link(this.boxes[i],this.boxes[(i-n)-1]);
-                        --win = win and link(this.boxes[i],this.boxes[(i-n)+1]);
+                        win = win and link(this.boxes[i],this.boxes[(i-n)-1]);
                     };
                     win = win and link(this.boxes[i],this.boxes[i-1]);
                     --print("link {} {} {}\n",i,i-1,win);
@@ -67,8 +66,9 @@ class Tiling_box {
                         this.boxes[i]= new Box( (xmax,(y+dy-1)),(x,y) );
                         if(yindex!=0) then {
                             win = win and link(this.boxes[i],this.boxes[i-1]);
-                            --win = win and link(this.boxes[i],this.boxes[i-n-1]);
+                            win = win and link(this.boxes[i],this.boxes[(i-n)-1]);
                         };
+                            win = win and link(this.boxes[i],this.boxes[(i-n)+1]);
                             win = win and link(this.boxes[i],this.boxes[i-n]);
                         i=i+1;
                         y=y+dy;
@@ -77,6 +77,7 @@ class Tiling_box {
                     this.boxes[i]= new Box( (xmax,ymax),(x,y) ); -- last box might be bigger, due to division rounding
                     win = win and link(this.boxes[i],this.boxes[i-n]);
                     win = win and link(this.boxes[i],this.boxes[i-1]);
+                    win = win and link(this.boxes[i],this.boxes[(i-n)-1]);
                     --win = win and link(this.boxes[i],this.boxes[i-n-1]);
                 unless win then print("WIN IS BAD!\n");
                 --print(win); -- if win is false something is of with linking/creation
@@ -177,7 +178,7 @@ def add(a:Agent) : bool {
     true;
     }}
 }
---if the arguements shares a border with this box, it's added to the apropriate edge and returns true
+--if the arguement shares a border or corner with this box, it's added tas a nejbor and returns true
 --otherwise returns false
 def link(a:Box) : bool {
     var c=a.max();
@@ -242,10 +243,41 @@ def move() : bool {
                     match desired[i] with (x,y) => {
                         --print( ("go",desired[i],a.a.pos()) );
                         nejbor=null;
-                        if x>this.xmax then { x2=a.a.x; y2=a.a.y; if(this.right==null) then {nejbor=mk_Future(false)} else {nejbor=this.right.external_move(a.a,x,y)}};
-                        if y>this.ymax then { x2=a.a.x; y2=a.a.y; if(this.up==null) then {nejbor=mk_Future(false)} else {nejbor=this.up.external_move(a.a,x,y)}};
-                        if x<this.xmin then { x2=a.a.x; y2=a.a.y; if(this.left==null) then {nejbor=mk_Future(false)} else {nejbor=this.left.external_move(a.a,x,y)}};
-                        if y<this.ymin then { x2=a.a.x; y2=a.a.y; if(this.down==null) then {nejbor=mk_Future(false)} else {nejbor=this.down.external_move(a.a,x,y)}};
+                        let
+                            up = y>this.ymax
+                            down = y<this.ymin
+                            right = x>this.xmax
+                            left = x<this.xmin
+                            border = {
+                                    if up then {
+                                        if right then {
+                                            this.top_right
+                                        } else if left then {
+                                            this.top_left
+                                        } else {
+                                            this.up
+                                        }
+                                    } else if down then {
+                                        if right then {
+                                            this.bottom_right
+                                        } else if left then {
+                                            this.bottom_left
+                                        } else {
+                                            this.down
+                                        }
+                                    } else if left then {this.left} else if right then {this.right} else {null : Box}
+                            }
+                        in {
+                        if up or down or left or right then {
+
+                            if(border==null) then {
+                                print("collision with edge of simulation, {}\n", (x,y));
+                                nejbor=mk_Future(false)
+                            } else {
+                                x2=a.a.x; y2=a.a.y;
+                                nejbor=border.external_move(a.a,x,y);
+                            }
+                        };
                         if nejbor==null then {
                             --local collision detection
                             if this.matrix.get_val(x,y)==false then {
@@ -271,7 +303,7 @@ def move() : bool {
                             }
                         };
                             i=i+1;
-                        }};
+                        }}};
                 if parent==null then {a=null;} else { --case when list is empty
                     if parent==a then { --case when a is the first item of list
                         a=a.next

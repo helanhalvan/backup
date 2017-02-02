@@ -291,10 +291,12 @@ void Ped::Model::calculateNextPosition( Ped::Tagent *agent)
     takenPositions.push_back(position);
   }
 
-  // Compute the three alternative positions that would bring the agent
+  // Compute the three??? alternative positions that would bring the agent
   // closer to his desiredPosition, starting with the desiredPosition itself
   std::vector<std::pair<int, int> > prioritizedAlternatives;
   std::pair<int, int> pDesired(agent->getDesiredX(), agent->getDesiredY());
+
+  ///THE POS IT WANTS TO GO TO!
   prioritizedAlternatives.push_back(pDesired);
 
   int diffX = pDesired.first - agent->getX();
