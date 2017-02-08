@@ -114,8 +114,8 @@ int main(int argc, char*argv[]) {
   cout << "Demo setup complete, running ..." << endl;
   int retval = 0;
   // Timing of simulation
-  std::chrono::time_point<std::chrono::system_clock> start,stop;
-  start = std::chrono::system_clock::now();
+  //std::chrono::time_point<std::chrono::system_clock> start,stop;
+  int start = time(0);//std::chrono::system_clock::now();
 
   if(timing_mode)
   {
@@ -131,11 +131,11 @@ int main(int argc, char*argv[]) {
   }
 
   // End timing
-  stop = std::chrono::system_clock::now();
-  std::chrono::duration<double> elapsed_seconds = stop-start;
-  cout << "Time: " << elapsed_seconds.count() << " seconds." << endl;
-
-  cout << "Done" << endl;
+  int stop = time(0);//std::chrono::system_clock::now();
+  //std::chrono::duration<double> elapsed_seconds = stop-start;
+  //cout << "Time: " << elapsed_seconds.count() << " seconds." << endl;
+  printf("%i seconds\n", stop-start); 
+  //cout << "Done" << endl;
   delete (simulation);
   return retval;
 }

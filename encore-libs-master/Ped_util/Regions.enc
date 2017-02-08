@@ -90,11 +90,13 @@ class Tiling_box {
                 };
     }}
     def move (ui:bool,sdl_main:SDL_Main,i:int,start_time:int) : void {
-        for i in [0..|this.boxes|-1] {
-            this.futures[i]=(this.boxes[i]).move();
+        print("step {} GO!\n",i);
+        for id in [0..|this.boxes|-1] {
+            this.futures[id]=(this.boxes[id]).move(i);
         };
         for f in this.futures {
             await(f);
+            get(f);
         };
         --print("done_wait\n");
         --if(i%1000==0) then {print(time); time=0};
@@ -135,11 +137,13 @@ class Box {
  agents : Item
  last : Item
  newcommers : Item
+ to_early : Item
+ ttl : int
 def init(in_max:(int,int), in_min:(int,int) ) : void {
     this.matrix= new Quad_tree(in_max,in_min);
     match in_max with (x,y) => {this.xmax=x;this.ymax=y};
     match in_min with (x,y) => {this.xmin=x;this.ymin=y};
-    --print("done\n");
+    this.ttl=10001;
     }
 --getters for borders
 def min() : (int,int) { (this.xmin,this.ymin) }
@@ -220,18 +224,24 @@ def merge() : void {
             this.last.next=this.agents; --append current agents to new agents list
             this.agents=this.newcommers; -- replace current agents with new agents list
             this.newcommers=null;
-            --this.last=null;
-        }
+            this.last=null;
+        };
     }
  --moves all agents in the box once
  --returns true
-def move() : bool {
-        --print("serial_move\n");
+def move(step_nr:int) : bool {
+        this.ttl=this.ttl-1;
+        unless step_nr==this.ttl then { print( (step_nr,this.ttl,"ttl!=step_nr") ); while true { () } };
+        --print(("moving",step_nr,this.xmax,this.ymax));
         this.merge();
         var parent = this.agents;
         var a = this.agents;
+        var deleted = false;
        while a!=null {
-            --print(a.a.next());
+            unless (a.a.ttl==step_nr or a.a.ttl==step_nr-1) then {print(this.ttl,a.a.ttl,a.a.hash_code); while true { () } };
+            deleted = false;
+            if ((a.a.ttl)==step_nr) then { -- removes unlikely case when an agent is moved twice
+                a.a.ttl=a.a.ttl-1;
                 var desired = a.a.next();
                 var i = 0;
                 var nejbor = null:Fut bool;
@@ -239,7 +249,7 @@ def move() : bool {
                 var x2 =0;
                 var y2 =0;
             --print("+");
-            while( i < |desired| and moved == false) {
+            while(i < |desired| and moved == false) {
                     match desired[i] with (x,y) => {
                         --print( ("go",desired[i],a.a.pos()) );
                         nejbor=null;
@@ -248,7 +258,7 @@ def move() : bool {
                             down = y<this.ymin
                             right = x>this.xmax
                             left = x<this.xmin
-                            border = {
+                            border = { --find which border is crossed, if any
                                     if up then {
                                         if right then {
                                             this.top_right
@@ -269,7 +279,6 @@ def move() : bool {
                             }
                         in {
                         if up or down or left or right then {
-
                             if(border==null) then {
                                 print("collision with edge of simulation, {}\n", (x,y));
                                 nejbor=mk_Future(false)
@@ -291,20 +300,24 @@ def move() : bool {
                         } else {
                             await(nejbor);
                             if get(nejbor) then { --if left this box
-                                --print(this.matrix.get_val(x2,y2));
+                                print("ttl: {} hash: {}\n",a.a.ttl,a.a.hash_code);
                                 unless this.matrix.remove(x2,y2) then print("remove failed 2\n"); --remove from old pos
                                 moved=true;
+                                deleted=true;
                                 --remove a from list
-                                if parent==a then {
+                                if parent==a then { --case for first item
+                                    --print("removing first item\n");
                                     this.agents=a.next;
-                                    parent=a.next;
-                                }--case for first item
-                                 else {parent.next=a.next}; --other item
+                                };
+                                a.a=null;
+                                parent.next=a.next;
                             }
                         };
                             i=i+1;
-                        }}};
-                if parent==null then {a=null;} else { --case when list is empty
+                        }}}} else {print("timetraveler detected {} {} {}\n", a.a.hash_code,a.a.ttl,this.ttl);};
+                --next in linked list
+                if parent==null then {a=null; --case when list is empty
+                } else if (deleted==false) then {
                     if parent==a then { --case when a is the first item of list
                         a=a.next
                     } else {
@@ -318,6 +331,7 @@ def move() : bool {
 
     --recives a Agent from another box
 def external_move(a:Agent, x:int,y:int ) : bool {
+    unless this.ttl==a.ttl then {print(("out_of_sync",this.ttl,a.ttl, a.hash_code))};
     false;
     if(this.matrix.get_val(x,y)==true ) then { false } else {
         a.move_int(x,y);
@@ -333,34 +347,25 @@ def external_move(a:Agent, x:int,y:int ) : bool {
     passive class Item {
         a : Agent
         next : Item
+        prev : Item
         def init(a:Agent) : void {this.a=a;}
-    }
-    {--
-    passive class C_Matrix {
-        origin_x : int
-        origin_y : int
-        locks : [bool]
-        x_len : int
-        def init(in_max:(int,int),in_min:(int,int)) : void {
-                match (in_max,in_min) with
-                    ((xmax,ymax),(xmin,ymin)) => {
-                    this.origin_x=xmin;
-                    this.origin_y=ymin;
-                    this.x_len=xmax-xmin;
-                    this.locks=new [bool]((xmax-xmin+1)*(ymax-ymin+1));
-                    --print( (xmin,ymin,this.x_len,|this.locks|) );
-                    for i in [0..|this.locks|] {(this.locks)[i]=false}
-                };
+        def delete() : void {
+            if this.next==null and this.prev==null then { () }
+            else if this.next!=null and this.prev!=null then {
+                this.next.prev=this.prev.next;
+                this.prev.next=this.next.prev;
+            } else if this.next!=null then {
+                this.next.prev=null;
+            } else if this.prev!=null then {
+                this.prev.next=null;
             }
-        def get_val( x:int,y:int ) : bool {
-            --print((x,y,(x-this.origin_x)+((y-this.origin_y)*this.x_len)));
-            (this.locks)[(x-this.origin_x)+((y-this.origin_y)*this.x_len)]
         }
-        def set( x:int,y:int,value:bool ) : void {
-            (this.locks)[(x-this.origin_x)+((y-this.origin_y)*this.x_len)]=value
+        def append(next:Item) : void {
+            this.next=next;
+            next.prev=this;
         }
     }
-    --}
+
 def link(a:Box,b:Box) : bool {
     val aa=a.link(b);
     val bb=b.link(a);
@@ -369,17 +374,3 @@ def link(a:Box,b:Box) : bool {
     unless aaa==bbb then print("ONE_WAY_LINK\n");
     aaa
 }
-{-when ((y_max_2+1) == y_min_1) and (x_max_1+1==x_min_2) and (this.bottom_right==null) => {this.bottom_right=a; true}
-( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_min_1-1) == y_max_1) and (x_min_1==x_min_2-1) and (this.bottom_left==null) => {this.bottom_left=a; true}
-( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_1+1) == y_min_2) and (x_min_1==x_max_2-1) and (this.top_left==null) => {this.top_left=a; true }
-( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_1+1) == y_min_2) and (x_max_1+1==x_min_2) and (this.top_right==null) => {this.top_right=a; true }
-( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((x_max_1+1) == x_min_2) and (y_max_1==y_max_2) and (this.right==null) => {this.right=a;--print("right\n");
-true }
-( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_1+1) == y_min_2) and (x_max_1==x_max_2) and (this.up==null) => {this.up=a;   --print("up\n");
-true }
-( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((x_max_2+1) == x_min_1) and (y_max_1==y_max_2) and (this.left==null) => {this.left=a; --print("left\n");
-true }
-( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) when ((y_max_2+1) == y_min_1) and (x_max_1==x_max_2) and (this.down==null) => {this.down=a; --print("down\n");
-true }
-
-_ => { false }-}

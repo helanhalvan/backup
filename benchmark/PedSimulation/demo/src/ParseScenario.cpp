@@ -65,7 +65,7 @@ void ParseScenario::handleXmlStartElement()
   // New waypoint definition
   if (xmlReader.name() == "waypoint")
   {
-    createWaypoint();	
+    createWaypoint();
   }
 
   // New agents to add to scenario
@@ -108,15 +108,15 @@ void ParseScenario::createWaypoint()
   double x = readDouble("x");
   double y = readDouble("y");
   double r = readDouble("r");
-  
+
   Ped::Twaypoint *w = new Ped::Twaypoint(x, y, r);
   waypoints[id] = w;
 }
 
 void ParseScenario::createAgents()
 {
-  double x = readDouble("x");
-  double y = readDouble("y");
+  double x = readDouble("xs");
+  double y = readDouble("ys");
   int n = readDouble("n");
   double dx = readDouble("dx");
   double dy = readDouble("dy");

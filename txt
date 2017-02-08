@@ -1,250 +1,333 @@
  *** Error during typechecking *** 
-"./encore-libs-master/Ped_util/Regions.enc" (line 34, column 40)
-Operator 'and' is only defined for boolean types
-   Left type: bool
-   Right type: Fut bool
+"./encore-libs-master/Ped_util/Regions.enc" (line 237, column 18)
+No field 'tll' in class 'Agent'
 In expression: 
-  win and (this.boxes[i]).link(this.boxes[i - 1])
+  a.a.tll
 In expression: 
-  win = win and (this.boxes[i]).link(this.boxes[i - 1])
+  a.a.tll == this.ttl
 In expression: 
-  {win = win and (this.boxes[i]).link(this.boxes[i - 1]);
-   win = win and (this.boxes[i - 1]).link(this.boxes[i])}
+  if a.a.tll == this.ttl then
+    {var desired = a.a.next();
+     var i = 0;
+     var nejbor = null : Fut bool;
+     var moved = false;
+     var x2 = 0;
+     var y2 = 0;
+     while i < |desired| and moved == false
+       match desired[i] with
+         (x, y) => {nejbor = null;
+                    let up = y > this.ymax
+                        down = y < this.ymin
+                        right = x > this.xmax
+                        left = x < this.xmin
+                        border = if up then
+                                   if right then
+                                     this.top_right
+                                   else
+                                     if left then
+                                       this.top_left
+                                     else
+                                       this.up
+                                 else
+                                   if down then
+                                     if right then
+                                       this.bottom_right
+                                     else
+                                       if left then
+                                         this.bottom_left
+                                       else
+                                         this.down
+                                   else
+                                     if left then
+                                       this.left
+                                     else
+                                       if right then
+                                         this.right
+                                       else
+                                         null : Box
+                    in
+                      {if up or down or left or right then
+                         if border == null then
+                           {print("collision with edge of simulation, {}\n", (x, y));
+                            nejbor = mk_Future(false)}
+                         else
+                           {x2 = a.a.x;
+                            y2 = a.a.y;
+                            nejbor = border.external_move(a.a, x, y)};
+                       if nejbor == null then
+                         if this.matrix.get_val(x, y) == false then
+                           {unless this.matrix.remove(a.a.x, a.a.y) then
+                              print("remove failed\n");
+                            this.matrix.set(x, y, true);
+                            a.a.move_int(x, y);
+                            moved = true}
+                       else
+                         {await nejbor;
+                          if get nejbor then
+                            {unless this.matrix.remove(x2, y2) then
+                               print("remove failed 2\n");
+                             moved = true;
+                             if parent == a then
+                               {this.agents = a.next;
+                                parent = a.next}
+                             else
+                               parent.next = a.next}};
+                       i = i + 1}}
+       }
 In expression: 
-  if yindex != 0 then
-    {win = win and (this.boxes[i]).link(this.boxes[i - 1]);
-     win = win and (this.boxes[i - 1]).link(this.boxes[i])}
-In expression: 
-  {print("new\n");
-   this.boxes[i] = new Box((x + dx - 1, y + dy - 1), (x, y));
-   if yindex != 0 then
-     {win = win and (this.boxes[i]).link(this.boxes[i - 1]);
-      win = win and (this.boxes[i - 1]).link(this.boxes[i])};
-   if xindex != 0 then
-     {win = win and (this.boxes[i]).link(this.boxes[i - n]);
-      win = win and (this.boxes[i - n]).link(this.boxes[i])};
-   i = i + 1;
-   y = y + dy}
-In expression: 
-  for yindex in [ 0 , n - 2 by 1 ]
-    {print("new\n");
-     this.boxes[i] = new Box((x + dx - 1, y + dy - 1), (x, y));
-     if yindex != 0 then
-       {win = win and (this.boxes[i]).link(this.boxes[i - 1]);
-        win = win and (this.boxes[i - 1]).link(this.boxes[i])};
-     if xindex != 0 then
-       {win = win and (this.boxes[i]).link(this.boxes[i - n]);
-        win = win and (this.boxes[i - n]).link(this.boxes[i])};
-     i = i + 1;
-     y = y + dy}
-In expression: 
-  {for yindex in [ 0 , n - 2 by 1 ]
-     {print("new\n");
-      this.boxes[i] = new Box((x + dx - 1, y + dy - 1), (x, y));
-      if yindex != 0 then
-        {win = win and (this.boxes[i]).link(this.boxes[i - 1]);
-         win = win and (this.boxes[i - 1]).link(this.boxes[i])};
-      if xindex != 0 then
-        {win = win and (this.boxes[i]).link(this.boxes[i - n]);
-         win = win and (this.boxes[i - n]).link(this.boxes[i])};
-      i = i + 1;
-      y = y + dy};
-   if xindex != n - 1 then
-     {println(ymax - y);
-      print("big\n");
-      this.boxes[i] = new Box((x + dx - 1, ymax), (x, y));
-      if xindex != 0 then
-        {win = win and (this.boxes[i]).link(this.boxes[i - n]);
-         win = win and (this.boxes[i - n]).link(this.boxes[i]);
-         win = win and (this.boxes[i]).link(this.boxes[i - 1]);
-         win = win and (this.boxes[i - 1]).link(this.boxes[i])};
-      i = i + 1;
-      x = x + dx}
+  {if a.a.tll == this.ttl then
+     {var desired = a.a.next();
+      var i = 0;
+      var nejbor = null : Fut bool;
+      var moved = false;
+      var x2 = 0;
+      var y2 = 0;
+      while i < |desired| and moved == false
+        match desired[i] with
+          (x, y) => {nejbor = null;
+                     let up = y > this.ymax
+                         down = y < this.ymin
+                         right = x > this.xmax
+                         left = x < this.xmin
+                         border = if up then
+                                    if right then
+                                      this.top_right
+                                    else
+                                      if left then
+                                        this.top_left
+                                      else
+                                        this.up
+                                  else
+                                    if down then
+                                      if right then
+                                        this.bottom_right
+                                      else
+                                        if left then
+                                          this.bottom_left
+                                        else
+                                          this.down
+                                    else
+                                      if left then
+                                        this.left
+                                      else
+                                        if right then
+                                          this.right
+                                        else
+                                          null : Box
+                     in
+                       {if up or down or left or right then
+                          if border == null then
+                            {print("collision with edge of simulation, {}\n", (x, y));
+                             nejbor = mk_Future(false)}
+                          else
+                            {x2 = a.a.x;
+                             y2 = a.a.y;
+                             nejbor = border.external_move(a.a, x, y)};
+                        if nejbor == null then
+                          if this.matrix.get_val(x, y) == false then
+                            {unless this.matrix.remove(a.a.x, a.a.y) then
+                               print("remove failed\n");
+                             this.matrix.set(x, y, true);
+                             a.a.move_int(x, y);
+                             moved = true}
+                        else
+                          {await nejbor;
+                           if get nejbor then
+                             {unless this.matrix.remove(x2, y2) then
+                                print("remove failed 2\n");
+                              moved = true;
+                              if parent == a then
+                                {this.agents = a.next;
+                                 parent = a.next}
+                              else
+                                parent.next = a.next}};
+                        i = i + 1}}
+        };
+   if parent == null then
+     a = null
    else
-     {print("last\n");
-      this.boxes[i] = new Box((xmax, ymax), (x, y));
-      win = win and (this.boxes[i]).link(this.boxes[i - n]);
-      win = win and (this.boxes[i - n]).link(this.boxes[i]);
-      win = win and (this.boxes[i]).link(this.boxes[i - 1]);
-      win = win and (this.boxes[i - 1]).link(this.boxes[i])};
-   y = ymin}
-In expression: 
-  for xindex in [ 0 , n - 1 by 1 ]
-    {for yindex in [ 0 , n - 2 by 1 ]
-       {print("new\n");
-        this.boxes[i] = new Box((x + dx - 1, y + dy - 1), (x, y));
-        if yindex != 0 then
-          {win = win and (this.boxes[i]).link(this.boxes[i - 1]);
-           win = win and (this.boxes[i - 1]).link(this.boxes[i])};
-        if xindex != 0 then
-          {win = win and (this.boxes[i]).link(this.boxes[i - n]);
-           win = win and (this.boxes[i - n]).link(this.boxes[i])};
-        i = i + 1;
-        y = y + dy};
-     if xindex != n - 1 then
-       {println(ymax - y);
-        print("big\n");
-        this.boxes[i] = new Box((x + dx - 1, ymax), (x, y));
-        if xindex != 0 then
-          {win = win and (this.boxes[i]).link(this.boxes[i - n]);
-           win = win and (this.boxes[i - n]).link(this.boxes[i]);
-           win = win and (this.boxes[i]).link(this.boxes[i - 1]);
-           win = win and (this.boxes[i - 1]).link(this.boxes[i])};
-        i = i + 1;
-        x = x + dx}
+     if parent == a then
+       a = a.next
      else
-       {print("last\n");
-        this.boxes[i] = new Box((xmax, ymax), (x, y));
-        win = win and (this.boxes[i]).link(this.boxes[i - n]);
-        win = win and (this.boxes[i - n]).link(this.boxes[i]);
-        win = win and (this.boxes[i]).link(this.boxes[i - 1]);
-        win = win and (this.boxes[i - 1]).link(this.boxes[i])};
-     y = ymin}
+       {parent = parent.next;
+        if parent != null then
+          a = parent.next
+        else
+          a = null}}
 In expression: 
-  let win = true
+  while a != null
+    {if a.a.tll == this.ttl then
+       {var desired = a.a.next();
+        var i = 0;
+        var nejbor = null : Fut bool;
+        var moved = false;
+        var x2 = 0;
+        var y2 = 0;
+        while i < |desired| and moved == false
+          match desired[i] with
+            (x, y) => {nejbor = null;
+                       let up = y > this.ymax
+                           down = y < this.ymin
+                           right = x > this.xmax
+                           left = x < this.xmin
+                           border = if up then
+                                      if right then
+                                        this.top_right
+                                      else
+                                        if left then
+                                          this.top_left
+                                        else
+                                          this.up
+                                    else
+                                      if down then
+                                        if right then
+                                          this.bottom_right
+                                        else
+                                          if left then
+                                            this.bottom_left
+                                          else
+                                            this.down
+                                      else
+                                        if left then
+                                          this.left
+                                        else
+                                          if right then
+                                            this.right
+                                          else
+                                            null : Box
+                       in
+                         {if up or down or left or right then
+                            if border == null then
+                              {print("collision with edge of simulation, {}\n", (x, y));
+                               nejbor = mk_Future(false)}
+                            else
+                              {x2 = a.a.x;
+                               y2 = a.a.y;
+                               nejbor = border.external_move(a.a, x, y)};
+                          if nejbor == null then
+                            if this.matrix.get_val(x, y) == false then
+                              {unless this.matrix.remove(a.a.x, a.a.y) then
+                                 print("remove failed\n");
+                               this.matrix.set(x, y, true);
+                               a.a.move_int(x, y);
+                               moved = true}
+                          else
+                            {await nejbor;
+                             if get nejbor then
+                               {unless this.matrix.remove(x2, y2) then
+                                  print("remove failed 2\n");
+                                moved = true;
+                                if parent == a then
+                                  {this.agents = a.next;
+                                   parent = a.next}
+                                else
+                                  parent.next = a.next}};
+                          i = i + 1}}
+          };
+     if parent == null then
+       a = null
+     else
+       if parent == a then
+         a = a.next
+       else
+         {parent = parent.next;
+          if parent != null then
+            a = parent.next
+          else
+            a = null}}
 In expression: 
-  let win = true
+  var a = this.agents
 In expression: 
-  let i = 0
+  var a = this.agents
 In expression: 
-  let i = 0
+  var parent = this.agents
 In expression: 
-  let y = ymin
+  var parent = this.agents
 In expression: 
-  let y = ymin
-In expression: 
-  let x = xmin
-In expression: 
-  let x = xmin
-In expression: 
-  let dy = ymax - ymin / n
-In expression: 
-  let dy = ymax - ymin / n
-In expression: 
-  let dx = xmax - xmin / n
-In expression: 
-  let dx = xmax - xmin / n
-In expression: 
-  {let dx = xmax - xmin / n;
-   let dy = ymax - ymin / n;
-   this.boxes = new [Box](n * n);
-   let x = xmin;
-   let y = ymin;
-   let i = 0;
-   let win = true;
-   for xindex in [ 0 , n - 1 by 1 ]
-     {for yindex in [ 0 , n - 2 by 1 ]
-        {print("new\n");
-         this.boxes[i] = new Box((x + dx - 1, y + dy - 1), (x, y));
-         if yindex != 0 then
-           {win = win and (this.boxes[i]).link(this.boxes[i - 1]);
-            win = win and (this.boxes[i - 1]).link(this.boxes[i])};
-         if xindex != 0 then
-           {win = win and (this.boxes[i]).link(this.boxes[i - n]);
-            win = win and (this.boxes[i - n]).link(this.boxes[i])};
-         i = i + 1;
-         y = y + dy};
-      if xindex != n - 1 then
-        {println(ymax - y);
-         print("big\n");
-         this.boxes[i] = new Box((x + dx - 1, ymax), (x, y));
-         if xindex != 0 then
-           {win = win and (this.boxes[i]).link(this.boxes[i - n]);
-            win = win and (this.boxes[i - n]).link(this.boxes[i]);
-            win = win and (this.boxes[i]).link(this.boxes[i - 1]);
-            win = win and (this.boxes[i - 1]).link(this.boxes[i])};
-         i = i + 1;
-         x = x + dx}
+  {this.merge();
+   var parent = this.agents;
+   var a = this.agents;
+   while a != null
+     {if a.a.tll == this.ttl then
+        {var desired = a.a.next();
+         var i = 0;
+         var nejbor = null : Fut bool;
+         var moved = false;
+         var x2 = 0;
+         var y2 = 0;
+         while i < |desired| and moved == false
+           match desired[i] with
+             (x, y) => {nejbor = null;
+                        let up = y > this.ymax
+                            down = y < this.ymin
+                            right = x > this.xmax
+                            left = x < this.xmin
+                            border = if up then
+                                       if right then
+                                         this.top_right
+                                       else
+                                         if left then
+                                           this.top_left
+                                         else
+                                           this.up
+                                     else
+                                       if down then
+                                         if right then
+                                           this.bottom_right
+                                         else
+                                           if left then
+                                             this.bottom_left
+                                           else
+                                             this.down
+                                       else
+                                         if left then
+                                           this.left
+                                         else
+                                           if right then
+                                             this.right
+                                           else
+                                             null : Box
+                        in
+                          {if up or down or left or right then
+                             if border == null then
+                               {print("collision with edge of simulation, {}\n", (x, y));
+                                nejbor = mk_Future(false)}
+                             else
+                               {x2 = a.a.x;
+                                y2 = a.a.y;
+                                nejbor = border.external_move(a.a, x, y)};
+                           if nejbor == null then
+                             if this.matrix.get_val(x, y) == false then
+                               {unless this.matrix.remove(a.a.x, a.a.y) then
+                                  print("remove failed\n");
+                                this.matrix.set(x, y, true);
+                                a.a.move_int(x, y);
+                                moved = true}
+                           else
+                             {await nejbor;
+                              if get nejbor then
+                                {unless this.matrix.remove(x2, y2) then
+                                   print("remove failed 2\n");
+                                 moved = true;
+                                 if parent == a then
+                                   {this.agents = a.next;
+                                    parent = a.next}
+                                 else
+                                   parent.next = a.next}};
+                           i = i + 1}}
+           };
+      if parent == null then
+        a = null
       else
-        {print("last\n");
-         this.boxes[i] = new Box((xmax, ymax), (x, y));
-         win = win and (this.boxes[i]).link(this.boxes[i - n]);
-         win = win and (this.boxes[i - n]).link(this.boxes[i]);
-         win = win and (this.boxes[i]).link(this.boxes[i - 1]);
-         win = win and (this.boxes[i - 1]).link(this.boxes[i])};
-      y = ymin}}
-In expression: 
-  match find_extreme(agents) with
-    (xmax, ymax, xmin, ymin) => {let dx = xmax - xmin / n;
-                                 let dy = ymax - ymin / n;
-                                 this.boxes = new [Box](n * n);
-                                 let x = xmin;
-                                 let y = ymin;
-                                 let i = 0;
-                                 let win = true;
-                                 for xindex in [ 0 , n - 1 by 1 ]
-                                   {for yindex in [ 0 , n - 2 by 1 ]
-                                      {print("new\n");
-                                       this.boxes[i] = new Box((x + dx - 1, y + dy - 1), (x, y));
-                                       if yindex != 0 then
-                                         {win = win and (this.boxes[i]).link(this.boxes[i - 1]);
-                                          win = win and (this.boxes[i - 1]).link(this.boxes[i])};
-                                       if xindex != 0 then
-                                         {win = win and (this.boxes[i]).link(this.boxes[i - n]);
-                                          win = win and (this.boxes[i - n]).link(this.boxes[i])};
-                                       i = i + 1;
-                                       y = y + dy};
-                                    if xindex != n - 1 then
-                                      {println(ymax - y);
-                                       print("big\n");
-                                       this.boxes[i] = new Box((x + dx - 1, ymax), (x, y));
-                                       if xindex != 0 then
-                                         {win = win and (this.boxes[i]).link(this.boxes[i - n]);
-                                          win = win and (this.boxes[i - n]).link(this.boxes[i]);
-                                          win = win and (this.boxes[i]).link(this.boxes[i - 1]);
-                                          win = win and (this.boxes[i - 1]).link(this.boxes[i])};
-                                       i = i + 1;
-                                       x = x + dx}
-                                    else
-                                      {print("last\n");
-                                       this.boxes[i] = new Box((xmax, ymax), (x, y));
-                                       win = win and (this.boxes[i]).link(this.boxes[i - n]);
-                                       win = win and (this.boxes[i - n]).link(this.boxes[i]);
-                                       win = win and (this.boxes[i]).link(this.boxes[i - 1]);
-                                       win = win and (this.boxes[i - 1]).link(this.boxes[i])};
-                                    y = ymin}}
-  
-In expression: 
-  match find_extreme(agents) with
-    (xmax, ymax, xmin, ymin) => {let dx = xmax - xmin / n;
-                                 let dy = ymax - ymin / n;
-                                 this.boxes = new [Box](n * n);
-                                 let x = xmin;
-                                 let y = ymin;
-                                 let i = 0;
-                                 let win = true;
-                                 for xindex in [ 0 , n - 1 by 1 ]
-                                   {for yindex in [ 0 , n - 2 by 1 ]
-                                      {print("new\n");
-                                       this.boxes[i] = new Box((x + dx - 1, y + dy - 1), (x, y));
-                                       if yindex != 0 then
-                                         {win = win and (this.boxes[i]).link(this.boxes[i - 1]);
-                                          win = win and (this.boxes[i - 1]).link(this.boxes[i])};
-                                       if xindex != 0 then
-                                         {win = win and (this.boxes[i]).link(this.boxes[i - n]);
-                                          win = win and (this.boxes[i - n]).link(this.boxes[i])};
-                                       i = i + 1;
-                                       y = y + dy};
-                                    if xindex != n - 1 then
-                                      {println(ymax - y);
-                                       print("big\n");
-                                       this.boxes[i] = new Box((x + dx - 1, ymax), (x, y));
-                                       if xindex != 0 then
-                                         {win = win and (this.boxes[i]).link(this.boxes[i - n]);
-                                          win = win and (this.boxes[i - n]).link(this.boxes[i]);
-                                          win = win and (this.boxes[i]).link(this.boxes[i - 1]);
-                                          win = win and (this.boxes[i - 1]).link(this.boxes[i])};
-                                       i = i + 1;
-                                       x = x + dx}
-                                    else
-                                      {print("last\n");
-                                       this.boxes[i] = new Box((xmax, ymax), (x, y));
-                                       win = win and (this.boxes[i]).link(this.boxes[i - n]);
-                                       win = win and (this.boxes[i - n]).link(this.boxes[i]);
-                                       win = win and (this.boxes[i]).link(this.boxes[i - 1]);
-                                       win = win and (this.boxes[i - 1]).link(this.boxes[i])};
-                                    y = ymin}}
-  
-In method '_init' of type 'void'
-In class 'Regions.Tiling_box'
+        if parent == a then
+          a = a.next
+        else
+          {parent = parent.next;
+           if parent != null then
+             a = parent.next
+           else
+             a = null}};
+   true}
+In method 'move' of type 'bool'
+In class 'Regions.Box'
 

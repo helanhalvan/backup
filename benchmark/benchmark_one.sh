@@ -16,7 +16,7 @@ w="./main.enc.run ${1}_scenario.xml 0"
 { { perf stat -x -a -d -d $w ; } 2> temporaryfiletxt_${i} ; } > temptimes_${i}
 done
 
-w="./demo ${1}_scenario.xml --timing-mode"
+w="./demo ${1}_scenario.xml --timing-mode --implementation=parallel --collision"
 { { perf stat -x -a -d -d $w ; } 2> temporaryfiletxt_4 ; } > temptimes_4
 
 #echo "SETUP DONE"

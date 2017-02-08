@@ -24,11 +24,11 @@ def extreme_check(a:(int,int),b:(int,int,int,int) ) : (int,int,int,int) {
 
 def clock() : int {
     var x=0;
-    embed void { #{x}=clock(); } end;
+    embed void { #{x}=time(0); } end;
     x
 }
 def printtime(x:int) : void {
-   embed void { printf("%i seconds\n%i cycles\n", #{x}/CLOCKS_PER_SEC, #{x}); } end;
+   embed void { printf("%i seconds\n", #{x}); } end;
 }
 def mk_Future(n : bool) : Fut bool
  embed Fut bool
@@ -211,7 +211,7 @@ def parse_file(fname:String) : [Agent] {
                                         else {
                                             dy=dy+1 --+rand()%2
                                         };
-                                            agents[i]=new Agent((dx,dy),copy_tr(agent_waypoints),copy_ar(waypoints_distance),i,40000);
+                                            agents[i]=new Agent((dx,dy),copy_tr(agent_waypoints),copy_ar(waypoints_distance),i,10000);
                                             i=i+1
                                    }
                                }};

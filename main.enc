@@ -17,9 +17,7 @@ class Main {
 --check for easy memory optimizations in Quad_tree
 --Test if timmer does proper timing, seems of by some big factor
 --FIX DOUBLE MOVE BUG!!!
---fix agent move
---add links to support 8 dir move!
--- SOME LINKS ARE LEFT TO ADD
+--CONFORMITY FOR AGENT SPAWN
 
 --TODO LATER
 -- remove redundant checks
@@ -35,9 +33,9 @@ class Main {
             ui ={ match (args[2]).to_int() with
                             Just 1 => true
                             _ => false}
-            boxes = { if(args[3]==null) then {7} else {match (args[4]).to_int() with
+            boxes = { if(args[3]==null) then {2} else {match (args[4]).to_int() with
                             Just x => x
-                            _ => 9}}
+                            _ => 2}}
             --tree = new Quad_tree((100,100),(0,0))
        in
         {
@@ -56,6 +54,7 @@ class Main {
         }};
         print(tree.size());
 --}
+        --print("derp\n");
         ();
         --print("boxes={}\n",boxes);
          --print(args[2]);
