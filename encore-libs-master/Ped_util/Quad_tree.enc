@@ -125,9 +125,9 @@ passive class Quad_tree {
         def get_val( x:int,y:int ) : bool {
             this.tree.isin(x,y);
         }
-        def set( x:int,y:int,value:bool ) : void {
+        def set( x:int,y:int ) : void {
             if(x>this.xmax or y>this.ymax or y<this.ymin or x<this.xmin) then print("TRYING TO STORE VALUE OUTSIDE OF THIS TREE\n") else {
-            if value then this.tree.add(x,y) else this.tree.remove(x,y);
+            this.tree.add(x,y)
             };
             ()
         }

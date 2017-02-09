@@ -139,15 +139,30 @@ class Box {
  newcommers : Item
  to_early : Item
  ttl : int
+ size : int
+ moving : bool
+
 def init(in_max:(int,int), in_min:(int,int) ) : void {
     this.matrix= new Quad_tree(in_max,in_min);
     match in_max with (x,y) => {this.xmax=x;this.ymax=y};
     match in_min with (x,y) => {this.xmin=x;this.ymin=y};
     this.ttl=10001;
+    this.size=0;
+    this.moving=false;
     }
 --getters for borders
 def min() : (int,int) { (this.xmin,this.ymin) }
 def max() : (int,int) { (this.xmax,this.ymax) }
+
+def check_channeling() : void {
+    var cur= this.agents;
+    var i=0;
+    while cur!=null { i=i+1; cur=cur.next; };
+    var j=this.matrix.size();
+    if( i > j ) then print("more linked list agents ");
+    if( i < j ) then print("more matrix agents ");
+    if( i != j ) then { print((i,j,this.size)); while true { () };};
+}
 -- SLOW BUT ONLY USED BY UI
 def agents() : [(int,int)] {
     this.merge();
@@ -155,10 +170,6 @@ def agents() : [(int,int)] {
     var cur= this.agents;
     var i=0;
     while cur!=null { i=i+1; cur=cur.next; };
-    var j=this.matrix.size();
-    --check channeling between Quad_tree and linked lists
-    if( i != j ) then { print((i,j,this.agents.a.x,this.xmax,this.xmin,this.agents.a.y,this.ymax,this.ymin,this.matrix.tree.isin(this.agents.a.x,this.agents.a.y) ));
-                        while true { () };};
     var ret= new [(int,int)](i);
     cur=this.agents;
     i=0;
@@ -173,14 +184,22 @@ def agents() : [(int,int)] {
  --adds new agents to newcommers linked list
 def add(a:Agent) : bool {
     if a.x>this.xmax or a.x<this.xmin or a.y>this.ymax or a.y<this.ymin then false else {
-        if(this.matrix.get_val(a.x,a.y)==true) then {print("#"); true} else { --print("agents stacked on eachother\n");
-        this.matrix.set(a.x,a.y,true); --add to collison matrix
-    if(this.newcommers == null) then {this.newcommers=new Item(a); this.last=this.newcommers;} else {
-        this.last.next=new Item(a);
-        this.last=this.last.next;
-    };
-    true;
-    }}
+        if(this.matrix.get_val(a.x,a.y)==true) then {print("AGENTS IN TOP OF eachother\n"); while true { () }; true } else { --print("agents stacked on eachother\n");
+            this.matrix.set(a.x,a.y); --add to collison matrix
+            if(this.newcommers == null) then {
+                this.newcommers=new Item(a);
+            } else if (this.last == null) then {
+                this.last=new Item(a);
+                this.newcommers.append(this.last);
+            } else {
+                var new_wraper = new Item(a);
+                this.last.append(new_wraper);
+                this.last=new_wraper;
+            };
+            this.size=this.size+1;
+            true;
+        }
+    }
 }
 --if the arguement shares a border or corner with this box, it's added tas a nejbor and returns true
 --otherwise returns false
@@ -218,28 +237,38 @@ def link(a:Box) : bool {
             }
         }
     }
+def check_newcommers() : void {
+    var cur = this.newcommers;
+    var i = 2;
+    print("Is newcommers related to last? ");
+    while (cur!=this.last) { cur=cur.next; i=i+1;};
+    print(" Yes {}\n",i);
+}
 def merge() : void {
         if(this.newcommers!=null) then {
-            --print((this.last.next,this.last.a,this.agents));
-            this.last.next=this.agents; --append current agents to new agents list
-            this.agents=this.newcommers; -- replace current agents with new agents list
+            this.check_newcommers();
+            if(this.agents!=null) then {
+                if(this.last!=null) then this.last.append(this.agents) else this.newcommers.append(this.agents);
+                this.agents=this.newcommers;
+            } else { this.agents=this.newcommers;};
             this.newcommers=null;
             this.last=null;
+            print("MERING\n");
         };
+        this.check_channeling();
     }
  --moves all agents in the box once
  --returns true
 def move(step_nr:int) : bool {
+        if this.moving==true then { print("2 MOVE MESSAGES AT THE SAME TIME\n"); };
         this.ttl=this.ttl-1;
         unless step_nr==this.ttl then { print( (step_nr,this.ttl,"ttl!=step_nr") ); while true { () } };
         --print(("moving",step_nr,this.xmax,this.ymax));
         this.merge();
         var parent = this.agents;
         var a = this.agents;
-        var deleted = false;
        while a!=null {
             unless (a.a.ttl==step_nr or a.a.ttl==step_nr-1) then {print(this.ttl,a.a.ttl,a.a.hash_code); while true { () } };
-            deleted = false;
             if ((a.a.ttl)==step_nr) then { -- removes unlikely case when an agent is moved twice
                 a.a.ttl=a.a.ttl-1;
                 var desired = a.a.next();
@@ -248,10 +277,8 @@ def move(step_nr:int) : bool {
                 var moved = false;
                 var x2 =0;
                 var y2 =0;
-            --print("+");
             while(i < |desired| and moved == false) {
                     match desired[i] with (x,y) => {
-                        --print( ("go",desired[i],a.a.pos()) );
                         nejbor=null;
                         let
                             up = y>this.ymax
@@ -291,8 +318,8 @@ def move(step_nr:int) : bool {
                             --local collision detection
                             if this.matrix.get_val(x,y)==false then {
                                 --print(this.matrix.get_val(a.a.x,a.a.y));
-                                unless this.matrix.remove(a.a.x,a.a.y) then { print("remove failed\n") }; --remove from old pos
-                                this.matrix.set(x,y,true); --add to new pos
+                                unless this.matrix.remove(a.a.x,a.a.y) then { print("remove failed\n"); while true { () } }; --remove from old pos
+                                this.matrix.set(x,y); --add to new pos
                                 a.a.move_int(x,y); --move
                                 moved=true;
                                 --print("moved\n");
@@ -300,38 +327,25 @@ def move(step_nr:int) : bool {
                         } else {
                             await(nejbor);
                             if get(nejbor) then { --if left this box
+                                this.size=this.size-1;
                                 print("ttl: {} hash: {}\n",a.a.ttl,a.a.hash_code);
-                                unless this.matrix.remove(x2,y2) then print("remove failed 2\n"); --remove from old pos
+                                unless this.matrix.remove(x2,y2) then { print("remove failed 2\n"); while true { () } }; --remove from old pos
                                 moved=true;
-                                deleted=true;
-                                --remove a from list
-                                if parent==a then { --case for first item
-                                    --print("removing first item\n");
-                                    this.agents=a.next;
-                                };
-                                a.a=null;
-                                parent.next=a.next;
+                                if a==this.agents then {this.agents=a.next;};
+                                a.delete();
                             }
                         };
                             i=i+1;
                         }}}} else {print("timetraveler detected {} {} {}\n", a.a.hash_code,a.a.ttl,this.ttl);};
-                --next in linked list
-                if parent==null then {a=null; --case when list is empty
-                } else if (deleted==false) then {
-                    if parent==a then { --case when a is the first item of list
-                        a=a.next
-                    } else {
-                        parent=parent.next;
-                        if parent!=null then a=parent.next else a=null}
-                };
-                --suspend;
+                        a=a.next; --SWEET SWEET SEGFAUTLS!
             };
+        this.moving=false;
           true;
          }
 
     --recives a Agent from another box
 def external_move(a:Agent, x:int,y:int ) : bool {
-    unless this.ttl==a.ttl then {print(("out_of_sync",this.ttl,a.ttl, a.hash_code))};
+    unless this.ttl==a.ttl or this.ttl==a.ttl-1 or this.ttl==a.ttl+1 then {print(("out_of_sync",this.ttl,a.ttl, a.hash_code))};
     false;
     if(this.matrix.get_val(x,y)==true ) then { false } else {
         a.move_int(x,y);
@@ -362,8 +376,9 @@ def external_move(a:Agent, x:int,y:int ) : bool {
         }
         def append(next:Item) : void {
             this.next=next;
+            if(next!=null) then {
             next.prev=this;
-        }
+        }}
     }
 
 def link(a:Box,b:Box) : bool {
