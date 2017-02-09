@@ -161,7 +161,16 @@ def check_channeling() : void {
     var j=this.matrix.size();
     if( i > j ) then print("more linked list agents ");
     if( i < j ) then print("more matrix agents ");
-    if( i != j ) then { print((i,j,this.size)); while true { () };};
+    if( i != j ) then {
+            print((i,j,this.size));
+            cur=this.agents;
+            i=0;
+            while cur!=null {
+                if (this.matrix.get_val(cur.a.x, cur.a.y) == false) then {print("AGENT'S pos not in MATRIX {} {} {}\n", cur.a.hash_code, i,(this.xmax,this.ymax)); };
+                i=i+1;
+                cur=cur.next;
+            };
+            while true { () };};
 }
 -- SLOW BUT ONLY USED BY UI
 def agents() : [(int,int)] {
@@ -184,7 +193,7 @@ def agents() : [(int,int)] {
  --adds new agents to newcommers linked list
 def add(a:Agent) : bool {
     if a.x>this.xmax or a.x<this.xmin or a.y>this.ymax or a.y<this.ymin then false else {
-        if(this.matrix.get_val(a.x,a.y)==true) then {print("AGENTS IN TOP OF eachother\n"); while true { () }; true } else { --print("agents stacked on eachother\n");
+        if(this.matrix.get_val(a.x,a.y)==true) then {print("AGENTS IN TOP OF eachother\n"); while true { () }; true } else {
             this.matrix.set(a.x,a.y); --add to collison matrix
             if(this.newcommers == null) then {
                 this.newcommers=new Item(a);
@@ -239,16 +248,22 @@ def link(a:Box) : bool {
     }
 def check_newcommers() : void {
     var cur = this.newcommers;
-    var i = 2;
+    var i = 1;
     print("Is newcommers related to last? ");
-    while (cur!=this.last) { cur=cur.next; i=i+1;};
+    while (cur!=this.last) { if(cur.a==null) then {print("GHOST IN THE CHAIN\n"); while true { () }; }; cur=cur.next; i=i+1;};
     print(" Yes {}\n",i);
 }
 def merge() : void {
         if(this.newcommers!=null) then {
             this.check_newcommers();
             if(this.agents!=null) then {
-                if(this.last!=null) then this.last.append(this.agents) else this.newcommers.append(this.agents);
+                if(this.last==null) then {
+                    unless (this.newcommers.next==null and this.newcommers.prev==null) then { print("ONE AGENT NOT REALLY ALONE!\n"); while true { () }; };
+                    print("one agent arrived {} {}\n",this.newcommers.a.hash_code,(this.xmax,this.ymax) );
+                    this.newcommers.append(this.agents);
+                }
+                else
+                    this.last.append(this.agents);
                 this.agents=this.newcommers;
             } else { this.agents=this.newcommers;};
             this.newcommers=null;
@@ -339,21 +354,18 @@ def move(step_nr:int) : bool {
                         }}}} else {print("timetraveler detected {} {} {}\n", a.a.hash_code,a.a.ttl,this.ttl);};
                         a=a.next; --SWEET SWEET SEGFAUTLS!
             };
-        this.moving=false;
+          this.moving=false;
           true;
          }
 
     --recives a Agent from another box
 def external_move(a:Agent, x:int,y:int ) : bool {
-    unless this.ttl==a.ttl or this.ttl==a.ttl-1 or this.ttl==a.ttl+1 then {print(("out_of_sync",this.ttl,a.ttl, a.hash_code))};
+    unless this.ttl==a.ttl or this.ttl==a.ttl+1 then {print(("out_of_sync",this.ttl,a.ttl, a.hash_code)); while true { () } };
     false;
     if(this.matrix.get_val(x,y)==true ) then { false } else {
         a.move_int(x,y);
         this.add(a);
-        --print("ext_move\n");
-        true;
         };
-
     }
 }
 
@@ -364,15 +376,17 @@ def external_move(a:Agent, x:int,y:int ) : bool {
         prev : Item
         def init(a:Agent) : void {this.a=a;}
         def delete() : void {
-            if this.next==null and this.prev==null then { () }
-            else if this.next!=null and this.prev!=null then {
-                this.next.prev=this.prev.next;
-                this.prev.next=this.next.prev;
-            } else if this.next!=null then {
+            if this.next==null and this.prev==null then
+            { () }
+            else if this.prev==null then {
                 this.next.prev=null;
-            } else if this.prev!=null then {
+            } else if this.next==null then {
                 this.prev.next=null;
-            }
+            } else {
+                this.next.prev=this.prev;
+                this.prev.next=this.next;
+            };
+            this.a=null;
         }
         def append(next:Item) : void {
             this.next=next;
