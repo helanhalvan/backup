@@ -90,7 +90,7 @@ class Tiling_box {
                 };
     }}
     def move (ui:bool,sdl_main:SDL_Main,i:int,start_time:int) : void {
-        print("step {} GO!\n",i);
+        --print("step {} GO!\n",i);
         for id in [0..|this.boxes|-1] {
             this.futures[id]=(this.boxes[id]).move(i);
         };
@@ -154,6 +154,14 @@ def init(in_max:(int,int), in_min:(int,int) ) : void {
 def min() : (int,int) { (this.xmin,this.ymin) }
 def max() : (int,int) { (this.xmax,this.ymax) }
 
+--check_ methods for invariant checking, only used when debuging
+def check_newcommers() : void {
+    var cur = this.newcommers;
+    var i = 1;
+    print("Is newcommers related to last? ");
+    while (cur!=this.last) { if(cur.a==null) then {print("GHOST IN THE CHAIN\n"); while true { () }; }; cur=cur.next; i=i+1;};
+    print(" Yes {}\n",i);
+}
 def check_channeling() : void {
     var cur= this.agents;
     var i=0;
@@ -172,9 +180,9 @@ def check_channeling() : void {
             };
             while true { () };};
 }
--- SLOW BUT ONLY USED BY UI
+-- SLOW BUT ONLY USED BY UI, returns pos of all agents
 def agents() : [(int,int)] {
-    this.merge();
+    --this.merge();
     if(this.agents==null) then { new [(int,int)](0); } else {
     var cur= this.agents;
     var i=0;
@@ -246,20 +254,13 @@ def link(a:Box) : bool {
             }
         }
     }
-def check_newcommers() : void {
-    var cur = this.newcommers;
-    var i = 1;
-    print("Is newcommers related to last? ");
-    while (cur!=this.last) { if(cur.a==null) then {print("GHOST IN THE CHAIN\n"); while true { () }; }; cur=cur.next; i=i+1;};
-    print(" Yes {}\n",i);
-}
 def merge() : void {
         if(this.newcommers!=null) then {
-            this.check_newcommers();
+            --this.check_newcommers();
             if(this.agents!=null) then {
                 if(this.last==null) then {
                     unless (this.newcommers.next==null and this.newcommers.prev==null) then { print("ONE AGENT NOT REALLY ALONE!\n"); while true { () }; };
-                    print("one agent arrived {} {}\n",this.newcommers.a.hash_code,(this.xmax,this.ymax) );
+                    --print("one agent arrived {} {}\n",this.newcommers.a.hash_code,(this.xmax,this.ymax) );
                     this.newcommers.append(this.agents);
                 }
                 else
@@ -268,9 +269,9 @@ def merge() : void {
             } else { this.agents=this.newcommers;};
             this.newcommers=null;
             this.last=null;
-            print("MERING\n");
+            --print("MERING\n");
         };
-        this.check_channeling();
+        --this.check_channeling();
     }
  --moves all agents in the box once
  --returns true
@@ -343,7 +344,7 @@ def move(step_nr:int) : bool {
                             await(nejbor);
                             if get(nejbor) then { --if left this box
                                 this.size=this.size-1;
-                                print("ttl: {} hash: {}\n",a.a.ttl,a.a.hash_code);
+                                --print("ttl: {} hash: {}\n",a.a.ttl,a.a.hash_code);
                                 unless this.matrix.remove(x2,y2) then { print("remove failed 2\n"); while true { () } }; --remove from old pos
                                 moved=true;
                                 if a==this.agents then {this.agents=a.next;};
@@ -351,8 +352,8 @@ def move(step_nr:int) : bool {
                             }
                         };
                             i=i+1;
-                        }}}} else {print("timetraveler detected {} {} {}\n", a.a.hash_code,a.a.ttl,this.ttl);};
-                        a=a.next; --SWEET SWEET SEGFAUTLS!
+                        }}}}; --else {print("timetraveler detected {} {} {}\n", a.a.hash_code,a.a.ttl,this.ttl);};
+                        a=a.next;
             };
           this.moving=false;
           true;
@@ -360,7 +361,7 @@ def move(step_nr:int) : bool {
 
     --recives a Agent from another box
 def external_move(a:Agent, x:int,y:int ) : bool {
-    unless this.ttl==a.ttl or this.ttl==a.ttl+1 then {print(("out_of_sync",this.ttl,a.ttl, a.hash_code)); while true { () } };
+    unless this.ttl==a.ttl+2 or this.ttl==a.ttl+1 then {print(("out_of_sync",this.ttl,a.ttl, a.hash_code)); while true { () } };
     false;
     if(this.matrix.get_val(x,y)==true ) then { false } else {
         a.move_int(x,y);
