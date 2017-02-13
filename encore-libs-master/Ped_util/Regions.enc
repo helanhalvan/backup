@@ -11,7 +11,7 @@ import Quad_tree
 def regions(agents: [Agent],ui:bool,boxes:int) : void {
      var sdl_main = if ui then make_UI() else null : SDL_Main;
      var box = new Tiling_box(agents,boxes);
-     --print(|agents|);
+     print(("Encore regions",|agents|));
      box!move(ui,sdl_main,10000,clock()); --40000
  }
 class Tiling_box {
@@ -92,7 +92,7 @@ class Tiling_box {
     def move (ui:bool,sdl_main:SDL_Main,i:int,start_time:int) : void {
         --print("step {} GO!\n",i);
         for id in [0..|this.boxes|-1] {
-            this.futures[id]=(this.boxes[id]).move(i);
+            this.futures[id]=(this.boxes[id]).move();
         };
         for f in this.futures {
             await(f);
@@ -201,21 +201,24 @@ def agents() : [(int,int)] {
  --adds new agents to newcommers linked list
 def add(a:Agent) : bool {
     if a.x>this.xmax or a.x<this.xmin or a.y>this.ymax or a.y<this.ymin then false else {
-        if(this.matrix.get_val(a.x,a.y)==true) then {print("AGENTS IN TOP OF eachother\n"); while true { () }; true } else {
-            this.matrix.set(a.x,a.y); --add to collison matrix
-            if(this.newcommers == null) then {
-                this.newcommers=new Item(a);
-            } else if (this.last == null) then {
-                this.last=new Item(a);
-                this.newcommers.append(this.last);
-            } else {
-                var new_wraper = new Item(a);
-                this.last.append(new_wraper);
-                this.last=new_wraper;
-            };
-            this.size=this.size+1;
-            true;
-        }
+        this.add_internal(a);
+    }
+}
+def add_internal(a:Agent) : bool {
+    if(this.matrix.get_val(a.x,a.y)==true) then {print("AGENTS IN TOP OF eachother\n"); while true { () }; true } else {
+        this.matrix.set(a.x,a.y); --add to collison matrix
+        if(this.newcommers == null) then {
+            this.newcommers=new Item(a);
+        } else if (this.last == null) then {
+            this.last=new Item(a);
+            this.newcommers.append(this.last);
+        } else {
+            var new_wraper = new Item(a);
+            this.last.append(new_wraper);
+            this.last=new_wraper;
+        };
+        this.size=this.size+1;
+        true;
     }
 }
 --if the arguement shares a border or corner with this box, it's added tas a nejbor and returns true
@@ -259,12 +262,12 @@ def merge() : void {
             --this.check_newcommers();
             if(this.agents!=null) then {
                 if(this.last==null) then {
-                    unless (this.newcommers.next==null and this.newcommers.prev==null) then { print("ONE AGENT NOT REALLY ALONE!\n"); while true { () }; };
+                    --unless (this.newcommers.next==null and this.newcommers.prev==null) then { print("ONE AGENT NOT REALLY ALONE!\n"); while true { () }; };
                     --print("one agent arrived {} {}\n",this.newcommers.a.hash_code,(this.xmax,this.ymax) );
                     this.newcommers.append(this.agents);
                 }
                 else
-                    this.last.append(this.agents);
+                    {this.last.append(this.agents);};
                 this.agents=this.newcommers;
             } else { this.agents=this.newcommers;};
             this.newcommers=null;
@@ -275,17 +278,17 @@ def merge() : void {
     }
  --moves all agents in the box once
  --returns true
-def move(step_nr:int) : bool {
-        if this.moving==true then { print("2 MOVE MESSAGES AT THE SAME TIME\n"); };
+def move() : bool {
+        --if this.moving==true then { print("2 MOVE MESSAGES AT THE SAME TIME\n"); };
         this.ttl=this.ttl-1;
-        unless step_nr==this.ttl then { print( (step_nr,this.ttl,"ttl!=step_nr") ); while true { () } };
+        --unless step_nr==this.ttl then { print( (step_nr,this.ttl,"ttl!=step_nr") ); while true { () } };
         --print(("moving",step_nr,this.xmax,this.ymax));
         this.merge();
         var parent = this.agents;
         var a = this.agents;
        while a!=null {
-            unless (a.a.ttl==step_nr or a.a.ttl==step_nr-1) then {print(this.ttl,a.a.ttl,a.a.hash_code); while true { () } };
-            if ((a.a.ttl)==step_nr) then { -- removes unlikely case when an agent is moved twice
+            --unless (a.a.ttl==step_nr or a.a.ttl==step_nr-1) then {print(this.ttl,a.a.ttl,a.a.hash_code); while true { () } };
+            if ((a.a.ttl)==this.ttl) then { -- removes unlikely case when an agent is moved twice
                 a.a.ttl=a.a.ttl-1;
                 var desired = a.a.next();
                 var i = 0;
@@ -361,11 +364,11 @@ def move(step_nr:int) : bool {
 
     --recives a Agent from another box
 def external_move(a:Agent, x:int,y:int ) : bool {
-    unless this.ttl==a.ttl+2 or this.ttl==a.ttl+1 then {print(("out_of_sync",this.ttl,a.ttl, a.hash_code)); while true { () } };
-    false;
+    --unless this.ttl==a.ttl+2 or this.ttl==a.ttl+1 then {print(("out_of_sync",this.ttl,a.ttl, a.hash_code)); while true { () } };
+    --false;
     if(this.matrix.get_val(x,y)==true ) then { false } else {
         a.move_int(x,y);
-        this.add(a);
+        this.add_internal(a);
         };
     }
 }
