@@ -322,7 +322,7 @@ def move(step_nr:int) : bool {
                         in {
                         if up or down or left or right then {
                             if(border==null) then {
-                                print("collision with edge of simulation, {}\n", (x,y));
+                                --print("collision with edge of simulation, {}\n", (x,y));
                                 nejbor=mk_Future(false)
                             } else {
                                 x2=a.a.x; y2=a.a.y;

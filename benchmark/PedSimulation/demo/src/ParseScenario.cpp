@@ -112,20 +112,32 @@ void ParseScenario::createWaypoint()
   Ped::Twaypoint *w = new Ped::Twaypoint(x, y, r);
   waypoints[id] = w;
 }
-
+//TODO clean up this
 void ParseScenario::createAgents()
 {
-  double x = readDouble("xs");
-  double y = readDouble("ys");
+  int x = readDouble("xs");
+  int y = readDouble("ys");
   int n = readDouble("n");
-  double dx = readDouble("dx");
-  double dy = readDouble("dy");
-
+  int dx_max = readDouble("dx")/2;
+  int dy_max = readDouble("dy")/2;
+  int dx=x-dx_max;
+  int dy=y-dy_max;
   tempAgents.clear();
   for (int i = 0; i < n; ++i)
   {
-    int xPos = x + qrand()/(RAND_MAX/dx) -dx/2;
-    int yPos = y + qrand()/(RAND_MAX/dy) -dy/2;
+    if(dx>x+dx_max) {
+        printf("out of space\n");
+        dx=x-dx_max;
+    }
+    else if(dy>y+dy_max) {
+        dy=y-dy_max;
+        dx=dx+1;
+    }
+    else {
+        dy=dy+1;
+    };
+    int xPos = dx; //+qrand()/(RAND_MAX/dx)
+    int yPos = dy; //+qrand()/(RAND_MAX/dy)
     Ped::Tagent *a = new Ped::Tagent(xPos, yPos);
     tempAgents.push_back(a);
   }

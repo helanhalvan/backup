@@ -43,7 +43,7 @@ int main(int argc, char*argv[]) {
     if(argv[i][0] == '-' && argv[i][1] == '-')
     {
       if(strcmp(&argv[i][2],"timing-mode") == 0) {
-        cout << "Timing mode on\n";
+        //cout << "Timing mode on\n";
         timing_mode = true;
       }
       else if(strcmp(&argv[i][2],"collision") == 0)              { collision = true; }
@@ -87,20 +87,20 @@ int main(int argc, char*argv[]) {
   ParseScenario parser(scenefile);
 
   if (collision == true) {
-    cout << "collision enabled ";
+    //cout << "collision enabled ";
       if (implementation == Ped::SEQ) {
         cout << "(seq)";
           implementation = Ped::COLLISION_SEQ;
       } else {
-        cout << "(parallel)";
-          implementation = Ped::COLLISION_PARALLEL;
+        //cout << "(parallel)";
+          implementation = Ped::COLLISION_PARALLEL; //THIS OVERRITES ALL THE options for parallel collsion detection
       }
     cout << std::endl;
   }
   if (heatmap_mode != Ped::DISABLED) {
     cout << "heatmap enabled" << endl;
   }
-
+    cout << parser.getAgents().size() <<endl;
   model.setup(parser.getAgents(), implementation, num_threads, heatmap_mode);
 
   // GUI related set ups
@@ -111,7 +111,7 @@ int main(int argc, char*argv[]) {
   const int maxNumberOfStepsToSimulate = 10000;
   PedSimulation *simulation = new PedSimulation(model, mainwindow);
 
-  cout << "Demo setup complete, running ..." << endl;
+  cout << "OPENMP" << endl;
   int retval = 0;
   // Timing of simulation
   //std::chrono::time_point<std::chrono::system_clock> start,stop;
@@ -134,7 +134,7 @@ int main(int argc, char*argv[]) {
   int stop = time(0);//std::chrono::system_clock::now();
   //std::chrono::duration<double> elapsed_seconds = stop-start;
   //cout << "Time: " << elapsed_seconds.count() << " seconds." << endl;
-  printf("%i seconds\n", stop-start); 
+  printf("%i seconds\n", stop-start);
   //cout << "Done" << endl;
   delete (simulation);
   return retval;

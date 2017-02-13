@@ -314,7 +314,7 @@ void Ped::Model::tick() {
     case SEQ: tick_seq(); break;
     case OMP: tick_omp(); break;
     case PTHREAD: tick_pthread(); break;
-    case VECTOR: tick_vector(); break;
+    case VECTOR: printf("VECTOR\n"); tick_vector(); break;
     case TICK_OPENCL: tick_opencl(); break;
     case COLLISION_SEQ: tick_collision_seq(); break;
     case COLLISION_PARALLEL: tick_collision_parallel(); break;
