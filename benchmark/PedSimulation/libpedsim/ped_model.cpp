@@ -604,7 +604,11 @@ Ped::MOVE_ACTION Ped::Model::move(Tagent* agent, Region *region){
     p2.x = agent->getX();
     p2.y = desired.y;
   }
-
+    cout << "code alive" << endl;
+    if(p1.x>(agent->getX()+1) || p1.y<(agent->getX()-1) || p1.x>(agent->getX()+1) || p1.y<(agent->getX()-1) ||
+       p2.x>(agent->getX()+1) || p2.y<(agent->getX()-1) || p2.x>(agent->getX()+1) || p2.y<(agent->getX()-1)) {
+        cout << "there is a distrubance in the force\n" << endl;
+    }
   if(rand()%2){
     prioritized_alternatives[1] = &p1;
     prioritized_alternatives[2] = &p2;

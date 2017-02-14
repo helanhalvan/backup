@@ -95,7 +95,6 @@ class Tiling_box {
             this.futures[id]=(this.boxes[id]).move();
         };
         for f in this.futures {
-            await(f);
             get(f);
         };
         --print("done_wait\n");
@@ -204,6 +203,16 @@ def add(a:Agent) : bool {
         this.add_internal(a);
     }
 }
+    --recives a Agent from another box
+def external_move(a:Agent, x:int,y:int ) : bool {
+    --unless this.ttl==a.ttl+2 or this.ttl==a.ttl+1 then {print(("out_of_sync",this.ttl,a.ttl, a.hash_code)); while true { () } };
+    --false;
+    if x>this.xmax or x<this.xmin or y>this.ymax or y<this.ymin then {print("external_move BAD {} {} {} {}\n", (x,y), (this.xmax,this.ymax), (this.xmin,this.ymin), a.hash_code); while true { () }; false } else {
+    if(this.matrix.get_val(x,y)==true ) then { false } else {
+        a.move_int(x,y);
+        this.add_internal(a);
+        };
+    }}
 def add_internal(a:Agent) : bool {
     if(this.matrix.get_val(a.x,a.y)==true) then {print("AGENTS IN TOP OF eachother\n"); while true { () }; true } else {
         this.matrix.set(a.x,a.y); --add to collison matrix
@@ -324,11 +333,12 @@ def move() : bool {
                                     } else if left then {this.left} else if right then {this.right} else {null : Box}
                             }
                         in {
-                        if up or down or left or right then {
+                        if up or down or left or right then { --if outside of the box
                             if(border==null) then {
                                 --print("collision with edge of simulation, {}\n", (x,y));
                                 nejbor=mk_Future(false)
                             } else {
+                                --print("{} {} hash: {}\n",(a.a.x,a.a.y),desired[i],a.a.hash_code);
                                 x2=a.a.x; y2=a.a.y;
                                 nejbor=border.external_move(a.a,x,y);
                             }
@@ -347,7 +357,7 @@ def move() : bool {
                             await(nejbor);
                             if get(nejbor) then { --if left this box
                                 this.size=this.size-1;
-                                --print("ttl: {} hash: {}\n",a.a.ttl,a.a.hash_code);
+
                                 unless this.matrix.remove(x2,y2) then { print("remove failed 2\n"); while true { () } }; --remove from old pos
                                 moved=true;
                                 if a==this.agents then {this.agents=a.next;};
@@ -361,16 +371,6 @@ def move() : bool {
           this.moving=false;
           true;
          }
-
-    --recives a Agent from another box
-def external_move(a:Agent, x:int,y:int ) : bool {
-    --unless this.ttl==a.ttl+2 or this.ttl==a.ttl+1 then {print(("out_of_sync",this.ttl,a.ttl, a.hash_code)); while true { () } };
-    --false;
-    if(this.matrix.get_val(x,y)==true ) then { false } else {
-        a.move_int(x,y);
-        this.add_internal(a);
-        };
-    }
 }
 
 --UTIL CLASSES FOR Box

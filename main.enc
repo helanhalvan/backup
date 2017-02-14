@@ -13,15 +13,8 @@ import Ped_util.Quad_tree
 --import Data.Either
 class Main {
 --TODO
---Test that quad-tree based implementation works
 --check for easy memory optimizations in Quad_tree
---Test if timmer does proper timing, seems of by some big factor
---FIX DOUBLE MOVE BUG!!!
---CONFORMITY FOR AGENT SPAWN
-
---TODO LATER
--- remove redundant checks
--- test
+--remove futures in Regions supervisor
    def main(args: [String]) : void {
 
        let
@@ -33,9 +26,9 @@ class Main {
             ui ={ match (args[2]).to_int() with
                             Just 1 => true
                             _ => false}
-            boxes = { if(args[3]==null) then {2} else {match (args[4]).to_int() with
+            boxes = { if(args[3]==null) then {7} else {match (args[4]).to_int() with
                             Just x => x
-                            _ => 2}}
+                            _ => 7}}
             --tree = new Quad_tree((100,100),(0,0))
        in
         {

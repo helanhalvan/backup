@@ -38,7 +38,6 @@ passive class Agent {
     -- --returns places the agent can and want to go to
     -- --can => an agent can only go up, down, left or right
     -- --want => an agent only want to go closer to their next waypoint
-    -- lowers TTL
     def next() : [(int,int)] {
             --this.ttl=this.ttl-1; --update step counter
             var ret = new [(int,int)](3);
@@ -52,21 +51,66 @@ passive class Agent {
                 y1=this.y
                 x2=this.targets_x[this.i]
                 y2=this.targets_y[this.i]
-                dx=round((x1-x2)/len)
-                dy=round((y1-y2)/len)
+                dx=round( ((x1-x2)*1.0) /len)
+                dy=round( ((y1-y2)*1.0) /len)
                 next_x=x1-dx
                 next_y=y1-dy
             in {
                 ret[0]=(next_x,next_y);
                 if(dx==0 or dy==0) then {
-                ret[1]=(next_x+dy,next_y+dx);
-                ret[2]=(next_x-dy,next_y-dx);
+                    ret[1]=(next_x+dy,next_y+dx);
+                    ret[2]=(next_x-dy,next_y-dx);
                 } else {
-                ret[1]=(next_x,y1);
-                ret[2]=(x1,next_y);
+                    ret[1]=(next_x,y1);
+                    ret[2]=(x1,next_y);
+                };
+                for i in [0..2] {
+                    if man_distance(ret[i],(this.x,this.y))>2 then {
+                        print("MOVING FURTHER THEN ONE STEP AT THE TIME {} {} {} {}\n {} {} {} {} {}\n",man_distance(ret[i],(this.x,this.y)),(this.x,this.y),ret[i], i, (x1,y1), (x2,y2),(dx,dy),(x1-x2,y1-y2),len);
+                        while true { () };
+                    }
+                };
+                ret
+}}
+{-
+    def next() : [(int,int)] {
+            --this.ttl=this.ttl-1; --update step counter
+            var ret = new [(int,int)](3);
+            val len=distance_int( this.x,this.y, (this.targets_x)[this.i], (this.targets_y)[this.i] );
+            if len<this.targets_size[this.i] then
+                {this.i=this.i+1;};
+            if |this.targets_size| == this.i then
+                {this.i=0;};
+
+            var x=0.5;
+            x=this.x;
+            var y=0.5;
+            y=this.y;
+            var diffx=0.5;
+            diffx=this.targets_x[this.i]-x;
+            var diffy=0.5;
+            diffy=(this.targets_y[this.i]-y);
+            val desiredx=round( x+ (diffx/len) );
+            val desiredy=round( y+ (diffy/len) );
+            val diffx2=this.x-desiredx;
+            val diffy2=this.y-desiredy;
+            {
+                ret[0]=(desiredx,desiredy);
+                if(diffx2==0 or diffy2==0) then {
+                ret[1]=(desiredx+diffy2,desiredy+diffx2);
+                ret[2]=(desiredx-diffy2,desiredy-diffx2);
+                } else {
+                ret[1]=(desiredx,this.y);
+                ret[2]=(this.x,desiredy);
+                };
+                for i in [0..2] {
+                    if man_distance(ret[i],(this.x,this.y))>2 then {
+                        print("MOVING FURTHER THEN ONE STEP AT THE TIME, {} {} {}\n",man_distance(ret[i],(this.x,this.y)),(this.x,this.y),ret[i]);
+                    }
                 };
                 ret
             }}
+-}
     --updates the current position
     --agents have no agency and check nothing when it comes to their own position
     def move(in_pos:(int,int)) : void {

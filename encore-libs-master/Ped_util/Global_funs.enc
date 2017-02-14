@@ -103,7 +103,7 @@ def rand() : int {
 def sleep(x:real) : void {
     embed void { sleep( #{x} ); } end
 }
-def rot(nr:int) : int {
+def rot(nr:real) : real {
     embed void { #{nr}=sqrt(#{nr}); } end;
     nr
 }
@@ -123,7 +123,7 @@ def round(x:real) : int {
     embed void { #{i}=round(#{x}); } end;
     i
 }
-def distance(a:(int,int),b:(int,int)) : int {
+def distance(a:(int,int),b:(int,int)) : real {
     match (a,b) with
         ((x1,y1),(x2,y2)) => rot(((x1-x2)*(x1-x2))+((y1-y2)*(y1-y2)))
          _ => { print("THIS WILL NEVER HAPPEN!"); 1/0 }
