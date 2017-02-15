@@ -2,6 +2,34 @@ module Global_funs
 import Agent_passive
 import XML.XML
 
+
+def invSqrt(input:int) : real{
+  var ret = 0.0;
+  embed void {
+  float x = #{input};
+  float xhalf = 0.5f * x;
+  int i = *(int*)&x;
+  i = 0x5f3759df - (i >> 1);
+  x = *(float*)&i;
+  #{ret} = x*(1.5f - xhalf*x*x);
+  } end;
+  ret;
+}
+{--
+--quake 3 invSqrt
+def invSqrt(x: real) : real{
+  embed void {
+  double xhalf = 0.5f * #{x};
+  int64_t i = *(int64_t*)&#{x};
+  i = 0x5fe6eb50c7b537a9 - (i >> 1);
+  #{x} = *(double*)&i;
+  #{x} = #{x}*(1.5f - xhalf* #{x} * #{x} );
+  } end;
+  x
+    --1/rot(x);
+}
+--}
+
 --xmax ymax xmin ymin
 def find_extreme(agents:[Agent]) : (int,int,int,int) {
     var extreme=(-10000,-10000,10000,10000);
@@ -121,6 +149,11 @@ def man_distance_int(x1:int,y1:int,x2:int,y2:int) : int {
 def round(x:real) : int {
     val i=0;
     embed void { #{i}=round(#{x}); } end;
+    i
+}
+def ceil(x:real) : int {
+    val i=0;
+    embed void { #{i}=ceil(#{x}); } end;
     i
 }
 def distance(a:(int,int),b:(int,int)) : real {

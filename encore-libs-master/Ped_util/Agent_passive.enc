@@ -38,38 +38,62 @@ passive class Agent {
     -- --returns places the agent can and want to go to
     -- --can => an agent can only go up, down, left or right
     -- --want => an agent only want to go closer to their next waypoint
+
+    --double length = diffX * diffX + diffY * diffY;
+    --double r = destination->getr();
+    --agentReachedDestination = length < (r * r);
+
     def next() : [(int,int)] {
-            --this.ttl=this.ttl-1; --update step counter
-            var ret = new [(int,int)](3);
-            val len=distance_int( this.x,this.y, (this.targets_x)[this.i], (this.targets_y)[this.i] );
-            if len<this.targets_size[this.i] then
-                {this.i=this.i+1;};
-            if |this.targets_size| == this.i then
-                {this.i=0;};
             let
                 x1=this.x
                 y1=this.y
-                x2=this.targets_x[this.i]
-                y2=this.targets_y[this.i]
-                dx=round( ((x1-x2)*1.0) /len)
-                dy=round( ((y1-y2)*1.0) /len)
-                next_x=x1-dx
-                next_y=y1-dy
             in {
-                ret[0]=(next_x,next_y);
-                if(dx==0 or dy==0) then {
-                    ret[1]=(next_x+dy,next_y+dx);
-                    ret[2]=(next_x-dy,next_y-dx);
+                var x2=this.targets_x[this.i];
+                var y2=this.targets_y[this.i];
+                var xdiff=x1-x2;
+                var ydiff=y1-y2;
+                var lenSquare=(xdiff*xdiff)+(ydiff*ydiff);
+                var invlen = invSqrt(lenSquare);
+                var ret = new [(int,int)](3);
+            if lenSquare< (this.targets_size[this.i]*this.targets_size[this.i]) then
+                {this.i=this.i+1;};
+            if |this.targets_size| == this.i then
+                {this.i=0;};
+                x2=this.targets_x[this.i];
+                y2=this.targets_y[this.i];
+                xdiff=x1-x2;
+                ydiff=y1-y2;
+                lenSquare=(xdiff*xdiff)+(ydiff*ydiff);
+                invlen = invSqrt(lenSquare);
+            let
+                desired_x=x1+round( (x2+xdiff)*invlen )
+                desired_y=y1+round( (y2+ydiff)*invlen )
+            in {
+                xdiff=desired_x-x1;
+                ydiff=desired_y-y1;
+                ret[0]=(desired_x,desired_y);
+                ret[1]=(desired_x,desired_y);
+                ret[2]=(desired_x,desired_y);
+
+                if(xdiff==0 or ydiff==0) then {
+                    --if(xdiff==0 and ydiff==0) then print("xdiff and ydiff == 0, invariant VIOLATED {} {}\n",xdiff,ydiff);
+                    ret[1]=(desired_x+ydiff,desired_y+xdiff);
+                    ret[2]=(desired_x-ydiff,desired_y-xdiff);
                 } else {
-                    ret[1]=(next_x,y1);
-                    ret[2]=(x1,next_y);
+                    ret[1]=(desired_x,y1);
+                    ret[2]=(x1,desired_y);
                 };
+                --}
                 for i in [0..2] {
-                    if man_distance(ret[i],(this.x,this.y))>2 then {
-                        print("MOVING FURTHER THEN ONE STEP AT THE TIME {} {} {} {}\n {} {} {} {} {}\n",man_distance(ret[i],(this.x,this.y)),(this.x,this.y),ret[i], i, (x1,y1), (x2,y2),(dx,dy),(x1-x2,y1-y2),len);
-                        while true { () };
-                    }
-                };
+                    if man_distance(ret[i],(this.x,this.y))<1 or man_distance(ret[i],(this.x,this.y))>2 then {
+                        unless equal(ret[i],(this.x,this.y)) then {
+                        print("\nMOVING {} STEPS {} {} {}\n {} {}\n",man_distance(ret[i],(this.x,this.y)),
+                        (this.x,this.y),ret[i], i,
+                        (xdiff,ydiff),invlen);
+                        };
+                        --while true { () };
+                    } --else {print(xdiff,ydiff);}
+                }};
                 ret
 }}
 {-

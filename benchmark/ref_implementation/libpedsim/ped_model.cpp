@@ -316,8 +316,10 @@ void Ped::Model::calculateNextPosition( Ped::Tagent *agent)
   prioritizedAlternatives.push_back(p1);
   prioritizedAlternatives.push_back(p2);
 
-    if(p1.first>(agent->getX()+1) || p1.first<(agent->getX()-1) || p1.second>(agent->getX()+1) || p1.second<(agent->getX()-1) ) {
-        cout << "there is a distrubance in the force\n" << endl;
+    if(p1.first>(agent->getX()+1) || p1.first<(agent->getY()-1) || p1.second>(agent->getX()+1) || p1.second<(agent->getY()-1) ) {
+        cout << "b";
+    } else {
+        cout << "a";
     }
 
   // Find the first empty alternative position

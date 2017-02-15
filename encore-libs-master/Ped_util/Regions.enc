@@ -207,7 +207,7 @@ def add(a:Agent) : bool {
 def external_move(a:Agent, x:int,y:int ) : bool {
     --unless this.ttl==a.ttl+2 or this.ttl==a.ttl+1 then {print(("out_of_sync",this.ttl,a.ttl, a.hash_code)); while true { () } };
     --false;
-    if x>this.xmax or x<this.xmin or y>this.ymax or y<this.ymin then {print("external_move BAD {} {} {} {}\n", (x,y), (this.xmax,this.ymax), (this.xmin,this.ymin), a.hash_code); while true { () }; false } else {
+    if x>this.xmax or x<this.xmin or y>this.ymax or y<this.ymin then { false } else { -- robustness for 
     if(this.matrix.get_val(x,y)==true ) then { false } else {
         a.move_int(x,y);
         this.add_internal(a);

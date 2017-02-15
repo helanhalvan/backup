@@ -47,7 +47,7 @@ void Ped::Tagent::bindData(float* px, float* py, float* dx, float* dy, float* tx
   *destination_r = destination->getr();
 
 }
-//THIS IS WRONG, WE WANT SQRT, not INVSQRT
+//TODO COPY THIS ?
 // Uses an aproximate fast inverse square root algorithm.
 // This is copied from Quake III Arena.
 float invSqrt(float x){

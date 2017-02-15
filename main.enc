@@ -15,6 +15,7 @@ class Main {
 --TODO
 --check for easy memory optimizations in Quad_tree
 --remove futures in Regions supervisor
+-- unify the SQRT
    def main(args: [String]) : void {
 
        let
