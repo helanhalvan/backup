@@ -1,24 +1,23 @@
-./main.enc.run: Interrupt
 failed to read counter stalled-cycles-frontend
 failed to read counter stalled-cycles-backend
 failed to read counter L1-icache-loads
-1124,750477-a-atask-clock-a1124750477-a100,00
-2115-a-acontext-switches-a1124750477-a100,00
-8-a-acpu-migrations-a1124750477-a100,00
-1251-a-apage-faults-a1124750477-a100,00
-3053667446-a-acycles-a259395129-a24,48
+1230622,881493-a-atask-clock-a1230622881493-a100,00
+2985750-a-acontext-switches-a1230622881493-a100,00
+10-a-acpu-migrations-a1230622881493-a100,00
+12340-a-apage-faults-a1230622881493-a100,00
+3019166127733-a-acycles-a351338744987-a28,34
 <not supported>-a-astalled-cycles-frontend-a0-a100,00
 <not supported>-a-astalled-cycles-backend-a0-a100,00
-1093974318-a-ainstructions-a337150263-a31,57
-262026572-a-abranches-a359116001-a33,40
-4505470-a-abranch-misses-a394204461-a38,19
-289840155-a-aL1-dcache-loads-a236095158-a24,28
-41014479-a-aL1-dcache-load-misses-a199854345-a20,47
-23030226-a-aLLC-loads-a205917774-a20,38
-328551-a-aLLC-load-misses-a265841070-a25,50
+2995823995116-a-ainstructions-a446657863372-a36,03
+649007362673-a-abranches-a433665761170-a34,98
+12126664628-a-abranch-misses-a432157522024-a34,86
+472641383625-a-aL1-dcache-loads-a259668379082-a20,94
+83500969643-a-aL1-dcache-load-misses-a208947518191-a16,85
+16791343042-a-aLLC-loads-a210164405217-a16,95
+1178602651-a-aLLC-load-misses-a266396036025-a21,49
 <not supported>-a-aL1-icache-loads-a0-a100,00
-398821-a-aL1-icache-load-misses-a330272577-a30,84
-292229383-a-adTLB-loads-a220580473-a20,13
-148679-a-adTLB-load-misses-a192377238-a17,25
-4069-a-aiTLB-loads-a166692163-a15,43
-8512-a-aiTLB-load-misses-a206504884-a18,98
+1720722292-a-aL1-icache-load-misses-a347210418587-a28,01
+473349656336-a-adTLB-loads-a252568395757-a20,37
+612640082-a-adTLB-load-misses-a242771619447-a19,58
+118871250-a-aiTLB-loads-a209387615834-a16,89
+29067499-a-aiTLB-load-misses-a262666029964-a21,19

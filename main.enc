@@ -2,14 +2,14 @@ import SDL.SDL_Main
 import SDL.SDL_Types
 import SDL.SDL_Primitives
 import Ped_util.Agent_passive
-import Ped_util.Agent_active
+--import Ped_util.Agent_active
 import Ped_util.UI
 import Ped_util.Global_funs
-import Ped_util.List_driver
+--import Ped_util.List_driver
 --import Ped_util.Bucket_driver
-import Ped_util.Matrix_driver
+--import Ped_util.Matrix_driver
 import Ped_util.Regions
-import Ped_util.Quad_tree
+--import Ped_util.Quad_tree
 --import Data.Either
 class Main {
 --TODO
@@ -60,7 +60,7 @@ class Main {
         --matrix(agents,ui);
        }
    }
-
+{--
 def baseline(agents: [Agent], ui:bool) : void {
      var
          i = 0;
@@ -106,4 +106,5 @@ def baseline_loop(i:int,drivers:[Agent_driver],futures:[Fut void],ui:bool,sdl_ma
              --if(i % 1000==0) then {print("{} {}\n",i,new_time);};
          if i>0 then this!baseline_loop(i-1, drivers,futures,ui,sdl_main,last_time);
  }
+--}
 }

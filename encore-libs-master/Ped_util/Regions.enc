@@ -181,7 +181,7 @@ def check_channeling() : void {
 }
 -- SLOW BUT ONLY USED BY UI, returns pos of all agents
 def agents() : [(int,int)] {
-    --this.merge();
+    this.merge();
     if(this.agents==null) then { new [(int,int)](0); } else {
     var cur= this.agents;
     var i=0;
@@ -207,7 +207,7 @@ def add(a:Agent) : bool {
 def external_move(a:Agent, x:int,y:int ) : bool {
     --unless this.ttl==a.ttl+2 or this.ttl==a.ttl+1 then {print(("out_of_sync",this.ttl,a.ttl, a.hash_code)); while true { () } };
     --false;
-    if x>this.xmax or x<this.xmin or y>this.ymax or y<this.ymin then { false } else { -- robustness for 
+    if x>this.xmax or x<this.xmin or y>this.ymax or y<this.ymin then { false } else { -- robustness for
     if(this.matrix.get_val(x,y)==true ) then { false } else {
         a.move_int(x,y);
         this.add_internal(a);
@@ -295,18 +295,20 @@ def move() : bool {
         this.merge();
         var parent = this.agents;
         var a = this.agents;
+        var desired = new [int](6);
        while a!=null {
             --unless (a.a.ttl==step_nr or a.a.ttl==step_nr-1) then {print(this.ttl,a.a.ttl,a.a.hash_code); while true { () } };
             if ((a.a.ttl)==this.ttl) then { -- removes unlikely case when an agent is moved twice
                 a.a.ttl=a.a.ttl-1;
-                var desired = a.a.next();
+                a.a.next(desired);
                 var i = 0;
                 var nejbor = null:Fut bool;
                 var moved = false;
                 var x2 =0;
                 var y2 =0;
             while(i < |desired| and moved == false) {
-                    match desired[i] with (x,y) => {
+                    val x = desired[i];
+                    val y = desired[i+1];
                         nejbor=null;
                         let
                             up = y>this.ymax
@@ -343,7 +345,7 @@ def move() : bool {
                                 nejbor=border.external_move(a.a,x,y);
                             }
                         };
-                        if nejbor==null then {
+                        if nejbor==null then { --else here
                             --local collision detection
                             if this.matrix.get_val(x,y)==false then {
                                 --print(this.matrix.get_val(a.a.x,a.a.y));
@@ -364,8 +366,8 @@ def move() : bool {
                                 a.delete();
                             }
                         };
-                            i=i+1;
-                        }}}}; --else {print("timetraveler detected {} {} {}\n", a.a.hash_code,a.a.ttl,this.ttl);};
+                            i=i+2;
+                        }}}; --else {print("timetraveler detected {} {} {}\n", a.a.hash_code,a.a.ttl,this.ttl);};
                         a=a.next;
             };
           this.moving=false;

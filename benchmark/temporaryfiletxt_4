@@ -1,24 +1,24 @@
-./demo: Interrupt
+1 warning generated.
 failed to read counter stalled-cycles-frontend
 failed to read counter stalled-cycles-backend
 failed to read counter L1-icache-loads
-24,117240-a-atask-clock-a24117240-a100,00
-1-a-acontext-switches-a24117240-a100,00
-0-a-acpu-migrations-a24117240-a100,00
-2404-a-apage-faults-a24117240-a100,00
-10137501-a-acycles-a3771859-a100,00
+87233,038144-a-atask-clock-a87233038144-a100,00
+3243284-a-acontext-switches-a87233038144-a100,00
+1211-a-acpu-migrations-a87233038144-a100,00
+15777-a-apage-faults-a87233038144-a100,00
+198679806751-a-acycles-a28162105647-a29,00
 <not supported>-a-astalled-cycles-frontend-a0-a100,00
 <not supported>-a-astalled-cycles-backend-a0-a100,00
-24481298-a-ainstructions-a7773203-a100,00
-8255736-a-abranches-a11773884-a100,00
-74707-a-abranch-misses-a15775389-a100,00
-6360654-a-aL1-dcache-loads-a8004375-a40,47
-1186952-a-aL1-dcache-load-misses-a8347944-a34,61
-108728-a-aLLC-loads-a4345074-a18,01
-65546-a-aLLC-load-misses-a4345074-a18,01
+93406093167-a-ainstructions-a35688181107-a36,75
+22710294486-a-abranches-a34846378005-a35,87
+240662045-a-abranch-misses-a35502322136-a36,54
+23168972421-a-aL1-dcache-loads-a21997566733-a22,64
+1829583455-a-aL1-dcache-load-misses-a16441968043-a16,93
+593460995-a-aLLC-loads-a16488180925-a16,98
+2302753-a-aLLC-load-misses-a21832368750-a22,48
 <not supported>-a-aL1-icache-loads-a0-a100,00
-12214-a-aL1-icache-load-misses-a4345074-a18,01
-<not counted>-a-adTLB-loads-a0-a0,00
-<not counted>-a-adTLB-load-misses-a0-a0,00
-<not counted>-a-aiTLB-loads-a0-a0,00
-<not counted>-a-aiTLB-load-misses-a0-a0,00
+319833431-a-aL1-icache-load-misses-a28220047482-a29,05
+23311500525-a-adTLB-loads-a20686089173-a21,30
+13394059-a-adTLB-load-misses-a18322887265-a18,86
+248451-a-aiTLB-loads-a16009918839-a16,49
+8630378-a-aiTLB-load-misses-a21233763388-a21,88

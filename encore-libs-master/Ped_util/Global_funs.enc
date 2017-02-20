@@ -156,6 +156,11 @@ def ceil(x:real) : int {
     embed void { #{i}=ceil(#{x}); } end;
     i
 }
+def floor(x:real) : int {
+    val i=0;
+    embed void { #{i}=floor(#{x}); } end;
+    i
+}
 def distance(a:(int,int),b:(int,int)) : real {
     match (a,b) with
         ((x1,y1),(x2,y2)) => rot(((x1-x2)*(x1-x2))+((y1-y2)*(y1-y2)))
