@@ -2,23 +2,23 @@
 failed to read counter stalled-cycles-frontend
 failed to read counter stalled-cycles-backend
 failed to read counter L1-icache-loads
-47,439412-a-atask-clock-a47439412-a100,00
-22-a-acontext-switches-a47439412-a100,00
-8-a-acpu-migrations-a47439412-a100,00
-701-a-apage-faults-a47439412-a100,00
-20734965-a-acycles-a7273543-a100,00
-<not supported>-a-astalled-cycles-frontend-a0-a100,00
-<not supported>-a-astalled-cycles-backend-a0-a100,00
-41200668-a-ainstructions-a23299411-a100,00
-12819174-a-abranches-a39313524-a100,00
-148901-a-abranch-misses-a47320420-a100,00
-13032613-a-aL1-dcache-loads-a8006896-a17,04
-<not counted>-a-aL1-dcache-load-misses-a0-a0,00
-<not counted>-a-aLLC-loads-a0-a0,00
-<not counted>-a-aLLC-load-misses-a0-a0,00
-<not supported>-a-aL1-icache-loads-a0-a100,00
-<not counted>-a-aL1-icache-load-misses-a0-a0,00
-<not counted>-a-adTLB-loads-a0-a0,00
-<not counted>-a-adTLB-load-misses-a0-a0,00
-<not counted>-a-aiTLB-loads-a0-a0,00
-<not counted>-a-aiTLB-load-misses-a0-a0,00
+1454,672610-all-cpus-all-cpustask-clock-all-cpus1454672610-all-cpus100,00
+1091-all-cpus-all-cpuscontext-switches-all-cpus1454672610-all-cpus100,00
+10-all-cpus-all-cpuscpu-migrations-all-cpus1454672610-all-cpus100,00
+1114-all-cpus-all-cpuspage-faults-all-cpus1454672610-all-cpus100,00
+3595678297-all-cpus-all-cpuscycles-all-cpus358961167-all-cpus28,73
+<not supported>-all-cpus-all-cpusstalled-cycles-frontend-all-cpus0-all-cpus100,00
+<not supported>-all-cpus-all-cpusstalled-cycles-backend-all-cpus0-all-cpus100,00
+1404426717-all-cpus-all-cpusinstructions-all-cpus486282649-all-cpus37,90
+326950792-all-cpus-all-cpusbranches-all-cpus529712486-all-cpus40,29
+6369438-all-cpus-all-cpusbranch-misses-all-cpus562769572-all-cpus41,78
+388935910-all-cpus-all-cpusL1-dcache-loads-all-cpus310682126-all-cpus22,56
+56736459-all-cpus-all-cpusL1-dcache-load-misses-all-cpus256813086-all-cpus18,33
+31694771-all-cpus-all-cpusLLC-loads-all-cpus252976626-all-cpus17,73
+354585-all-cpus-all-cpusLLC-load-misses-all-cpus324343633-all-cpus23,00
+<not supported>-all-cpus-all-cpusL1-icache-loads-all-cpus0-all-cpus100,00
+987983-all-cpus-all-cpusL1-icache-load-misses-all-cpus399865882-all-cpus28,21
+395646155-all-cpus-all-cpusdTLB-loads-all-cpus249062738-all-cpus17,54
+360173-all-cpus-all-cpusdTLB-load-misses-all-cpus219193051-all-cpus16,79
+5292-all-cpus-all-cpusiTLB-loads-all-cpus207720199-all-cpus17,04
+4993-all-cpus-all-cpusiTLB-load-misses-all-cpus267375771-all-cpus22,01

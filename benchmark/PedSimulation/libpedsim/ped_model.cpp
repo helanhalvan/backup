@@ -280,7 +280,8 @@ void Ped::Model::setup(std::vector<Ped::Tagent*> agentsInScenario, IMPLEMENTATIO
   treehash = new std::map<const Ped::Tagent*, Ped::Ttree*>();
 
   // Create a new quadtree containing all agents
-  tree = new Ttree(NULL, treehash, 0, treeDepth, 0, 0, 1000, 800);
+  tree = new Ttree(NULL, treehash, 0, treeDepth, 0, 0, 1000, 800); //HARD CODED BOUNDS
+  //tree = new Ttree(NULL, treehash, 0, treeDepth, 0, 0, SCENARIOWIDTH?, SCENARIOHEIGHT?); //HARD CODED BOUNDS
   for (std::vector<Ped::Tagent*>::iterator it = agents.begin(); it != agents.end(); ++it){
     tree->addAgent(*it);
   }

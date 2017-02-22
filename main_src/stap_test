@@ -1,0 +1,11 @@
+global gc_passes
+
+probe process.mark("gc-start")
+{
+    gc_passes <<< $arg1;
+}
+
+probe end
+{
+    printf("Total nr GC passes %d\n", @count(gc_passes));
+}

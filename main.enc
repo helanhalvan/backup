@@ -27,9 +27,9 @@ class Main {
             ui ={ match (args[2]).to_int() with
                             Just 1 => true
                             _ => false}
-            boxes = { if(args[3]==null) then {7} else {match (args[4]).to_int() with
+            boxes = { if(args[3]==null) then {15} else {match (args[4]).to_int() with
                             Just x => x
-                            _ => 7}}
+                            _ => 15}}
             --tree = new Quad_tree((100,100),(0,0))
        in
         {

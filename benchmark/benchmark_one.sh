@@ -12,12 +12,12 @@ do
 #rm temporaryfiletxt_${i}
 #rm temptimes_${i}
 #w="./main.enc.run $i ${1}_scenario.xml 0"
-w="./main.enc.run ${1}_scenario.xml 0 --ponythreads 8"
-{ { perf stat -x -a -d -d $w ; } 2> temporaryfiletxt_${i} ; } > temptimes_${i}
+w="./main.enc.run ${1}_scenario.xml 0 --ponythreads ${2}"
+{ { perf stat -x -all-cpus -d -d $w ; } 2> temporaryfiletxt_${i} ; } > temptimes_${i}
 done
 
 w="./demo ${1}_scenario.xml --timing-mode --implementation=parallel --collision --heatmap=disabled"
-{ { perf stat -x -a -d -d $w ; } 2> temporaryfiletxt_4 ; } > temptimes_4
+{ { perf stat -x -all-cpus -d -d $w ; } 2> temporaryfiletxt_4 ; } > temptimes_4
 
 #./demo 4000_scenario.xml --timing-mode --implementation=parallel --collision
 
@@ -36,7 +36,7 @@ echo "\\\\"
 
 for i in {3,4}
 do
-l=`cat temporaryfiletxt_${i} | grep acycles`
+l=`cat temporaryfiletxt_${i} | grep scycles`
 echo $l
 if [ "$i" != 4 ]; then
 echo "&"

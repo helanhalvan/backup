@@ -17,6 +17,7 @@ def regions(agents: [Agent],ui:bool,boxes:int) : void {
 class Tiling_box {
     boxes : [Box]
     futures : [Fut bool]
+    futs_left : int
     def init(agents:[Agent],n:int) : void {
         match find_extreme(agents) with
             (xmax,ymax,xmin,ymin) => {
