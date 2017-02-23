@@ -1,9 +1,9 @@
-import SDL.SDL_Main
-import SDL.SDL_Types
-import SDL.SDL_Primitives
+--import SDL.SDL_Main
+--import SDL.SDL_Types
+--import SDL.SDL_Primitives
 import Ped_util.Agent_passive
 --import Ped_util.Agent_active
-import Ped_util.UI
+--import Ped_util.UI
 import Ped_util.Global_funs
 --import Ped_util.List_driver
 --import Ped_util.Bucket_driver
@@ -19,45 +19,14 @@ class Main {
    def main(args: [String]) : void {
 
        let
-
-            version={     match (args[1]).to_int() with
-                            Just result => result
-                            Nothing     => { 0 };}
             agents=parse_file(args[1])
-            ui ={ match (args[2]).to_int() with
-                            Just 1 => true
-                            _ => false}
-            boxes = { if(args[3]==null) then {15} else {match (args[4]).to_int() with
+            boxes = { if(|args|<=2) then {15} else {match (args[2]).to_int() with
                             Just x => x
                             _ => 15}}
-            --tree = new Quad_tree((100,100),(0,0))
        in
         {
-{--
-        print(tree.size());
-        var i = 0;
-        for a in [5..85] {
-            for b in [0..9] {
-                tree.set(a,b,true);
-        }};
-        --print(i);
-        print(tree.size());
-        for b in [0..9] {
-            for a in [5..85] {
-                tree.set(a,b,false);
-        }};
-        print(tree.size());
---}
-        --print("derp\n");
-        ();
-        --print("boxes={}\n",boxes);
-         --print(args[2]);
-        --this!baseline(agents,ui);
-        --if version==2 then bucket(agents,ui);
-        regions(agents,ui,boxes); --if version==3 then
-        --if version==4 then list(agents,ui);
-        --if version==5 then matrix(agents,ui); --}
-        --matrix(agents,ui);
+
+        regions(agents,false,boxes);
        }
    }
 {--
