@@ -1,9 +1,9 @@
-import SDL.SDL_Main
-import SDL.SDL_Types
-import SDL.SDL_Primitives
+--import SDL.SDL_Main
+--import SDL.SDL_Types
+--import SDL.SDL_Primitives
 import Ped_util.Agent_passive
 --import Ped_util.Agent_active
-import Ped_util.UI
+--import Ped_util.UI
 import Ped_util.Global_funs
 --import Ped_util.List_driver
 --import Ped_util.Bucket_driver
@@ -25,8 +25,6 @@ class Main {
                             Just 1 => true
                             _ => false}
             boxes = { if(|args|<4 or args[3]==null) then {15} else {match (args[3]).to_int() with
-                            Just x => x
-                            _ => 15}}
        in
         {
         regions(agents,ui,boxes);

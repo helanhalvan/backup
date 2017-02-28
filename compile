@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ $2 == "-s" ]]; then
-encorec $1 -o $1.run -I ./encore-libs-master/Collections:./encore-libs-master -F "-lSDL2 -lSDL2_ttf -lSDL2_image -ggdb -O3" -g
+$HOME/Desktop/encore/release/encorec $1 -o $1.run -I ./encore-libs-master/Collections:./encore-libs-master -F "-ggdb -O3" -g
 fi
 
 if [[ $2 == "-r" ]]; then

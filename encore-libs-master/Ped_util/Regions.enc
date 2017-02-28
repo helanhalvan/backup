@@ -2,17 +2,17 @@
 module Regions
 import Agent_passive
 import Global_funs
-import SDL.SDL_Main
-import Ped_util.UI
+--import SDL.SDL_Main
+--import Ped_util.UI
 import Quad_tree
 
 --TODO FIX DOUBLE MOVE BUG!!!
 
 def regions(agents: [Agent],ui:bool,boxes:int) : void {
-     var sdl_main = if ui then make_UI() else null : SDL_Main;
+     --var sdl_main = if ui then make_UI() else null : SDL_Main;
      var box = new Tiling_box(agents,boxes);
      print(("Encore regions",|agents|));
-     box!move(ui,sdl_main,10000,clock()); --40000
+     box!move(10000,clock()); --40000
  }
 class Tiling_box {
     boxes : [Box]
@@ -90,7 +90,7 @@ class Tiling_box {
                     };
                 };
     }}
-    def move (ui:bool,sdl_main:SDL_Main,i:int,start_time:int) : void {
+    def move (i:int,start_time:int) : void {
         --print("step {} GO!\n",i);
         for id in [0..|this.boxes|-1] {
             this.futures[id]=(this.boxes[id]).move();
@@ -100,8 +100,8 @@ class Tiling_box {
         };
         --print("done_wait\n");
         --if(i%1000==0) then {print(time); time=0};
-        if(ui) then show(this.agents(),sdl_main);
-        if(i>1) then this!move(ui,sdl_main,i-1,start_time) else {printtime(clock()-start_time);}
+        --if(ui) then show(this.agents(),sdl_main);
+        if(i>1) then this!move(i-1,start_time) else {printtime(clock()-start_time);}
         --print(|this.agents()|);
         }
     def agents() : [(int,int)] {
