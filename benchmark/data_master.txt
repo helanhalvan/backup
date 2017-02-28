@@ -1,0 +1,13 @@
+agent-count 4000 2000 800 400 80 40 20 10
+Encore-Runtime 129 77 27 8 3 3 2 3
+OpenMP-Runtime 15 6 3 2 0 0 0 0
+encore-task-clock 100.00 100.00 100.00 100.00 100.00 100.00 100.00 100.00
+openmp-task-clock 100.00 100.00 100.00 100.00 100.00 100.00 100.00 100.00
+encore-branch-miss-% 38.45 38.46 38.48 38.54 38.70 38.50 38.81 38.49
+encore-branch-miss-% 36.44 36.47 36.61 36.63 37.37 38.92 38.34 48.90
+Encore-LLC-load-misses 23.09 23.08 23.12 23.14 23.29 23.26 23.29 23.21
+openmp-LLC-load-misses 22.68 22.70 22.38 22.60 22.52 22.72 25.52 19.98
+encore-L1-dcache-load-misses 15.38 15.41 15.38 15.43 15.59 15.38 15.63 15.52
+openmp-L1-dcache-load-misses 17.22 16.81 17.34 17.17 16.56 17.96 19.17 18.28
+encore-L1-icache-load-misses 30.78 30.76 30.82 30.84 30.99 30.96 30.97 30.90
+openmp-L1-icache-load-misses 29.16 29.20 29.03 29.07 28.63 29.72 31.50 23.61

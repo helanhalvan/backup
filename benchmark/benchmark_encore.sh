@@ -14,10 +14,8 @@
 w="./main.enc.run ${1}_scenario.xml 0 --ponythreads ${2}"
 { { perf stat -x -all-cpus -d -d $w ; } 2> temporaryfiletxt ; } > temptimes
 
+#l=`cat temporaryfiletxt`
+#echo $l
 
-
-l=`cat temporaryfiletxt`
-echo $l
-
-l=`cat temptimes`
-echo $l
+cat temptimes
+cat temporaryfiletxt
