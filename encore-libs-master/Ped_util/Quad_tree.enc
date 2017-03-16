@@ -1,5 +1,3 @@
--- This file was automatically converted by encorec
-
 module Quad_tree
 import Global_funs
 passive class Quad
@@ -28,27 +26,31 @@ passive class Quad
   def add(x : int, y : int) : unit
     --if x <= this.max_x && x >= this.min_x && y <= this.max_y && y >= this.min_y then
       match this.top_right with
-          case Nothing when |this.agent| == 0 =>
-            this.agent = new [int](2)
-            (this.agent)(0) = x
-            (this.agent)(1) = y
-            this.size = 1
-            return()
-          end
           case Nothing =>
-              val dx = this.max_x - this.min_x / 2
-              val dy = this.max_y - this.min_y / 2
+            if |this.agent|==0 then
+                this.agent = new [int](2)
+                this.agent(0) = x
+                this.agent(1) = y
+                this.size = 1
+            else
+              val dx = (this.max_x - this.min_x) / 2
+              val dy = (this.max_y - this.min_y) / 2
               this.top_right = Just(new Quad(this.max_x, this.max_y, this.min_x + dx + 1, this.min_y + dy + 1))
               this.top_left = Just(new Quad(this.min_x + dx, this.max_y, this.min_x, this.min_y + dy + 1))
               this.bottom_right = Just(new Quad(this.max_x, this.min_y + dy, this.min_x + dx + 1, this.min_y))
               this.bottom_left = Just(new Quad(this.min_x + dx, this.min_y + dy, this.min_x, this.min_y))
-              this.size = 1
-              this.recur((this.agent)(0), (this.agent)(1)).add((this.agent)(0), (this.agent)(1))
+              this.size = 2
+              --print("deeper {} {} {} {} {} {}\n", this.max_x, this.max_y, x, y,this.agent(0),this.agent(1))
+              this.recur(this.agent(0), this.agent(1)).add(this.agent(0), this.agent(1))
+              this.recur(x, y).add(x, y)
               this.agent = new [int](0)
+            end
+          end
+          case unused =>
+              this.size = this.size + 1
+              this.recur(x, y).add(x, y)
           end
       end
-      this.size = this.size + 1
-      this.recur(x, y).add(x, y)
   end
   def remove(x : int, y : int) : bool
     match this.top_right with
@@ -90,8 +92,8 @@ passive class Quad
     end
   end
   def recur(x : int, y : int) : Quad
-    val top = y > this.max_y - this.min_y / 2 + this.min_y
-    val right = x > this.max_x - this.min_x / 2 + this.min_x
+    val top = y > (((this.max_y - this.min_y) / 2) + this.min_y)
+    val right = x > (((this.max_x - this.min_x) / 2) + this.min_x)
     if top then
       if right then
         match (this.top_right) with
@@ -130,7 +132,6 @@ passive class Quad_tree
         this.xmin = xmin
         this.ymin = ymin
       end
-
     end
   end
   def get_val(x : int, y : int) : bool

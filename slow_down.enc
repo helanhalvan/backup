@@ -1,75 +1,87 @@
-def clock() : int {
-    var x=0;
-    embed void { #{x}=clock(); } end;
-    x
-}
-class Main {
-    drivers : [Agent_driver]
-    futures : [Fut void]
-   def main(args: [String]) : void {
-        this!baseline(20);
-   }
-def baseline(size:int) : void {
-        var i = 0;
-        this.drivers= new [Agent_driver](size);
-        this.futures= new [Fut void](size);
-        var j = 0;
-         for i in [0..size-1] {
-             this.drivers[i]=new Agent_driver(size);
-         };
-         i=0;
-         for a in this.drivers {
-             for b in this.drivers {
-                 unless (a==b) then {
-                 a!link(b);
-                 }
-             }
-         };
-         this!baseline_loop(4000,0);
- }
-def baseline_loop(i:int,times:int) : void {
-         var j = 0;
-         var last_time=clock();
-         var t = times;
-         for a in this.drivers {
-             this.futures[j]=a.move();
-             j=j+1;
-         };
-         for a in this.futures {
-             get(a);
-         };
-        if(i % 100==0) then {
-             print("{} {}\n",i, t);
-            t=0;
-        } else {
-            t=t+clock()-last_time;
-        };
-        if i>0 then this!baseline_loop(i-1,t);
- }
-}
-class Agent_driver {
-    links : [Agent_driver]
-    index : int
-    def init(size:int) : void {
-        this.links=new [Agent_driver](size-1);
-        this.index=0;
-    }
-    def link(a:Agent_driver) : void {
-        this.links[this.index]=a;
-        this.index=this.index+1;
-    }
-    def move() : void {
-        var futures = new [Fut void](|this.links|);
-        var i = 0;
-        var full = false;
-        for a in this.links {
-            --print("{},{},{}\n",i,futures[i],a);
-            futures[i]=a.there();
-            i=i+1;
-        };
-        i=0;
-        for a in futures await(a);
-        ()
-    }
-    def there() : void { () }
-}
+fun polyEquals[a, b](x : a, y : b) : bool
+  EMBED (bool)
+    #{x}.p == #{y}.p;
+  END
+end
+fun clock() : int
+  var x = 0
+  EMBED (unit)
+    { #{x}=clock(); }
+  END
+  x
+end
+class Main
+  var drivers : [Agent_driver]
+  var futures : [Fut[unit]]
+  def main(args : [String]) : unit
+    this!baseline(20)
+  end
+  def baseline(size : int) : unit
+    var i = 0
+    this.drivers = new [Agent_driver](size)
+    this.futures = new [Fut[unit]](size)
+    var j = 0
+    for i <- [0..size - 1] do
+      (this.drivers)(i) = new Agent_driver(size)
+    end
+    i = 0
+    for a <- this.drivers do
+      for b <- this.drivers do
+            if polyEquals[Agent_driver, Agent_driver](a,b) then
+              a!link(b)
+            end
+      end
+    end
+    this!baseline_loop(4000, 0)
+  end
+  def baseline_loop(i : int, times : int) : unit
+    var j = 0
+    var last_time = clock()
+    var t = times
+    for a <- this.drivers do
+      (this.futures)(j) = a!move()
+      j = j + 1
+    end
+    for a <- this.futures do
+      get(a)
+    end
+    if i % 100 == 0 then
+      print("{} {}\n", i, t)
+      t = 0
+    else
+      t = t + clock() - last_time
+    end
+    if i > 0 then
+      this!baseline_loop(i - 1, t)
+    end
+  end
+end
+class Agent_driver
+  var links : [Agent_driver]
+  var index : int
+  def init(size : int) : unit
+    this.links = new [Agent_driver](size - 1)
+    this.index = 0
+  end
+  def link(a : Agent_driver) : unit
+     (this.links)(this.index) = a
+     this.index = this.index + 1
+  end
+  def move() : unit
+    var futures = new [Fut[unit]](|this.links|)
+    var i = 0
+    var full = false
+    for a <- this.links do
+      futures(i) = a!there()
+      i = i + 1
+    end
+    i = 0
+    for a <- futures do
+      await(a)
+    end
+    ()
+  end
+  def there() : unit
+    ()
+  end
+end

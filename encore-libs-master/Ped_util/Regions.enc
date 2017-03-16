@@ -1,5 +1,3 @@
--- This file was automatically converted by encorec
-
 module Regions
 import Agent_passive
 import Global_funs
@@ -7,7 +5,7 @@ import Quad_tree
 fun regions(agents : [Agent], ui : bool, boxes : int) : unit
   var box = new Tiling_box(agents, boxes)
   println(("Encore regions", |agents|))
-  box!move(10000, clock(), ui)
+  box!move(1, clock(), ui) --0000
 end
 fun link(a : Box, b : Box) : bool
   val aa = a!link(b)
@@ -26,14 +24,14 @@ class Tiling_box
   def init(agents : [Agent], n : int) : unit
     match find_extreme(agents) with
       case (xmax, ymax, xmin, ymin) =>
-        val dx = xmax - xmin / n
-        val dy = ymax - ymin / n
+        val dx = (xmax - xmin) / n
         this.boxes = new [Box](n * n)
         this.futures = new [Fut[bool]](|this.boxes|)
         var x = xmin
         var y = ymin
         var i = 0
         var win = true
+        val dy = (ymax - ymin) / n
         for xindex <- [0..n - 1] do
           for yindex <- [0..n - 2] do
             (this.boxes)(i) = new Box((x + dx - 1, y + dy - 1), (x, y))
@@ -91,9 +89,11 @@ class Tiling_box
     end
   end
   def move(i : int, start_time : int, ui : bool) : unit
+    print("dispatch\n")
     for id <- [0..|this.boxes| - 1] do
       (this.futures)(id) = ((this.boxes)(id)) ! move()
     end
+    print("end\n")
     for f <- this.futures do
       get(f)
     end
@@ -156,11 +156,11 @@ class Box
         this.xmin = x
         this.ymin = y
       end
-
     end
     this.ttl = 10001
     this.size = 0
     this.moving = false
+    print("SETUPDONE\n")
   end
   def min() : (int, int)
     (this.xmin, this.ymin)
@@ -168,54 +168,7 @@ class Box
   def max() : (int, int)
     (this.xmax, this.ymax)
   end
-{--
-  def check_newcommers() : unit
-    var cur = this.newcommers
-    var i = 1
-    print("Is newcommers related to last? ")
-    while cur != this.last do
-      if cur.a == null then
-        print("GHOST IN THE CHAIN\n")
-        while true do
-          ()
-        end
-      end
-      cur = cur.next
-      i = i + 1
-    end
-    print(" Yes {}\n", i)
-  end
-  def check_channeling() : unit
-    var cur = this.agents
-    var i = 0
-    while cur != null do
-      i = i + 1
-      cur = cur.next
-    end
-    var j = this.matrix.size()
-    if i > j then
-      print("more linked list agents ")
-    end
-    if i < j then
-      print("more matrix agents ")
-    end
-    if i != j then
-      println((i, j, this.size))
-      cur = this.agents
-      i = 0
-      while cur != null do
-        if this.matrix.get_val(cur.a.x, cur.a.y) == false then
-          print("AGENT'S pos not in MATRIX {} {} {}\n", cur.a.hash_code, i, (this.xmax, this.ymax))
-        end
-        i = i + 1
-        cur = cur.next
-      end
-      while true do
-        ()
-      end
-    end
-  end
---}
+
   def agents() : [(int, int)]
     this.merge()
     match this.agents with
@@ -358,6 +311,7 @@ class Box
     end
   end
   def move() : bool
+    print(this.ttl)
     this.ttl = this.ttl - 1
     this.merge()
     var parent = this.agents
@@ -367,6 +321,7 @@ class Box
       var a = match wrapped_a with
                 case Just(value) => value
               end
+      print(a.a.x)
       if a.a.ttl == this.ttl then
         a.a.ttl = a.a.ttl - 1
         a.a.next(desired)
@@ -419,12 +374,7 @@ class Box
               match border with
                 case Nothing =>
                   if this.matrix.get_val(x, y) == false then
-                    unless this.matrix.remove(a.a.x, a.a.y) then
-                      print("remove failed\n")
-                      while true do
-                        ()
-                      end
-                    end
+                    this.matrix.remove(a.a.x, a.a.y)
                     this.matrix.set(x, y)
                     a.a.move_int(x, y)
                     moved = true
@@ -475,7 +425,7 @@ passive class Item : Id
         case (Nothing,Just(prev)) => prev.next=Nothing
         case (Just(next),Nothing) => next.prev=Nothing
     end
-    this.a = null -- this passed typ checking???
+    this.a = null -- this passed type checking???
   end
   def append(next : Maybe[Item]) : unit
     this.next = next
