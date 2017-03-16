@@ -1,18 +1,5 @@
-<<<<<<< HEAD
--- This file was automatically converted by encorec
-
-import Ped_util.Agent_passive
-=======
---import SDL.SDL_Main
---import SDL.SDL_Types
---import SDL.SDL_Primitives
-import Ped_util.Agent_passive
---import Ped_util.Agent_active
---import Ped_util.UI
->>>>>>> ddde8289a9ffffbca36700b45248e7e0c02e2f3d
 import Ped_util.Global_funs
 import Ped_util.Regions
-<<<<<<< HEAD
 class Main
   def main(args : [String]) : unit
     let
@@ -35,42 +22,10 @@ class Main
                   case _ =>
                     5
                   end
-=======
---import Ped_util.Quad_tree
---import Data.Either
---}
-class Main {
---TODO
---check for easy memory optimizations in Quad_tree
---remove futures in Regions supervisor
--- unify the SQRT
-   def main(args: [String]) : void {
-
-       let
-            agents=parse_file(args[1])
-            ui ={ match (args[2]).to_int() with
-                            Just 1 => true
-                            _ => false}
-            boxes = { if(|args|<4 or args[3]==null) then {15} else {match (args[3]).to_int() with
-       in
-        {
-        regions(agents,ui,boxes);
-       }
-   }
-{--
-def baseline(agents: [Agent], ui:bool) : void {
-     var
-         i = 0;
-        var  drivers= new [Agent_driver]( |agents| );
-        var  futures= new [Fut void](|agents|);
-         var j = 0;
-         var sdl_main = if ui then make_UI() else null : SDL_Main;
->>>>>>> ddde8289a9ffffbca36700b45248e7e0c02e2f3d
-
                 end
               end
     in
-      regions(agents, ui, boxes)
+     regions(agents,ui,boxes)
     end
   end
 end
