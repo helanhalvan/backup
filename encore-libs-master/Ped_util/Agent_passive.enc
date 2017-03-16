@@ -1,163 +1,118 @@
+-- This file was automatically converted by encorec
+
 module Agent_passive
---import Collections.HashMap
---import Collections.HashCode
 import Ped_util.Global_funs
---import Collections.Map
+passive class Agent
+  var hash_code : uint
+  var x : int
+  var y : int
+  var targets_x : [int]
+  var targets_y : [int]
+  var targets_size : [int]
+  var i : int
+  var ttl : int
+  def init(in_pos : (int, int), list : [(int, int)], targets_size : [int], in_id : int, ttl : int) : unit
+    match in_pos with
+      case (x, y) =>
+        this.x = x
+        this.y = y
+      end
 
-passive class Agent {
-    hash_code : uint                --global unique id IMMUTABLE
-    --pos : (int,int)         --current position MUTABLE
-    x : int
-    y : int
-    --targets : [(int,int)]   --waypoints, a list of positions to go to IMMUTABLE
-    targets_x : [int]
-    targets_y : [int]
-    targets_size : [int]    -- target radius
-    i : int                 --index of targets MUTABLE
-    ttl : int     --number of steps before calling it a day
-    def init(in_pos:(int,int), list:[(int,int)], targets_size:[int], in_id:int,ttl:int) : void {
-        --print("POS ok\n");
-        match in_pos with (x,y) => {this.x=x;this.y=y;};
-        this.i=0;
-        this.targets_x= new [int](|targets_size|);
-        this.targets_y= new [int](|targets_size|);
-        --this.targets=list;
-        this.targets_size=targets_size;
-        for index in [0..|list|-1] {
-            --print("{} starting\n", index);
-            match list[index] with (x,y)=> {
-                --print("{} ok\n", index);
-                (this.targets_x)[index]=x;
-                (this.targets_y)[index]=y;
-            }
-        };
-        this.hash_code=in_id;
-        this.ttl=ttl;
-        ()
-    }
-    -- --returns places the agent can and want to go to
-    -- --can => an agent can only go up, down, left or right
-    -- --want => an agent only want to go closer to their next waypoint
+    end
+    this.i = 0
+    this.targets_x = new [int](|targets_size|)
+    this.targets_y = new [int](|targets_size|)
+    this.targets_size = targets_size
+    for index <- [0..|list| - 1] do
+      match list(index) with
+        case (x, y) =>
+          (this.targets_x)(index) = x
+          (this.targets_y)(index) = y
+        end
 
-    --double length = diffX * diffX + diffY * diffY;
-    --double r = destination->getr();
-    --agentReachedDestination = length < (r * r);
+      end
+    end
+    this.hash_code = in_id
+    this.ttl = ttl
+    ()
+  end
+  def next(ret : [int]) : unit
+    let
+      x1 = this.x
+      y1 = this.y
+    in
+      var x2 = (this.targets_x)(this.i)
+      var y2 = (this.targets_y)(this.i)
+      var xdiff = x1 - x2
+      var ydiff = y1 - y2
+      var lenSquare = xdiff * xdiff + ydiff * ydiff
+      var invlen = invSqrt(lenSquare)
+      if lenSquare < (this.targets_size(this.i) * this.targets_size(this.i)) then
+        this.i = this.i + 1
+      end
+      if |this.targets_size| == this.i then
+        this.i = 0
+      end
+      x2 = (this.targets_x)(this.i)
+      y2 = (this.targets_y)(this.i)
+      xdiff = x1 - x2
+      ydiff = y1 - y2
+      lenSquare = xdiff * xdiff + ydiff * ydiff
+      invlen = invSqrt(lenSquare)
+      let
+        xoff = xdiff * invlen
+        yoff = ydiff * invlen
+        desired_x = x1 + round(xoff * -(1))
+        desired_y = y1 + round(yoff * -(1))
+      in
+        val dx = desired_x - x1
+        val dy = desired_y - y1
+        ret(0) = desired_x
+        ret(1) = desired_y
+        if dx == 0 || dy == 0 then
+          if dx == 0 && dy == 0 then
+            print("dx and dy == 0, invariant VIOLATED {} {}\n", (x2 + xdiff, y2 + ydiff), (xoff, yoff))
+          end
+          ret(2) = desired_x + dy
+          ret(3) = desired_y + dx
+          ret(4) = desired_x - dy
+          ret(5) = desired_y - dx
+        else
+          ret(2) = desired_x
+          ret(3) = y1
+          ret(4) = x1
+          ret(5) = desired_y
+        end
+      end
+      ()
+    end
+  end
+  def move(in_pos : (int, int)) : unit
+    match in_pos with
+      case (x, y) =>
+        this.x = x
+        this.y = y
+      end
 
-    def next(ret:[int]) : void {
-            let
-                x1=this.x
-                y1=this.y
-            in {
-                var x2=this.targets_x[this.i];
-                var y2=this.targets_y[this.i];
-                var xdiff=x1-x2;
-                var ydiff=y1-y2;
-                var lenSquare=(xdiff*xdiff)+(ydiff*ydiff);
-                var invlen = invSqrt(lenSquare);
-                --var ret = new [(int,int)](3);
-            if lenSquare< (this.targets_size[this.i]*this.targets_size[this.i]) then
-                {this.i=this.i+1;};
-            if |this.targets_size| == this.i then
-                {this.i=0;};
-                x2=this.targets_x[this.i];
-                y2=this.targets_y[this.i];
-                xdiff=x1-x2;
-                ydiff=y1-y2;
-                lenSquare=(xdiff*xdiff)+(ydiff*ydiff);
-                invlen = invSqrt(lenSquare);
-            let
-                xoff=(xdiff)*invlen
-                yoff=(ydiff)*invlen
-                desired_x=x1+round(xoff*(-1))
-                desired_y=y1+round(yoff*(-1))
-            in {
-                val dx=desired_x-x1;
-                val dy=desired_y-y1;
-                ret[0]=desired_x;
-                ret[1]=desired_y;
-                --ret[1]=(desired_x,desired_y);
-                --ret[2]=(desired_x,desired_y);
-                --print(dx,dy);
-                if(dx==0 or dy==0) then {
-                    if(dx==0 and dy==0) then print("dx and dy == 0, invariant VIOLATED {} {}\n", ((x2+xdiff),(y2+ydiff)),(xoff,yoff) );
-                    ret[2]=desired_x+dy;
-                    ret[3]=desired_y+dx;
-                    ret[4]=desired_x-dy;
-                    ret[5]=desired_y-dx;
-                } else {
-                    ret[2]=desired_x;
-                    ret[3]=y1;
-                    ret[4]=x1;
-                    ret[5]=desired_y;
-                }};
-                ()
-}}
-{-
-    def next() : [(int,int)] {
-            --this.ttl=this.ttl-1; --update step counter
-            var ret = new [(int,int)](3);
-            val len=distance_int( this.x,this.y, (this.targets_x)[this.i], (this.targets_y)[this.i] );
-            if len<this.targets_size[this.i] then
-                {this.i=this.i+1;};
-            if |this.targets_size| == this.i then
-                {this.i=0;};
-
-            var x=0.5;
-            x=this.x;
-            var y=0.5;
-            y=this.y;
-            var diffx=0.5;
-            diffx=this.targets_x[this.i]-x;
-            var diffy=0.5;
-            diffy=(this.targets_y[this.i]-y);
-            val desiredx=round( x+ (diffx/len) );
-            val desiredy=round( y+ (diffy/len) );
-            val diffx2=this.x-desiredx;
-            val diffy2=this.y-desiredy;
-            {
-                ret[0]=(desiredx,desiredy);
-                if(diffx2==0 or diffy2==0) then {
-                ret[1]=(desiredx+diffy2,desiredy+diffx2);
-                ret[2]=(desiredx-diffy2,desiredy-diffx2);
-                } else {
-                ret[1]=(desiredx,this.y);
-                ret[2]=(this.x,desiredy);
-                };
-                for i in [0..2] {
-                    if man_distance(ret[i],(this.x,this.y))>2 then {
-                        print("MOVING FURTHER THEN ONE STEP AT THE TIME, {} {} {}\n",man_distance(ret[i],(this.x,this.y)),(this.x,this.y),ret[i]);
-                    }
-                };
-                ret
-            }}
--}
-    --updates the current position
-    --agents have no agency and check nothing when it comes to their own position
-    def move(in_pos:(int,int)) : void {
-        match in_pos with (x,y) => {this.x=x;this.y=y;}
-    }
-    def move_int(x:int,y:int) : void {
-        this.x=x;
-        this.y=y;
-    }
-                                --getter for position, used for collision detection
-    def pos() : (int,int)
-        (this.x,this.y)
-
-    --unused, broken
-                                    --copy constructor, hopefully I won't need that one in the finnal version
-    {-
-    def copy() : Agent {
-            let q = (this.x,this.y);
-            let qq = new [(int,int)](|this.targets|);
-                for i in [0..(|qq|-1)] {
-                    --this change exposes that the tupple this.targets[i] get mangled somewhere
-                    qq[i]=this.targets[i];
-                    --qq[i]={match this.targets[i] with (x,y) => (x,y)};
-                };
-            let w = new Agent(q, qq, copy_ar(this.targets_size),this.hash_code,this.ttl);
-                w.i=this.i;
-                w
-            }
-    -}
-        }
+    end
+  end
+  def move_int(x : int, y : int) : unit
+    this.x = x
+    this.y = y
+  end
+  def pos() : (int, int)
+    (this.x, this.y)
+  end
+  def copy() : Agent
+    val q = (this.x, this.y)
+    val qq = new [(int, int)](|this.targets_size|)
+    val qqq = new [int](|this.targets_size|)
+    for i <- [0..|qq| - 1] do
+      qq(i) = ((this.targets_x)(i), (this.targets_y)(i))
+      qqq(i) = (this.targets_size)(i)
+    end
+    var w = new Agent(q, qq, copy_ar(this.targets_size), this.hash_code, this.ttl)
+    w.i = this.i
+    w
+  end
+end

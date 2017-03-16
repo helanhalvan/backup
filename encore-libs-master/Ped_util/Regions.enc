@@ -1,412 +1,487 @@
+-- This file was automatically converted by encorec
 
 module Regions
 import Agent_passive
 import Global_funs
-import SDL.SDL_Main
-import Ped_util.UI
 import Quad_tree
+fun regions(agents : [Agent], ui : bool, boxes : int) : unit
+  var box = new Tiling_box(agents, boxes)
+  println(("Encore regions", |agents|))
+  box!move(10000, clock(), ui)
+end
+fun link(a : Box, b : Box) : bool
+  val aa = a!link(b)
+  val bb = b!link(a)
+  val aaa = get(aa)
+  val bbb = get(bb)
+  unless aaa == bbb then
+    print("ONE_WAY_LINK\n")
+  end
+  aaa
+end
+class Tiling_box
+  var boxes : [Box]
+  var futures : [Fut[bool]]
+  var futs_left : int
+  def init(agents : [Agent], n : int) : unit
+    match find_extreme(agents) with
+      case (xmax, ymax, xmin, ymin) =>
+        val dx = xmax - xmin / n
+        val dy = ymax - ymin / n
+        this.boxes = new [Box](n * n)
+        this.futures = new [Fut[bool]](|this.boxes|)
+        var x = xmin
+        var y = ymin
+        var i = 0
+        var win = true
+        for xindex <- [0..n - 1] do
+          for yindex <- [0..n - 2] do
+            (this.boxes)(i) = new Box((x + dx - 1, y + dy - 1), (x, y))
+            if yindex != 0 then
+              win = win && link((this.boxes)(i), (this.boxes)(i - 1))
+            end
+            if xindex != 0 then
+              win = win && link((this.boxes)(i), (this.boxes)(i - n))
+            end
+            if xindex != 0 && yindex != 0 then
+              win = win && link((this.boxes)(i), (this.boxes)(i - n + 1))
+              win = win && link((this.boxes)(i), (this.boxes)(i - n - 1))
+              ()
+            end
+            i = i + 1
+            y = y + dy
+          end
+          (this.boxes)(i) = new Box((x + dx - 1, ymax), (x, y))
+          if xindex != 0 then
+            win = win && link((this.boxes)(i), (this.boxes)(i - n))
+            win = win && link((this.boxes)(i), (this.boxes)(i - n - 1))
+          end
+          win = win && link((this.boxes)(i), (this.boxes)(i - 1))
+          i = i + 1
+          x = x + dx
+          y = ymin
+        end
+        for yindex <- [0..n - 2] do
+          (this.boxes)(i) = new Box((xmax, y + dy - 1), (x, y))
+          if yindex != 0 then
+            win = win && link((this.boxes)(i), (this.boxes)(i - 1))
+            win = win && link((this.boxes)(i), (this.boxes)(i - n - 1))
+          end
+          win = win && link((this.boxes)(i), (this.boxes)(i - n + 1))
+          win = win && link((this.boxes)(i), (this.boxes)(i - n))
+          i = i + 1
+          y = y + dy
+        end
+        (this.boxes)(i) = new Box((xmax, ymax), (x, y))
+        win = win && link((this.boxes)(i), (this.boxes)(i - n))
+        win = win && link((this.boxes)(i), (this.boxes)(i - 1))
+        win = win && link((this.boxes)(i), (this.boxes)(i - n - 1))
+        unless win then
+          print("WIN IS BAD!\n")
+        end
+        for a <- agents do
+          for b <- this.boxes do
+            if get(b!add(a)) then
+                break
+            end
+          end
+        end
+      end
 
---TODO FIX DOUBLE MOVE BUG!!!
+    end
+  end
+  def move(i : int, start_time : int, ui : bool) : unit
+    for id <- [0..|this.boxes| - 1] do
+      (this.futures)(id) = ((this.boxes)(id)) ! move()
+    end
+    for f <- this.futures do
+      get(f)
+    end
+    if i > 1 then
+      this!move(i - 1, start_time, ui)
+    else
+      printtime(clock() - start_time)
+    end
+  end
+  def agents() : [(int, int)]
+    val temp = new [[(int, int)]](|this.boxes|)
+    for i <- [0..|this.boxes| - 1] do
+      temp(i) = get(((this.boxes)(i)) ! agents())
+    end
+    flatten(temp)
+  end
+end
+class Box
+  var xmax : int
+  var ymax : int
+  var xmin : int
+  var ymin : int
+  var up : Maybe[Box]
+  var down : Maybe[Box]
+  var left : Maybe[Box]
+  var right : Maybe[Box]
+  var top_right : Maybe[Box]
+  var top_left : Maybe[Box]
+  var bottom_left : Maybe[Box]
+  var bottom_right : Maybe[Box]
+  var matrix : Quad_tree
+  var agents : Maybe[Item]
+  var last : Maybe[Item]
+  var newcommers : Maybe[Item]
+  var ttl : int
+  var size : int
+  var moving : bool
+  def init(in_max : (int, int), in_min : (int, int)) : unit
+    this.agents=Nothing
+    this.last=Nothing
+    this.newcommers=Nothing
+    this.up=Nothing
+    this.down=Nothing
+    this.left=Nothing
+    this.right=Nothing
+    this.top_left=Nothing
+    this.top_right=Nothing
+    this.bottom_right=Nothing
+    this.bottom_left=Nothing
+    this.matrix = new Quad_tree(in_max, in_min)
+    match in_max with
+      case (x, y) =>
+        this.xmax = x
+        this.ymax = y
+      end
 
-def regions(agents: [Agent],ui:bool,boxes:int) : void {
-     var sdl_main = if ui then make_UI() else null : SDL_Main;
-     var box = new Tiling_box(agents,boxes);
-     print(("Encore regions",|agents|));
-     box!move(ui,sdl_main,10000,clock()); --40000
- }
-class Tiling_box {
-    boxes : [Box]
-    futures : [Fut bool]
-    futs_left : int
-    def init(agents:[Agent],n:int) : void {
-        match find_extreme(agents) with
-            (xmax,ymax,xmin,ymin) => {
-                val dx= (xmax-xmin)/n;
-                val dy= (ymax-ymin)/n;
-                --print((xmax,ymax));
-                this.boxes = new [Box](n*n);
-                this.futures= new [Fut bool](|this.boxes|);
-                var x = xmin;
-                var y = ymin;
-                var i = 0;
-                var win = true;
-                for xindex in [0..n-1] { --creating and linking boxes
-                    for yindex in [0..n-2] {
-                        --print("new\n");
-                        this.boxes[i]= new Box( ((x+dx-1),(y+dy-1)),(x,y) );
-                        if(yindex!=0) then {
-                            win = win and link(this.boxes[i],this.boxes[i-1]);
-                            --print("link {} {} {}\n",i,i-1,win);
-                        };
-                        if(xindex!=0) then {
-                            win = win and link(this.boxes[i],this.boxes[i-n]);
-                            --print("link {} {} {}\n",i,i-n,win);
-                        };
-                        if(xindex!=0 and yindex!=0) then {
-                            win = win and link(this.boxes[i],this.boxes[(i-n)+1]);
-                            win = win and link(this.boxes[i],this.boxes[(i-n)-1]);
-                            ();
-                        };
-                        i=i+1;
-                        y=y+dy;
-                    };
-                    --print("big\n");
-                    this.boxes[i]= new Box( (x+dx-1,ymax),(x,y) ); -- last box might be bigger, due to division rounding
-                    if(xindex!=0) then {
-                        win = win and link(this.boxes[i],this.boxes[i-n]);
-                        win = win and link(this.boxes[i],this.boxes[(i-n)-1]);
-                    };
-                    win = win and link(this.boxes[i],this.boxes[i-1]);
-                    --print("link {} {} {}\n",i,i-1,win);
-                    i=i+1;
-                    x=x+dx;
-                    y=ymin;
-                };--creating and linking boxes
-                for yindex in [0..n-2] {
-                        --print("new\n");
-                        this.boxes[i]= new Box( (xmax,(y+dy-1)),(x,y) );
-                        if(yindex!=0) then {
-                            win = win and link(this.boxes[i],this.boxes[i-1]);
-                            win = win and link(this.boxes[i],this.boxes[(i-n)-1]);
-                        };
-                            win = win and link(this.boxes[i],this.boxes[(i-n)+1]);
-                            win = win and link(this.boxes[i],this.boxes[i-n]);
-                        i=i+1;
-                        y=y+dy;
-                    };
-                    --print("big\n");
-                    this.boxes[i]= new Box( (xmax,ymax),(x,y) ); -- last box might be bigger, due to division rounding
-                    win = win and link(this.boxes[i],this.boxes[i-n]);
-                    win = win and link(this.boxes[i],this.boxes[i-1]);
-                    win = win and link(this.boxes[i],this.boxes[(i-n)-1]);
-                    --win = win and link(this.boxes[i],this.boxes[i-n-1]);
-                unless win then print("WIN IS BAD!\n");
-                --print(win); -- if win is false something is of with linking/creation
-                for a in agents { --this is very slow, try sending each agent to one box at the time until it find one that fits
-                    for b in this.boxes {
-                        if( get(b.add(a)) ) then {
-                            embed void { break; } end;
-                        };
-                    };
-                };
-    }}
-    def move (ui:bool,sdl_main:SDL_Main,i:int,start_time:int) : void {
-        --print("step {} GO!\n",i);
-        for id in [0..|this.boxes|-1] {
-            this.futures[id]=(this.boxes[id]).move();
-        };
-        for f in this.futures {
-            get(f);
-        };
-        --print("done_wait\n");
-        --if(i%1000==0) then {print(time); time=0};
-        if(ui) then show(this.agents(),sdl_main);
-        if(i>1) then this!move(ui,sdl_main,i-1,start_time) else {printtime(clock()-start_time);}
-        --print(|this.agents()|);
-        }
-    def agents() : [(int,int)] {
-        val temp = new [[(int,int)]](|this.boxes|);
-            for i in [0..|this.boxes|-1] {
-                temp[i]=get(((this.boxes)[i]).agents());
-            };
-            flatten(temp)
-        }
-}
+    end
+    match in_min with
+      case (x, y) =>
+        this.xmin = x
+        this.ymin = y
+      end
 
---single threaded 2D space container
---contains all Agents in a given 2D region of space
---assumess cordnate system where Y is height and X is with, so increasing X means further to the right
-class Box {
--- min and max are inclusive
--- max is the greatest X value and the greatest Y value box contains
--- min is the smalles X and Y values
- xmax : int
- ymax : int
- xmin : int
- ymin : int
- up : Box
- down : Box
- left : Box
- right : Box
- top_right : Box
- top_left : Box
- bottom_left : Box
- bottom_right : Box
-
- matrix : Quad_tree --Best name for this data structure ever
- agents : Item
- last : Item
- newcommers : Item
- to_early : Item
- ttl : int
- size : int
- moving : bool
-
-def init(in_max:(int,int), in_min:(int,int) ) : void {
-    this.matrix= new Quad_tree(in_max,in_min);
-    match in_max with (x,y) => {this.xmax=x;this.ymax=y};
-    match in_min with (x,y) => {this.xmin=x;this.ymin=y};
-    this.ttl=10001;
-    this.size=0;
-    this.moving=false;
-    }
---getters for borders
-def min() : (int,int) { (this.xmin,this.ymin) }
-def max() : (int,int) { (this.xmax,this.ymax) }
-
---check_ methods for invariant checking, only used when debuging
-def check_newcommers() : void {
-    var cur = this.newcommers;
-    var i = 1;
-    print("Is newcommers related to last? ");
-    while (cur!=this.last) { if(cur.a==null) then {print("GHOST IN THE CHAIN\n"); while true { () }; }; cur=cur.next; i=i+1;};
-    print(" Yes {}\n",i);
-}
-def check_channeling() : void {
-    var cur= this.agents;
-    var i=0;
-    while cur!=null { i=i+1; cur=cur.next; };
-    var j=this.matrix.size();
-    if( i > j ) then print("more linked list agents ");
-    if( i < j ) then print("more matrix agents ");
-    if( i != j ) then {
-            print((i,j,this.size));
-            cur=this.agents;
-            i=0;
-            while cur!=null {
-                if (this.matrix.get_val(cur.a.x, cur.a.y) == false) then {print("AGENT'S pos not in MATRIX {} {} {}\n", cur.a.hash_code, i,(this.xmax,this.ymax)); };
-                i=i+1;
-                cur=cur.next;
-            };
-            while true { () };};
-}
--- SLOW BUT ONLY USED BY UI, returns pos of all agents
-def agents() : [(int,int)] {
-    this.merge();
-    if(this.agents==null) then { new [(int,int)](0); } else {
-    var cur= this.agents;
-    var i=0;
-    while cur!=null { i=i+1; cur=cur.next; };
-    var ret= new [(int,int)](i);
-    cur=this.agents;
-    i=0;
-    while cur!=null {
-        ret[i]=cur.a.pos();
-        --print(i);
-        i=i+1;
-        cur=cur.next
-        };
-    ret
-    }}
- --adds new agents to newcommers linked list
-def add(a:Agent) : bool {
-    if a.x>this.xmax or a.x<this.xmin or a.y>this.ymax or a.y<this.ymin then false else {
-        this.add_internal(a);
-    }
-}
-    --recives a Agent from another box
-def external_move(a:Agent, x:int,y:int ) : bool {
-    --unless this.ttl==a.ttl+2 or this.ttl==a.ttl+1 then {print(("out_of_sync",this.ttl,a.ttl, a.hash_code)); while true { () } };
-    --false;
-    if x>this.xmax or x<this.xmin or y>this.ymax or y<this.ymin then { false } else { -- robustness for
-    if(this.matrix.get_val(x,y)==true ) then { false } else {
-        a.move_int(x,y);
-        this.add_internal(a);
-        };
-    }}
-def add_internal(a:Agent) : bool {
-    if(this.matrix.get_val(a.x,a.y)==true) then {print("AGENTS IN TOP OF eachother\n"); while true { () }; true } else {
-        this.matrix.set(a.x,a.y); --add to collison matrix
-        if(this.newcommers == null) then {
-            this.newcommers=new Item(a);
-        } else if (this.last == null) then {
-            this.last=new Item(a);
-            this.newcommers.append(this.last);
-        } else {
-            var new_wraper = new Item(a);
-            this.last.append(new_wraper);
-            this.last=new_wraper;
-        };
-        this.size=this.size+1;
-        true;
-    }
-}
---if the arguement shares a border or corner with this box, it's added tas a nejbor and returns true
---otherwise returns false
-def link(a:Box) : bool {
-    var c=a.max();
-    var d=a.min();
-    await(c);
-    await(d);
-    match (this.xmax,this.ymax,this.xmin,this.ymin,get(c),get(d)) with
-        ( x_max_1,y_max_1,x_min_1,y_min_1,(x_max_2,y_max_2),(x_min_2,y_min_2) ) => {
-            var top = (y_max_1+1 == y_min_2);
-            var bottom = (y_min_1-1 == y_max_2);
-            var right = (x_max_1+1 == x_min_2);
-            var left = (x_min_1-1 == x_max_2);
-            if not(left or right or top or bottom) then false else {
-                if top then {
-                    if right then {
-                        if this.top_right==null then {this.top_right=a;true} else false
-                    } else if left then {
-                        if this.top_left==null then {this.top_left=a;true} else false
-                    } else {
-                        if this.up==null then {this.up=a;true} else false
-                    }
-                } else
-                if bottom then {
-                    if right then {
-                        if this.bottom_right==null then {this.bottom_right=a;true} else false
-                    } else if left then {
-                        if this.bottom_left==null then {this.bottom_left=a;true} else false
-                    } else {
-                        if this.down==null then {this.down=a;true} else false
-                    }
-                } else if right then { if this.right==null then {this.right=a; true} else false }
-                else {if this.left==null then {this.left=a; true} else false }
-            }
-        }
-    }
-def merge() : void {
-        if(this.newcommers!=null) then {
-            --this.check_newcommers();
-            if(this.agents!=null) then {
-                if(this.last==null) then {
-                    --unless (this.newcommers.next==null and this.newcommers.prev==null) then { print("ONE AGENT NOT REALLY ALONE!\n"); while true { () }; };
-                    --print("one agent arrived {} {}\n",this.newcommers.a.hash_code,(this.xmax,this.ymax) );
-                    this.newcommers.append(this.agents);
-                }
+    end
+    this.ttl = 10001
+    this.size = 0
+    this.moving = false
+  end
+  def min() : (int, int)
+    (this.xmin, this.ymin)
+  end
+  def max() : (int, int)
+    (this.xmax, this.ymax)
+  end
+{--
+  def check_newcommers() : unit
+    var cur = this.newcommers
+    var i = 1
+    print("Is newcommers related to last? ")
+    while cur != this.last do
+      if cur.a == null then
+        print("GHOST IN THE CHAIN\n")
+        while true do
+          ()
+        end
+      end
+      cur = cur.next
+      i = i + 1
+    end
+    print(" Yes {}\n", i)
+  end
+  def check_channeling() : unit
+    var cur = this.agents
+    var i = 0
+    while cur != null do
+      i = i + 1
+      cur = cur.next
+    end
+    var j = this.matrix.size()
+    if i > j then
+      print("more linked list agents ")
+    end
+    if i < j then
+      print("more matrix agents ")
+    end
+    if i != j then
+      println((i, j, this.size))
+      cur = this.agents
+      i = 0
+      while cur != null do
+        if this.matrix.get_val(cur.a.x, cur.a.y) == false then
+          print("AGENT'S pos not in MATRIX {} {} {}\n", cur.a.hash_code, i, (this.xmax, this.ymax))
+        end
+        i = i + 1
+        cur = cur.next
+      end
+      while true do
+        ()
+      end
+    end
+  end
+--}
+  def agents() : [(int, int)]
+    this.merge()
+    match this.agents with
+        case Nothing => new [(int, int)](0)
+        case thing =>
+              var cur=thing
+              var i = 0
+              while cur != Nothing do
+                i = i + 1
+                match cur with
+                    case Just(thing) => cur=thing.next
+                end
+              end
+              var ret = new [(int, int)](i)
+              cur = this.agents
+              i = 0
+              while cur != Nothing do
+                i = i + 1
+                match cur with
+                    case Just(thing) =>
+                     cur=thing.next
+                     ret(i) = thing.a.pos()
+                    end
+                end
+              end
+              ret
+        end
+    end
+  end
+  def add(a : Agent) : bool
+    if a.x > this.xmax || a.x < this.xmin || a.y > this.ymax || a.y < this.ymin then
+      false
+    else
+      this.add_internal(a)
+    end
+  end
+  def external_move(a : Agent, x : int, y : int) : bool
+    if x > this.xmax || x < this.xmin || y > this.ymax || y < this.ymin then
+      false
+    else
+      if this.matrix.get_val(x, y) == true then
+        false
+      else
+        a.move_int(x, y)
+        this.add_internal(a)
+      end
+    end
+  end
+  def add_internal(a : Agent) : bool
+    if this.matrix.get_val(a.x, a.y) == true then
+      print("AGENTS IN TOP OF eachother\n")
+      while true do
+        ()
+      end
+      true
+    else
+      this.matrix.set(a.x, a.y)
+      if this.newcommers == Nothing then
+        this.newcommers = Just(new Item(a))
+      else
+        if this.last == Nothing then
+          this.last = Just(new Item(a))
+          match this.newcommers with
+              case Just(thing) => thing.append(this.last)
+          end
+        else
+          var new_wraper = Just(new Item(a))
+          match this.last with
+            case Just(thing) => thing.append(new_wraper)
+          end
+          this.last = new_wraper
+        end
+      end
+      this.size = this.size + 1
+      true
+    end
+  end
+  def link(a : Box) : bool
+    var c = a ! max()
+    var d = a ! min()
+    await(c)
+    await(d)
+    match (this.xmax, this.ymax, this.xmin, this.ymin, get(c), get(d)) with
+      case (x_max_1, y_max_1, x_min_1, y_min_1, (x_max_2, y_max_2), (x_min_2, y_min_2)) =>
+        var top = y_max_1 + 1 == y_min_2
+        var bottom = y_min_1 - 1 == y_max_2
+        var right = x_max_1 + 1 == x_min_2
+        var left = x_min_1 - 1 == x_max_2
+        if not(left || right || top || bottom) then
+          false
+        else
+          if top then
+            if right then
+                this.top_right = Just(a)
+            else
+              if left then
+                  this.top_left = Just(a)
+              else
+                  this.up = Just(a)
+              end
+            end
+          else
+            if bottom then
+              if right then
+                  this.bottom_right = Just(a)
+              else
+                if left then
+                    this.bottom_left = Just(a)
                 else
-                    {this.last.append(this.agents);};
-                this.agents=this.newcommers;
-            } else { this.agents=this.newcommers;};
-            this.newcommers=null;
-            this.last=null;
-            --print("MERING\n");
-        };
-        --this.check_channeling();
-    }
- --moves all agents in the box once
- --returns true
-def move() : bool {
-        --if this.moving==true then { print("2 MOVE MESSAGES AT THE SAME TIME\n"); };
-        this.ttl=this.ttl-1;
-        --unless step_nr==this.ttl then { print( (step_nr,this.ttl,"ttl!=step_nr") ); while true { () } };
-        --print(("moving",step_nr,this.xmax,this.ymax));
-        this.merge();
-        var parent = this.agents;
-        var a = this.agents;
-        var desired = new [int](6);
-       while a!=null {
-            --unless (a.a.ttl==step_nr or a.a.ttl==step_nr-1) then {print(this.ttl,a.a.ttl,a.a.hash_code); while true { () } };
-            if ((a.a.ttl)==this.ttl) then { -- removes unlikely case when an agent is moved twice
-                a.a.ttl=a.a.ttl-1;
-                a.a.next(desired);
-                var i = 0;
-                var nejbor = null:Fut bool;
-                var moved = false;
-                var x2 =0;
-                var y2 =0;
-            while(i < |desired| and moved == false) {
-                    val x = desired[i];
-                    val y = desired[i+1];
-                        nejbor=null;
-                        let
-                            up = y>this.ymax
-                            down = y<this.ymin
-                            right = x>this.xmax
-                            left = x<this.xmin
-                            border = { --find which border is crossed, if any
-                                    if up then {
-                                        if right then {
-                                            this.top_right
-                                        } else if left then {
-                                            this.top_left
-                                        } else {
-                                            this.up
-                                        }
-                                    } else if down then {
-                                        if right then {
-                                            this.bottom_right
-                                        } else if left then {
-                                            this.bottom_left
-                                        } else {
-                                            this.down
-                                        }
-                                    } else if left then {this.left} else if right then {this.right} else {null : Box}
-                            }
-                        in {
-                        if up or down or left or right then { --if outside of the box
-                            if(border==null) then {
-                                --print("collision with edge of simulation, {}\n", (x,y));
-                                nejbor=mk_Future(false)
-                            } else {
-                                --print("{} {} hash: {}\n",(a.a.x,a.a.y),desired[i],a.a.hash_code);
-                                x2=a.a.x; y2=a.a.y;
-                                nejbor=border.external_move(a.a,x,y);
-                            }
-                        };
-                        if nejbor==null then { --else here
-                            --local collision detection
-                            if this.matrix.get_val(x,y)==false then {
-                                --print(this.matrix.get_val(a.a.x,a.a.y));
-                                unless this.matrix.remove(a.a.x,a.a.y) then { print("remove failed\n"); while true { () } }; --remove from old pos
-                                this.matrix.set(x,y); --add to new pos
-                                a.a.move_int(x,y); --move
-                                moved=true;
-                                --print("moved\n");
-                            }
-                        } else {
-                            await(nejbor);
-                            if get(nejbor) then { --if left this box
-                                this.size=this.size-1;
+                    this.down = Just(a)
+                end
+              end
+            else
+              if right then
+                  this.right = Just(a)
+              else
+                  this.left = Just(a)
+              end
+            end
+          end
+          true
+        end
+      end
 
-                                unless this.matrix.remove(x2,y2) then { print("remove failed 2\n"); while true { () } }; --remove from old pos
-                                moved=true;
-                                if a==this.agents then {this.agents=a.next;};
-                                a.delete();
-                            }
-                        };
-                            i=i+2;
-                        }}}; --else {print("timetraveler detected {} {} {}\n", a.a.hash_code,a.a.ttl,this.ttl);};
-                        a=a.next;
-            };
-          this.moving=false;
-          true;
-         }
-}
-
---UTIL CLASSES FOR Box
-    passive class Item {
-        a : Agent
-        next : Item
-        prev : Item
-        def init(a:Agent) : void {this.a=a;}
-        def delete() : void {
-            if this.next==null and this.prev==null then
-            { () }
-            else if this.prev==null then {
-                this.next.prev=null;
-            } else if this.next==null then {
-                this.prev.next=null;
-            } else {
-                this.next.prev=this.prev;
-                this.prev.next=this.next;
-            };
-            this.a=null;
-        }
-        def append(next:Item) : void {
-            this.next=next;
-            if(next!=null) then {
-            next.prev=this;
-        }}
-    }
-
-def link(a:Box,b:Box) : bool {
-    val aa=a.link(b);
-    val bb=b.link(a);
-    val aaa = get(aa);
-    val bbb = get(bb);
-    unless aaa==bbb then print("ONE_WAY_LINK\n");
-    aaa
-}
+    end
+  end
+  def merge() : unit
+    if this.newcommers != Nothing then
+      if this.agents != Nothing then
+        match (this.newcommers,this.last) with
+            case (nobody_cares,Just(last)) => last.append(this.agents)
+            case (Just(newc),unused) => newc.append(this.agents)
+        end
+        this.agents = this.newcommers
+      else
+        this.agents = this.newcommers
+      end
+      this.newcommers = Nothing
+      this.last = Nothing
+    end
+  end
+  def move() : bool
+    this.ttl = this.ttl - 1
+    this.merge()
+    var parent = this.agents
+    var wrapped_a = this.agents
+    var desired = new [int](6)
+    while wrapped_a != Nothing do
+      var a = match wrapped_a with
+                case Just(value) => value
+              end
+      if a.a.ttl == this.ttl then
+        a.a.ttl = a.a.ttl - 1
+        a.a.next(desired)
+        var i = 0
+        var moved = false
+        var x2 = 0
+        var y2 = 0
+        while i < |desired| && moved == false do
+          val x = desired(i)
+          val y = desired(i + 1)
+          let
+            up = y > this.ymax
+            down = y < this.ymin
+            right = x > this.xmax
+            left = x < this.xmin
+            border = if up then
+                       if right then
+                         this.top_right
+                       else
+                         if left then
+                           this.top_left
+                         else
+                           this.up
+                         end
+                       end
+                     else
+                       if down then
+                         if right then
+                           this.bottom_right
+                         else
+                           if left then
+                             this.bottom_left
+                           else
+                             this.down
+                           end
+                         end
+                       else
+                         if left then
+                           this.left
+                         else
+                           if right then
+                             this.right
+                           else
+                             Nothing
+                           end
+                         end
+                       end
+                     end
+          in
+              match border with
+                case Nothing =>
+                  if this.matrix.get_val(x, y) == false then
+                    unless this.matrix.remove(a.a.x, a.a.y) then
+                      print("remove failed\n")
+                      while true do
+                        ()
+                      end
+                    end
+                    this.matrix.set(x, y)
+                    a.a.move_int(x, y)
+                    moved = true
+                  end
+                end
+                case Just(real_thing) =>
+                    x2 = a.a.x
+                    y2 = a.a.y
+                    var nejbor = real_thing ! external_move(a.a, x, y)
+                    await(nejbor)
+                    if get(nejbor) then
+                      this.size = this.size - 1
+                      this.matrix.remove(x2, y2)
+                      moved = true
+                      if wrapped_a == this.agents then
+                         this.agents = a.next
+                      end
+                      a.delete()
+                    end
+                end
+              end
+              i = i + 2
+          end
+        end
+      end
+      wrapped_a = a.next
+    end
+    this.moving = false
+    true
+  end
+end
+passive class Item : Id
+  var a : Agent
+  var next : Maybe[Item]
+  var prev : Maybe[Item]
+  def init(a : Agent) : unit
+    this.a = a
+    this.next=Nothing
+    this.prev=Nothing
+  end
+  def delete() : unit
+    match (this.next,this.prev) with
+        case (Nothing,Nothing) => ()
+        case (Just(next),Just(prev)) =>
+            prev.next=this.next
+            next.prev=this.prev
+        end
+        case (Nothing,Just(prev)) => prev.next=Nothing
+        case (Just(next),Nothing) => next.prev=Nothing
+    end
+    this.a = null -- this passed typ checking???
+  end
+  def append(next : Maybe[Item]) : unit
+    this.next = next
+    match next with
+      case Nothing => ()
+      case Just(thing) => thing.next=Just(this)
+    end
+  end
+end

@@ -9,5 +9,5 @@ do
 echo $i
 
 ./benchmark_encore.sh $i 4 > $i"encoredata.tex"
-./benchmark_openmp.sh $i > $i"openmpdata.tex"
+./benchmark_openmp.sh $i 4 > $i"openmpdata.tex"
 done

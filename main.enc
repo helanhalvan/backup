@@ -1,82 +1,35 @@
-import SDL.SDL_Main
-import SDL.SDL_Types
-import SDL.SDL_Primitives
+-- This file was automatically converted by encorec
+
 import Ped_util.Agent_passive
---import Ped_util.Agent_active
-import Ped_util.UI
 import Ped_util.Global_funs
---import Ped_util.List_driver
---import Ped_util.Bucket_driver
---import Ped_util.Matrix_driver
 import Ped_util.Regions
---import Ped_util.Quad_tree
---import Data.Either
---}
-class Main {
---TODO
---check for easy memory optimizations in Quad_tree
---remove futures in Regions supervisor
--- unify the SQRT
-   def main(args: [String]) : void {
+class Main
+  def main(args : [String]) : unit
+    let
+      agents = parse_file(args(1))
+      ui = match (args(2)).to_int() with
+             case Just(1) =>
+               true
+             end
+             case _ =>
+               false
+             end
+           end
+      boxes = if |args| < 4 then
+                5
+              else
+                match (args(3)).to_int() with
+                  case Just(x) =>
+                    x
+                  end
+                  case _ =>
+                    5
+                  end
 
-       let
-            agents=parse_file(args[1])
-            ui ={ match (args[2]).to_int() with
-                            Just 1 => true
-                            _ => false}
-            boxes = { if(|args|<4 or args[3]==null) then {15} else {match (args[3]).to_int() with
-                            Just x => x
-                            _ => 15}}
-       in
-        {
-        regions(agents,ui,boxes);
-       }
-   }
-{--
-def baseline(agents: [Agent], ui:bool) : void {
-     var
-         i = 0;
-        var  drivers= new [Agent_driver]( |agents| );
-        var  futures= new [Fut void](|agents|);
-         var j = 0;
-         var sdl_main = if ui then make_UI() else null : SDL_Main;
-
-     {
-         for a in agents {
-             drivers[i]=new Agent_driver(a,|agents|);
-             i=i+1;
-         };
-         i=0;
-         for a in drivers{
-             for b in drivers {
-                 unless (a==b) then {
-                 a!link(b);
-                 }
-             }
-         };
-         --print("baseline setup done {} ui=={}\n",|drivers|, ui);
-         this!baseline_loop(40000,drivers,futures,ui,sdl_main,clock());
-     }
- }
-def baseline_loop(i:int,drivers:[Agent_driver],futures:[Fut void],ui:bool,sdl_main:SDL_Main,last_time:int) : void {
-             var j = 0;
-             --let new_time = clock()-last_time;
-             for a in drivers {
-                 futures[j]=a.move();
-                 j=j+1;
-             };
-             for a in futures {
-                 get(a);
-             };
-            if(ui) then {
-            var positions = new [(int,int)](|drivers|);
-                for w in [0..(|drivers|-1)] {
-                    positions[w]=get((drivers[w]).get_pos());
-                };
-                show(positions,sdl_main)
-            };
-             --if(i % 1000==0) then {print("{} {}\n",i,new_time);};
-         if i>0 then this!baseline_loop(i-1, drivers,futures,ui,sdl_main,last_time);
- }
---}
-}
+                end
+              end
+    in
+      regions(agents, ui, boxes)
+    end
+  end
+end

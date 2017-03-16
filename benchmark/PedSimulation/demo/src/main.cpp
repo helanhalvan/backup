@@ -62,7 +62,7 @@ int main(int argc, char*argv[]) {
       else if(strcmp(&argv[i][2],"color=none") == 0)  { color_mode = Ped::NONE; }
       else if(strcmp(&argv[i][2],"nthreads") == 0)  {
         num_threads = atoi(argv[++i]);
-        std::cout << "num threads " << num_threads << std::endl;
+        //std::cout << "num threads " << num_threads << std::endl;
       } else if(strcmp(&argv[i][2],"help") == 0) {
         cout << "Usage: " << argv[0] << " [--help] [--timing-mode] [--implementation=<seq|omp|pthread|opencl|vector|parallel>] [--nthreads num] [--collision] [--color=<none|cross|region>] [--heatmap=<disabled|naive|opencl>] [scenario]" << endl;
         cout << "                 --collision                   can only be used with --implementation=<seq|parallel>" << endl;

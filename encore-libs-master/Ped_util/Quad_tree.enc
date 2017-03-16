@@ -1,142 +1,153 @@
+-- This file was automatically converted by encorec
 
 module Quad_tree
-
 import Global_funs
+passive class Quad
+  var agent : [int]
+  var top_right : Maybe[Quad]
+  var top_left : Maybe[Quad]
+  var bottom_right : Maybe[Quad]
+  var bottom_left : Maybe[Quad]
+  var max_x : int
+  var max_y : int
+  var min_x : int
+  var min_y : int
+  var size : int
+  def init(max_x : int, max_y : int, min_x : int, min_y : int) : unit
+    this.max_x = max_x
+    this.max_y = max_y
+    this.min_x = min_x
+    this.min_y = min_y
+    this.top_right=Nothing
+    this.top_left=Nothing
+    this.bottom_right=Nothing
+    this.bottom_left=Nothing
+    this.size = 0
+    this.agent = new [int](0)
+  end
+  def add(x : int, y : int) : unit
+    --if x <= this.max_x && x >= this.min_x && y <= this.max_y && y >= this.min_y then
+      match this.top_right with
+          case Nothing when |this.agent| == 0 =>
+            this.agent = new [int](2)
+            (this.agent)(0) = x
+            (this.agent)(1) = y
+            this.size = 1
+            return()
+          end
+          case Nothing =>
+              val dx = this.max_x - this.min_x / 2
+              val dy = this.max_y - this.min_y / 2
+              this.top_right = Just(new Quad(this.max_x, this.max_y, this.min_x + dx + 1, this.min_y + dy + 1))
+              this.top_left = Just(new Quad(this.min_x + dx, this.max_y, this.min_x, this.min_y + dy + 1))
+              this.bottom_right = Just(new Quad(this.max_x, this.min_y + dy, this.min_x + dx + 1, this.min_y))
+              this.bottom_left = Just(new Quad(this.min_x + dx, this.min_y + dy, this.min_x, this.min_y))
+              this.size = 1
+              this.recur((this.agent)(0), (this.agent)(1)).add((this.agent)(0), (this.agent)(1))
+              this.agent = new [int](0)
+          end
+      end
+      this.size = this.size + 1
+      this.recur(x, y).add(x, y)
+  end
+  def remove(x : int, y : int) : bool
+    match this.top_right with
+      case Nothing =>
+          if this.same(x, y) then
+            this.agent = new[int](0)
+            this.size = 0
+            true
+          else
+            false
+          end
+      end
+      case Just(unused) =>
+          val hit = this.recur(x, y).remove(x, y)
+          if hit then
+            this.size = this.size - 1
+            if this.size == 0 then
+              this.top_right = Nothing
+              this.bottom_right = Nothing
+              this.top_left = Nothing
+              this.bottom_left = Nothing
+            end
+          end
+          hit
+      end
+    end
+  end
+  def isin(x : int, y : int) : bool
+    match this.top_right with
+      case Nothing => this.same(x, y)
+      case Just(unused) => this.recur(x, y).isin(x, y)
+    end
+  end
+  def same(x : int, y : int) : bool
+    if |this.agent| == 2 && this.agent(0) == x && this.agent(1) == y then
+      true
+    else
+      false
+    end
+  end
+  def recur(x : int, y : int) : Quad
+    val top = y > this.max_y - this.min_y / 2 + this.min_y
+    val right = x > this.max_x - this.min_x / 2 + this.min_x
+    if top then
+      if right then
+        match (this.top_right) with
+            case Just(qq) => qq
+        end
+      else
+        match (this.top_left) with
+            case Just(qq) => qq
+        end
+      end
+    else
+      if right then
+        match (this.bottom_right) with
+            case Just(qq) => qq
+        end
+      else
+        match (this.bottom_left) with
+            case Just(qq) => qq
+        end
+      end
+    end
+  end
+end
+passive class Quad_tree
+  var tree : Quad
+  var xmax : int
+  var ymax : int
+  var xmin : int
+  var ymin : int
+  def init(in_max : (int, int), in_min : (int, int)) : unit
+    match (in_max, in_min) with
+      case ((xmax, ymax), (xmin, ymin)) =>
+        this.tree = new Quad(xmax, ymax, xmin, ymin)
+        this.xmax = xmax
+        this.ymax = ymax
+        this.xmin = xmin
+        this.ymin = ymin
+      end
 
-    passive class Quad {
-        agent : [int]
-        top_right : Quad
-        top_left : Quad
-        bottom_right : Quad
-        bottom_left : Quad
-        max_x : int
-        max_y : int
-        min_x : int
-        min_y : int
-        size : int --used to determine if its time to become a leaf
-        def init(max_x:int,max_y:int,min_x:int,min_y:int) : void {
-                this.max_x=max_x;
-                this.max_y=max_y;
-                this.min_x=min_x;
-                this.min_y=min_y;
-                this.size=0;
-            }
-        def add(x:int,y:int) : void {
-            if(x<=this.max_x and x>=this.min_x and y<=this.max_y and y>=this.min_y) then
-            {
-            if ( this.agent==null and this.top_right==null) then { --if empty, store agent
-                this.agent = new [int](2);
-                this.agent[0]=x;
-                this.agent[1]=y;
-                this.size=1;
-                --print( (x,y) );
-            } else {
-                if(this.top_right==null) then { --if node have no leaves yet
-                    val dx = (this.max_x-this.min_x)/2;
-                    val dy = (this.max_y-this.min_y)/2;
-                    --make leaves
-                    this.top_right=new Quad(this.max_x,this.max_y,this.min_x+dx+1,this.min_y+dy+1);
-                    this.top_left=new Quad(this.min_x+dx,this.max_y,this.min_x,this.min_y+dy+1);
-                    this.bottom_right=new Quad(this.max_x,this.min_y+dy,this.min_x+dx+1,this.min_y);
-                    this.bottom_left=new Quad(this.min_x+dx,this.min_y+dy,this.min_x,this.min_y);
-                    this.size=1;
-                    --print( (this.max_x,this.min_x,this.max_y,this.min_y,dx,dy) );
-                    --add agent to leaves
-                    this.recur(this.agent[0],this.agent[1]).add(this.agent[0],this.agent[1]);
-                    this.agent=null;
-                };
-                    this.size=this.size+1;
-                    this.recur(x,y).add(x,y);
-            }} else {
-                print("OUTSIDE! {} {} {} {} {} {}\n",x,y,this.max_x,this.min_x,this.max_y,this.min_y);
-            }
-        }
-        def remove (x:int,y:int) : bool {
-            if (this.top_right==null) then {
-                if this.same(x,y) then {
-                    this.agent=null;
-                    this.size=0;
-                    true;
-                } else {
-                    false;
-                }
-            } else {
-                val hit=this.recur(x,y).remove(x,y);
-                if hit then { this.size=this.size-1;
-                if this.size==0 then { -- if all subtrees are empty, become a leaf
-                    this.top_right=null;
-                    this.bottom_right=null;
-                    this.top_left=null;
-                    this.bottom_left=null;
-                    }
-                };
-                hit
-            }
-        }
-        def isin(x:int,y:int) : bool {
-            if(this.top_right==null) then {
-                this.same(x,y)
-            } else {
-                this.recur(x,y).isin(x,y);
-            }
-        }
-        def same(x:int, y:int) : bool { --leaf equal comparison, null -> false
-            if (this.agent!=null and this.agent[0]==x and this.agent[1]==y) then true else false
-        }
-        --traverse down the tree one level
-        def recur (x:int, y:int) : Quad {
-        val top = y> ((this.max_y-this.min_y)/2)+this.min_y;
-        val right = x> ((this.max_x-this.min_x)/2)+this.min_x;
-            if top then {
-                if right then {
-                    --print("top_right\n");
-                    this.top_right
-                } else {
-                    --print("top_left {} {} {} {} {} {}\n",(x,y),(this.max_x,this.max_y),top,y,this.max_y,this.min_y);
-                    this.top_left
-                }
-            } else {
-                if right then {
-                    --print("bottom_right\n");
-                    this.bottom_right
-                } else {
-                    --print("bottom_left\n");
-                    this.bottom_left
-                }
-            }
-        }
-    }
-passive class Quad_tree {
-        tree : Quad
-        xmax : int
-        ymax : int
-        xmin : int
-        ymin : int
-        def init(in_max:(int,int),in_min:(int,int)) : void {
-                match (in_max,in_min) with
-                    ((xmax,ymax),(xmin,ymin)) => {
-                    this.tree = new Quad(xmax,ymax,xmin,ymin);
-                this.xmax=xmax;
-                this.ymax=ymax;
-                this.xmin=xmin;
-                this.ymin=ymin;
-                };
-            }
-        def get_val( x:int,y:int ) : bool {
-            this.tree.isin(x,y);
-        }
-        def set( x:int,y:int ) : void {
-            if(x>this.xmax or y>this.ymax or y<this.ymin or x<this.xmin) then print("TRYING TO STORE VALUE OUTSIDE OF THIS TREE\n") else {
-            this.tree.add(x,y)
-            };
-            ()
-        }
-        def remove(x:int,y:int) : bool {
-            this.tree.remove(x,y);
-        }
-        def size() : int {
-            if(this.tree.agent==null and this.tree.top_right==null and this.tree.size!=0) then print("BAD BAD BAD BAD \n");
-            this.tree.size;
-        }
-    }
---}
+    end
+  end
+  def get_val(x : int, y : int) : bool
+    this.tree.isin(x, y)
+  end
+  def set(x : int, y : int) : unit
+    if x > this.xmax || y > this.ymax || y < this.ymin || x < this.xmin then
+      print("TRYING TO STORE VALUE OUTSIDE OF THIS TREE\n")
+    else
+      this.tree.add(x, y)
+    end
+    ()
+  end
+  def remove(x : int, y : int) : bool
+    this.tree.remove(x, y)
+  end
+  def size() : int
+    this.tree.size
+  end
+end

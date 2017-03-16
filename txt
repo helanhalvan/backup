@@ -1,333 +1,276 @@
  *** Error during typechecking *** 
-"./encore-libs-master/Ped_util/Regions.enc" (line 237, column 18)
-No field 'tll' in class 'Agent'
+"./encore-libs-master/Ped_util/Regions.enc" (line 290, column 34)
+Type 'Regions.Box' does not match expected type 'Maybe[Regions.Box]'
 In expression: 
-  a.a.tll
+  a
 In expression: 
-  a.a.tll == this.ttl
+  this.top_right = a
 In expression: 
-  if a.a.tll == this.ttl then
-    {var desired = a.a.next();
-     var i = 0;
-     var nejbor = null : Fut bool;
-     var moved = false;
-     var x2 = 0;
-     var y2 = 0;
-     while i < |desired| and moved == false
-       match desired[i] with
-         (x, y) => {nejbor = null;
-                    let up = y > this.ymax
-                        down = y < this.ymin
-                        right = x > this.xmax
-                        left = x < this.xmin
-                        border = if up then
-                                   if right then
-                                     this.top_right
-                                   else
-                                     if left then
-                                       this.top_left
-                                     else
-                                       this.up
-                                 else
-                                   if down then
-                                     if right then
-                                       this.bottom_right
-                                     else
-                                       if left then
-                                         this.bottom_left
-                                       else
-                                         this.down
-                                   else
-                                     if left then
-                                       this.left
-                                     else
-                                       if right then
-                                         this.right
-                                       else
-                                         null : Box
-                    in
-                      {if up or down or left or right then
-                         if border == null then
-                           {print("collision with edge of simulation, {}\n", (x, y));
-                            nejbor = mk_Future(false)}
-                         else
-                           {x2 = a.a.x;
-                            y2 = a.a.y;
-                            nejbor = border.external_move(a.a, x, y)};
-                       if nejbor == null then
-                         if this.matrix.get_val(x, y) == false then
-                           {unless this.matrix.remove(a.a.x, a.a.y) then
-                              print("remove failed\n");
-                            this.matrix.set(x, y, true);
-                            a.a.move_int(x, y);
-                            moved = true}
-                       else
-                         {await nejbor;
-                          if get nejbor then
-                            {unless this.matrix.remove(x2, y2) then
-                               print("remove failed 2\n");
-                             moved = true;
-                             if parent == a then
-                               {this.agents = a.next;
-                                parent = a.next}
-                             else
-                               parent.next = a.next}};
-                       i = i + 1}}
-       }
+  do
+    this.top_right = a
+    true
+  end
 In expression: 
-  {if a.a.tll == this.ttl then
-     {var desired = a.a.next();
-      var i = 0;
-      var nejbor = null : Fut bool;
-      var moved = false;
-      var x2 = 0;
-      var y2 = 0;
-      while i < |desired| and moved == false
-        match desired[i] with
-          (x, y) => {nejbor = null;
-                     let up = y > this.ymax
-                         down = y < this.ymin
-                         right = x > this.xmax
-                         left = x < this.xmin
-                         border = if up then
-                                    if right then
-                                      this.top_right
-                                    else
-                                      if left then
-                                        this.top_left
-                                      else
-                                        this.up
-                                  else
-                                    if down then
-                                      if right then
-                                        this.bottom_right
-                                      else
-                                        if left then
-                                          this.bottom_left
-                                        else
-                                          this.down
-                                    else
-                                      if left then
-                                        this.left
-                                      else
-                                        if right then
-                                          this.right
-                                        else
-                                          null : Box
-                     in
-                       {if up or down or left or right then
-                          if border == null then
-                            {print("collision with edge of simulation, {}\n", (x, y));
-                             nejbor = mk_Future(false)}
-                          else
-                            {x2 = a.a.x;
-                             y2 = a.a.y;
-                             nejbor = border.external_move(a.a, x, y)};
-                        if nejbor == null then
-                          if this.matrix.get_val(x, y) == false then
-                            {unless this.matrix.remove(a.a.x, a.a.y) then
-                               print("remove failed\n");
-                             this.matrix.set(x, y, true);
-                             a.a.move_int(x, y);
-                             moved = true}
-                        else
-                          {await nejbor;
-                           if get nejbor then
-                             {unless this.matrix.remove(x2, y2) then
-                                print("remove failed 2\n");
-                              moved = true;
-                              if parent == a then
-                                {this.agents = a.next;
-                                 parent = a.next}
-                              else
-                                parent.next = a.next}};
-                        i = i + 1}}
-        };
-   if parent == null then
-     a = null
-   else
-     if parent == a then
-       a = a.next
-     else
-       {parent = parent.next;
-        if parent != null then
-          a = parent.next
-        else
-          a = null}}
+  if right then
+    this.top_right = a
+    true
+  else
+    if left then
+      this.top_left = a
+    else
+      this.up = a
+    end
+  end
 In expression: 
-  while a != null
-    {if a.a.tll == this.ttl then
-       {var desired = a.a.next();
-        var i = 0;
-        var nejbor = null : Fut bool;
-        var moved = false;
-        var x2 = 0;
-        var y2 = 0;
-        while i < |desired| and moved == false
-          match desired[i] with
-            (x, y) => {nejbor = null;
-                       let up = y > this.ymax
-                           down = y < this.ymin
-                           right = x > this.xmax
-                           left = x < this.xmin
-                           border = if up then
-                                      if right then
-                                        this.top_right
-                                      else
-                                        if left then
-                                          this.top_left
-                                        else
-                                          this.up
-                                    else
-                                      if down then
-                                        if right then
-                                          this.bottom_right
-                                        else
-                                          if left then
-                                            this.bottom_left
-                                          else
-                                            this.down
-                                      else
-                                        if left then
-                                          this.left
-                                        else
-                                          if right then
-                                            this.right
-                                          else
-                                            null : Box
-                       in
-                         {if up or down or left or right then
-                            if border == null then
-                              {print("collision with edge of simulation, {}\n", (x, y));
-                               nejbor = mk_Future(false)}
-                            else
-                              {x2 = a.a.x;
-                               y2 = a.a.y;
-                               nejbor = border.external_move(a.a, x, y)};
-                          if nejbor == null then
-                            if this.matrix.get_val(x, y) == false then
-                              {unless this.matrix.remove(a.a.x, a.a.y) then
-                                 print("remove failed\n");
-                               this.matrix.set(x, y, true);
-                               a.a.move_int(x, y);
-                               moved = true}
-                          else
-                            {await nejbor;
-                             if get nejbor then
-                               {unless this.matrix.remove(x2, y2) then
-                                  print("remove failed 2\n");
-                                moved = true;
-                                if parent == a then
-                                  {this.agents = a.next;
-                                   parent = a.next}
-                                else
-                                  parent.next = a.next}};
-                          i = i + 1}}
-          };
-     if parent == null then
-       a = null
-     else
-       if parent == a then
-         a = a.next
-       else
-         {parent = parent.next;
-          if parent != null then
-            a = parent.next
-          else
-            a = null}}
-In expression: 
-  var a = this.agents
-In expression: 
-  var a = this.agents
-In expression: 
-  var parent = this.agents
-In expression: 
-  var parent = this.agents
-In expression: 
-  {this.merge();
-   var parent = this.agents;
-   var a = this.agents;
-   while a != null
-     {if a.a.tll == this.ttl then
-        {var desired = a.a.next();
-         var i = 0;
-         var nejbor = null : Fut bool;
-         var moved = false;
-         var x2 = 0;
-         var y2 = 0;
-         while i < |desired| and moved == false
-           match desired[i] with
-             (x, y) => {nejbor = null;
-                        let up = y > this.ymax
-                            down = y < this.ymin
-                            right = x > this.xmax
-                            left = x < this.xmin
-                            border = if up then
-                                       if right then
-                                         this.top_right
-                                       else
-                                         if left then
-                                           this.top_left
-                                         else
-                                           this.up
-                                     else
-                                       if down then
-                                         if right then
-                                           this.bottom_right
-                                         else
-                                           if left then
-                                             this.bottom_left
-                                           else
-                                             this.down
-                                       else
-                                         if left then
-                                           this.left
-                                         else
-                                           if right then
-                                             this.right
-                                           else
-                                             null : Box
-                        in
-                          {if up or down or left or right then
-                             if border == null then
-                               {print("collision with edge of simulation, {}\n", (x, y));
-                                nejbor = mk_Future(false)}
-                             else
-                               {x2 = a.a.x;
-                                y2 = a.a.y;
-                                nejbor = border.external_move(a.a, x, y)};
-                           if nejbor == null then
-                             if this.matrix.get_val(x, y) == false then
-                               {unless this.matrix.remove(a.a.x, a.a.y) then
-                                  print("remove failed\n");
-                                this.matrix.set(x, y, true);
-                                a.a.move_int(x, y);
-                                moved = true}
-                           else
-                             {await nejbor;
-                              if get nejbor then
-                                {unless this.matrix.remove(x2, y2) then
-                                   print("remove failed 2\n");
-                                 moved = true;
-                                 if parent == a then
-                                   {this.agents = a.next;
-                                    parent = a.next}
-                                 else
-                                   parent.next = a.next}};
-                           i = i + 1}}
-           };
-      if parent == null then
-        a = null
+  if top then
+    if right then
+      this.top_right = a
+      true
+    else
+      if left then
+        this.top_left = a
       else
-        if parent == a then
-          a = a.next
+        this.up = a
+      end
+    end
+  else
+    if bottom then
+      if right then
+        if this.bottom_right == Nothing then
+          this.bottom_right = a
+          true
         else
-          {parent = parent.next;
-           if parent != null then
-             a = parent.next
-           else
-             a = null}};
-   true}
-In method 'move' of type 'bool'
+          false
+        end
+      else
+        if left then
+          this.bottom_left = a
+        else
+          this.down = a
+        end
+      end
+    else
+      if right then
+        this.right = a
+      else
+        this.left = a
+      end
+    end
+  end
+In expression: 
+  if not(left || right || top || bottom) then
+    false
+  else
+    if top then
+      if right then
+        this.top_right = a
+        true
+      else
+        if left then
+          this.top_left = a
+        else
+          this.up = a
+        end
+      end
+    else
+      if bottom then
+        if right then
+          if this.bottom_right == Nothing then
+            this.bottom_right = a
+            true
+          else
+            false
+          end
+        else
+          if left then
+            this.bottom_left = a
+          else
+            this.down = a
+          end
+        end
+      else
+        if right then
+          this.right = a
+        else
+          this.left = a
+        end
+      end
+    end
+  end
+In expression: 
+  var left = x_min_1 - 1 == x_max_2
+In expression: 
+  var left = x_min_1 - 1 == x_max_2
+In expression: 
+  var right = x_max_1 + 1 == x_min_2
+In expression: 
+  var right = x_max_1 + 1 == x_min_2
+In expression: 
+  var bottom = y_min_1 - 1 == y_max_2
+In expression: 
+  var bottom = y_min_1 - 1 == y_max_2
+In expression: 
+  var top = y_max_1 + 1 == y_min_2
+In expression: 
+  var top = y_max_1 + 1 == y_min_2
+In expression: 
+  do
+    var top = y_max_1 + 1 == y_min_2
+    var bottom = y_min_1 - 1 == y_max_2
+    var right = x_max_1 + 1 == x_min_2
+    var left = x_min_1 - 1 == x_max_2
+    if not(left || right || top || bottom) then
+      false
+    else
+      if top then
+        if right then
+          this.top_right = a
+          true
+        else
+          if left then
+            this.top_left = a
+          else
+            this.up = a
+          end
+        end
+      else
+        if bottom then
+          if right then
+            if this.bottom_right == Nothing then
+              this.bottom_right = a
+              true
+            else
+              false
+            end
+          else
+            if left then
+              this.bottom_left = a
+            else
+              this.down = a
+            end
+          end
+        else
+          if right then
+            this.right = a
+          else
+            this.left = a
+          end
+        end
+      end
+    end
+  end
+In expression: 
+  match (this.xmax, this.ymax, this.xmin, this.ymin, get(c), get(d)) with
+    case (x_max_1, y_max_1, x_min_1, y_min_1, (x_max_2, y_max_2), (x_min_2, y_min_2)) =>
+      var top = y_max_1 + 1 == y_min_2
+      var bottom = y_min_1 - 1 == y_max_2
+      var right = x_max_1 + 1 == x_min_2
+      var left = x_min_1 - 1 == x_max_2
+      if not(left || right || top || bottom) then
+        false
+      else
+        if top then
+          if right then
+            this.top_right = a
+            true
+          else
+            if left then
+              this.top_left = a
+            else
+              this.up = a
+            end
+          end
+        else
+          if bottom then
+            if right then
+              if this.bottom_right == Nothing then
+                this.bottom_right = a
+                true
+              else
+                false
+              end
+            else
+              if left then
+                this.bottom_left = a
+              else
+                this.down = a
+              end
+            end
+          else
+            if right then
+              this.right = a
+            else
+              this.left = a
+            end
+          end
+        end
+      end
+    end
+  
+  end
+In expression: 
+  var d = a!min()
+In expression: 
+  var d = a!min()
+In expression: 
+  var c = a!max()
+In expression: 
+  var c = a!max()
+In expression: 
+  do
+    var c = a!max()
+    var d = a!min()
+    await(c)
+    await(d)
+    match (this.xmax, this.ymax, this.xmin, this.ymin, get(c), get(d)) with
+      case (x_max_1, y_max_1, x_min_1, y_min_1, (x_max_2, y_max_2), (x_min_2, y_min_2)) =>
+        var top = y_max_1 + 1 == y_min_2
+        var bottom = y_min_1 - 1 == y_max_2
+        var right = x_max_1 + 1 == x_min_2
+        var left = x_min_1 - 1 == x_max_2
+        if not(left || right || top || bottom) then
+          false
+        else
+          if top then
+            if right then
+              this.top_right = a
+              true
+            else
+              if left then
+                this.top_left = a
+              else
+                this.up = a
+              end
+            end
+          else
+            if bottom then
+              if right then
+                if this.bottom_right == Nothing then
+                  this.bottom_right = a
+                  true
+                else
+                  false
+                end
+              else
+                if left then
+                  this.bottom_left = a
+                else
+                  this.down = a
+                end
+              end
+            else
+              if right then
+                this.right = a
+              else
+                this.left = a
+              end
+            end
+          end
+        end
+      end
+    
+    end
+  end
+In method 'link' of type 'bool'
 In class 'Regions.Box'
 
