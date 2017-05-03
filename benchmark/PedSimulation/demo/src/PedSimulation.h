@@ -15,9 +15,9 @@
 // Driver for updating the world
 class PedSimulation : public QObject{
   Q_OBJECT
-  
+
 public:
-  PedSimulation(Ped::Model &model,MainWindow &window);
+  PedSimulation(Ped::Model &model);
   PedSimulation() = delete;
 
   // Running simulation without GUI. Use for profiling.
@@ -25,14 +25,13 @@ public:
 
   // Running simulation with GUI. Use for visualization.
   void runSimulationWithQt(int maxNumberOfStepsToSimulate);
-    
+
   public slots:
     // Performs one simulation step
     void simulateOneStep();
 
 private:
   Ped::Model &model;
-  MainWindow &window;
 
   int maxSimulationSteps;
 };

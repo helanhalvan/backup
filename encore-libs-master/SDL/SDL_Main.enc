@@ -1,0 +1,364 @@
+-- This file was automatically converted by encorec
+
+module SDL_Main
+import SDL.SDL_Types
+import SDL.SDL_Primitives
+import SDL.SDL_Events
+import SDL.Vat
+EMBED
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+typedef   long double real;
+
+typedef struct {
+  unsigned char r;
+  unsigned char g;
+  unsigned char b;
+  unsigned char derp;
+}pixel;
+
+typedef struct{
+  int width;
+  int height;
+  SDL_Renderer* renderer;
+  SDL_Window* window;
+  SDL_Event* event;
+}sdl_object;
+
+typedef struct{
+  int width;
+  int height;
+  SDL_Texture* texture;
+  pixel* pixels;
+}sdl_texture;
+
+
+BODY
+
+END
+
+typedef Hack[t] = (SDL_Main, t)
+class SDL_Main
+  var sdl_settings : EMBED sdl_object* END
+  var sdl_texture : EMBED sdl_texture* END
+  var sdl_font : SDL_Font
+  var quit : bool
+  def drawRectangle(rec : Rectangle) : unit
+    var sdl_settings = this.sdl_settings
+    var sdl_texture = this.sdl_texture
+    var x = rec.x
+    var y = rec.y
+    var w = rec.w
+    var h = rec.h
+    EMBED (unit)
+      SDL_Rect rect;
+      rect.x = #{x};
+      rect.y = #{y};
+      rect.w = #{w};
+      rect.h = #{h};
+      SDL_RenderDrawRect(#{sdl_settings}->renderer, &rect);
+
+    END
+  end
+  def fillRectangle(rec : Rectangle) : unit
+    var sdl_settings = this.sdl_settings
+    var sdl_texture = this.sdl_texture
+    var x = rec.x
+    var y = rec.y
+    var w = rec.w
+    var h = rec.h
+    EMBED (unit)
+      SDL_Rect rect;
+      rect.x = #{x};
+      rect.y = #{y};
+      rect.w = #{w};
+      rect.h = #{h};
+      SDL_RenderFillRect(#{sdl_settings}->renderer, &rect);
+
+    END
+  end
+  def setRenderColor(c : ColorRGBA) : unit
+    var sdl_settings = this.sdl_settings
+    var sdl_texture = this.sdl_texture
+    var r = c.r
+    var g = c.g
+    var b = c.b
+    var a = c.a
+    EMBED (unit)
+      SDL_SetRenderDrawColor(#{sdl_settings}->renderer,
+                             #{r},
+                             #{g},
+                             #{b},
+                             #{a});
+
+    END
+  end
+  def drawImage(image_path : String, x : int, y : int, x_scale : real, y_scale : real) : unit
+    var sdl_settings = this.sdl_settings
+    var image_path = image_path.data
+    EMBED (unit)
+      SDL_Texture *img = NULL;
+      int w, h;
+      img = IMG_LoadTexture(#{sdl_settings}->renderer, #{image_path});
+      if(img == NULL){
+        fprintf(stderr,"Error occuered while loading image:\n%s",#{image_path});
+      }
+      SDL_QueryTexture(img, NULL, NULL, &w, &h);
+      SDL_Rect rect;
+      rect.x = #{x};
+      rect.y = #{y};
+      rect.w = (int)(w*#{x_scale});
+      rect.h = (int)(h*#{y_scale});
+      SDL_RenderCopy(#{sdl_settings}->renderer, img, NULL, &rect);
+      SDL_DestroyTexture(img);
+
+    END
+  end
+  def drawLine(p1 : Point2D, p2 : Point2D) : unit
+    var sdl_settings = this.sdl_settings
+    var sdl_texture = this.sdl_texture
+    var x1 = p1.x
+    var y1 = p1.y
+    var x2 = p2.x
+    var y2 = p2.y
+    EMBED (unit)
+      SDL_RenderDrawLine(#{sdl_settings}->renderer,
+                         #{x1},
+                         #{y1},
+                         #{x2},
+                         #{y2});
+
+    END
+  end
+  def clearAll() : unit
+    var sdl_settings = this.sdl_settings
+    EMBED (unit)
+      SDL_SetRenderDrawColor(#{sdl_settings}->renderer,
+                             0,
+                             0,
+                             0,
+                             255);
+      SDL_RenderClear(#{sdl_settings}->renderer);
+
+    END
+  end
+  def fillAll() : unit
+    var sdl_settings = this.sdl_settings
+    EMBED (unit)
+      SDL_RenderClear(#{sdl_settings}->renderer);
+
+    END
+  end
+  def initFont(font_name : String, size : int) : unit
+    var font = this.sdl_font
+    var font_path = font_name.data
+    EMBED (unit)
+      #{font}= TTF_OpenFont(#{font_path}, #{size});
+      if (#{font}== NULL) {
+          fprintf(stderr, "error: font not found\n");
+          exit(EXIT_FAILURE);
+      }
+
+    END
+    this.sdl_font = font
+  end
+  def drawText(text : String, x : int, y : int, color : ColorRGBA) : unit
+    var text_color = color.getCRepresentation()
+    var sdl_settings = this.sdl_settings
+    var font = this.sdl_font
+    var c_text = text.data
+    EMBED (unit)
+      if(#{font}== NULL){
+        fputs("Tried to draw font with no font loaded!",stderr);
+        exit(1);
+      }
+      int text_width;
+      int text_height;
+      SDL_Surface *surface;
+      SDL_Rect rect;
+      SDL_Color textColor = {255, 255, 255, 0};
+
+      surface = TTF_RenderText_Solid(#{font}, #{c_text}, #{text_color});
+      SDL_Texture *texture = SDL_CreateTextureFromSurface(#{sdl_settings}->renderer, surface);
+      text_width = surface->w;
+      text_height = surface->h;
+      SDL_FreeSurface(surface);
+      rect.x = #{x};
+      rect.y = #{y};
+      rect.w = text_width;
+      rect.h = text_height;
+      SDL_RenderCopy(#{sdl_settings}->renderer, texture, NULL, &rect);
+      SDL_DestroyTexture(texture);
+
+    END
+  end
+  def init(width : int, height : int) : unit
+    this.quit = false
+    var sdl_settings = this.sdl_settings
+    var sdl_texture = this.sdl_texture
+    var sdl_font = this.sdl_font
+    EMBED (unit)
+      #{sdl_font}= NULL;
+      SDL_Init(SDL_INIT_VIDEO);
+      TTF_Init();
+      sdl_object* sdl_settings = (sdl_object*)malloc(sizeof(sdl_object));
+      sdl_settings->width = #{width};
+      sdl_settings->height = #{height};
+      sdl_settings->window = SDL_CreateWindow("Encore Program",
+            SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, #{width}, #{height}, 0);
+      sdl_settings->renderer = SDL_CreateRenderer(sdl_settings->window, -1, 0);
+      sdl_settings->event = malloc(sizeof(SDL_Event));
+      #{sdl_settings}= sdl_settings;
+
+      sdl_texture* sdl_only_texture = malloc(sizeof(sdl_texture));
+      sdl_only_texture->width = #{width};
+      sdl_only_texture->height = #{height};
+      sdl_only_texture->texture =  SDL_CreateTexture(sdl_settings->renderer,
+            SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STATIC, #{width}, #{height});
+      sdl_only_texture->pixels = malloc(sdl_only_texture->width*sdl_only_texture->height*sizeof(pixel));
+
+      #{sdl_texture}= sdl_only_texture;
+
+
+    END
+    this.sdl_settings = sdl_settings
+    this.sdl_texture = sdl_texture
+    this.sdl_font = sdl_font
+  end
+  def getHeight() : int
+    var sdl_settings = this.sdl_settings
+    EMBED (int)
+      #{sdl_settings}->height;
+    END
+  end
+  def getWidth() : int
+    var sdl_settings = this.sdl_settings
+    EMBED (int)
+      #{sdl_settings}->width;
+    END
+  end
+  def refresh() : unit
+    var sdl_settings = this.sdl_settings
+    var sdl_texture = this.sdl_texture
+    var quit = this.quit
+    EMBED (unit)
+      SDL_RenderPresent(#{sdl_settings}->renderer);
+
+    END
+  end
+  def event_clone() : SDL_Event
+    var sdl_settings = this.sdl_settings
+    EMBED (SDL_Event)
+      SDL_Event* copy = malloc(sizeof(SDL_Event));
+      (SDL_Event*)memcpy(copy,#{sdl_settings}->event,sizeof(SDL_Event));
+      copy;
+
+    END
+  end
+  def pollEvent(handler : SDL_Event_Handler) : unit
+    var sdl_settings = this.sdl_settings
+    var event_present = 0
+    EMBED (unit)
+      #{event_present}= SDL_PollEvent(#{sdl_settings}->event);
+
+    END
+    if event_present == 1 then
+      handler!handleEvent(this, this.event_clone())
+    end
+  end
+  def waitForEvent(handler : SDL_Event_Handler, timeout : int) : unit
+    var sdl_settings = this.sdl_settings
+    if timeout == 0 then
+      EMBED (unit)
+        SDL_WaitEvent(#{sdl_settings}->event);
+
+      END
+    else
+      EMBED (unit)
+        SDL_WaitEventTimeout(#{sdl_settings}->event,#{timeout});
+
+      END
+    end
+    handler!handleEvent(this, this.event_clone())
+  end
+  def quit() : unit
+    EMBED (unit)
+      SDL_Quit();
+        10;
+
+    END
+  end
+end
+class Event_Vat[event_type]
+  var vat : Vat[(SDL_Main, event_type)]
+  def init() : unit
+    this.vat = new Vat[(SDL_Main, event_type)]()
+  end
+  def registerCallback(action : Hack[event_type] -> bool) : unit
+    this.vat!registerPost(fun (a : Maybe[(SDL_Main, event_type)], b : (SDL_Main, event_type)) => action(b))
+  end
+  def pushEvent(event : (SDL_Main, event_type)) : unit
+    this.vat!write(event)
+  end
+end
+class SDL_Event_Handler
+  var mouse_button_vat : Event_Vat[SDL_MouseButtonEvent]
+  var mouse_motion_vat : Event_Vat[SDL_MouseMotionEvent]
+  var keyboard_vat : Event_Vat[SDL_KeyboardEvent]
+  def init() : unit
+    this.mouse_button_vat = new Event_Vat[SDL_MouseButtonEvent]()
+    this.keyboard_vat = new Event_Vat[SDL_KeyboardEvent]()
+    this.mouse_motion_vat = new Event_Vat[SDL_MouseMotionEvent]()
+  end
+  def addMouseButtonCallback(action : Hack[SDL_MouseButtonEvent] -> bool) : unit
+    this.mouse_button_vat!registerCallback(action)
+  end
+  def addKeyboardCallback(action : Hack[SDL_KeyboardEvent] -> bool) : unit
+    this.keyboard_vat!registerCallback(action)
+  end
+  def addMotionCallback(action : Hack[SDL_MouseMotionEvent] -> bool) : unit
+    this.mouse_motion_vat!registerCallback(action)
+  end
+  def handleEvent(main : SDL_Main, event : SDL_Event) : unit
+    var event_type = EMBED (int)
+                       #{event}->type;
+                     END
+    if event_type == EMBED (int) SDL_QUIT; END then
+      EMBED (unit)
+        exit(0);
+      END
+    else
+      if event_type == EMBED (int) SDL_MOUSEBUTTONDOWN; END then
+        this.mouse_button_vat!pushEvent((main, new SDL_MouseButtonEvent(event)))
+      else
+        if event_type == EMBED (int) SDL_MOUSEBUTTONUP; END then
+          this.mouse_button_vat!pushEvent((main, new SDL_MouseButtonEvent(event)))
+        else
+          if event_type == EMBED (int) SDL_KEYDOWN; END then
+            this.keyboard_vat!pushEvent((main, new SDL_KeyboardEvent(event)))
+          else
+            if event_type == EMBED (int) SDL_KEYUP; END then
+              this.keyboard_vat!pushEvent((main, new SDL_KeyboardEvent(event)))
+            else
+              if event_type == EMBED (int) SDL_MOUSEMOTION; END then
+                this.mouse_motion_vat!pushEvent((main, new SDL_MouseMotionEvent(event)))
+              end
+            end
+          end
+        end
+      end
+    end
+    EMBED (unit)
+      //The copied event should be unused by now
+      free(#{event});
+
+    END
+  end
+end

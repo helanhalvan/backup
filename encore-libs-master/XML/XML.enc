@@ -2,7 +2,7 @@
 
 module XML
 import FileIO.IO
-passive class XML_node
+local class XML_node
   var s_rep : String
   var children : [XML_node]
   var comments : [String]
@@ -45,7 +45,7 @@ passive class XML_node
     ret
   end
 end
-passive class XML_lib
+local class XML_lib
   def init() : unit
     ()
   end

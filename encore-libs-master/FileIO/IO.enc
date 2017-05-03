@@ -1,7 +1,7 @@
 -- This file was automatically converted by encorec
 
 module IO
-passive class File
+local class File
   var file : EMBED FILE* END
   var fname : String
   var mode : String

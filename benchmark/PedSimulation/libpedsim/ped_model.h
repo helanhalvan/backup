@@ -29,8 +29,8 @@
 
 namespace Ped{
   const int STARTINGREGIONS = 4;
-  const int SCENARIOWIDTH = 800;
-  const int SCENARIOHEIGHT = 800;
+  const int SCENARIOWIDTH = 1200;
+  const int SCENARIOHEIGHT = 1200;
   const int MAX_REGIONS = 400;
   const int MERGEWEIGHT = 20;
   class Tagent;
@@ -359,4 +359,3 @@ namespace Ped{
   };
 }
 #endif
-

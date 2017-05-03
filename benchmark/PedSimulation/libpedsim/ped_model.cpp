@@ -248,7 +248,6 @@ void Ped::Model::setup(std::vector<Ped::Tagent*> agentsInScenario, IMPLEMENTATIO
         grid[j][i] = false;
       }
     }
-
     //initialize regions
     for (int i = 0; i < MAX_REGIONS; ++i) {
       unusedRegions.push_back(new Region());

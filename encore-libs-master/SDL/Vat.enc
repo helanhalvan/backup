@@ -1,0 +1,200 @@
+-- This file was automatically converted by encorec
+
+module Vat
+import SDL.Linked__List
+typedef Post_Fail_action[t] = (Maybe[t], t) -> bool
+typedef Transformation_action[t] = (Maybe[t], t) -> (bool, t)
+typedef Pre_action[t] = (Maybe[t], t) -> (bool, bool)
+class Vat[t]
+  var field : Maybe[t]
+  var pre_actions : Linked__List[Pre_action[t]]
+  var post_actions : Linked__List[Post_Fail_action[t]]
+  var trans_actions : Linked__List[Transformation_action[t]]
+  var fail_actions : Linked__List[Post_Fail_action[t]]
+  var open : bool
+  def init() : unit
+    this.field = Nothing
+    this.pre_actions = new Linked__List[Pre_action[t]]()
+    this.trans_actions = new Linked__List[Transformation_action[t]]()
+    this.fail_actions = new Linked__List[Post_Fail_action[t]]()
+    this.post_actions = new Linked__List[Post_Fail_action[t]]()
+    this.open = true
+  end
+  def openVat() : unit
+    this.open = true
+  end
+  def closeVat() : unit
+    this.open = false
+  end
+  def block_me() : unit
+    ()
+  end
+  def condRegPost(action : Post_Fail_action[t], condition : Maybe[t] -> bool, callback : Maybe[t] -> unit) : bool
+    if condition(this.field) then
+      this.registerPost(action)
+      true
+    else
+      callback(this.field)
+      false
+    end
+  end
+  def registerPre(pre : Pre_action[t]) : unit
+    this.pre_actions.append(pre)
+  end
+  def registerPost(post : Post_Fail_action[t]) : unit
+    this.post_actions.append(post)
+  end
+  def registerFail(fail : Post_Fail_action[t]) : unit
+    this.fail_actions.append(fail)
+  end
+  def registerTrans(trans : Transformation_action[t]) : unit
+    this.trans_actions.append(trans)
+  end
+  def readOrRegPost(post : Post_Fail_action[t]) : (bool, Maybe[t])
+    if this.field != Nothing then
+      (false, this.field)
+    else
+      this.registerPost(post)
+      (true, this.field)
+    end
+  end
+  def readOrRegFail(fail : Post_Fail_action[t]) : (bool, Maybe[t])
+    if this.field != Nothing then
+      (false, this.field)
+    else
+      this.registerFail(fail)
+      (true, this.field)
+    end
+  end
+  def readOrRegTrans(trans : Transformation_action[t]) : (bool, Maybe[t])
+    if this.field != Nothing then
+      (false, this.field)
+    else
+      this.registerTrans(trans)
+      (true, this.field)
+    end
+  end
+  def readOrRegPre(pre : Pre_action[t]) : (bool, Maybe[t])
+    if this.field != Nothing then
+      (false, this.field)
+    else
+      this.registerPre(pre)
+      (true, this.field)
+    end
+  end
+  def executePreActions(new_val : t) : bool
+    var current = this.pre_actions.first
+    var old = Nothing : Maybe[Node[Pre_action[t]]]
+    var success = true
+    if current == Nothing then
+      ()
+    else
+      while current != Nothing && success do
+        var keep = true
+        var f = current.data
+        match f(this.field, new_val) with
+          case (keep_, val_) =>
+            keep = keep_
+            success = val_
+          end
+
+        end
+        if not(keep) then
+          if old == Nothing then
+            this.pre_actions.first = old
+          else
+            old.next = current.next
+          end
+          current = current.next
+        else
+          old = current
+          current = current.next
+        end
+      end
+    end
+    if success then
+      var transformed = this.executeTransActions(new_val)
+      this.executePostOrFail(this.post_actions, transformed)
+      this.field = Just(transformed)
+    else
+      this.executePostOrFail(this.fail_actions, new_val)
+    end
+    success
+  end
+  def executeTransActions(new_val : t) : t
+    var current = this.trans_actions.first
+    var old = Nothing : Maybe[Node[Transformation_action[t]]]
+    var ret = new_val
+    if current == Nothing then
+      ()
+    else
+      while current != Nothing do
+        var f = current.data
+        var keep = true
+        match f(this.field, ret) with
+          case (keep_, val_) =>
+            keep = keep_
+            ret = val_
+          end
+
+        end
+        if not(keep) then
+          if old == Nothing then
+            this.trans_actions.first = old
+          else
+            old.next = current.next
+          end
+          current = current.next
+        else
+          old = current
+          current = current.next
+        end
+      end
+    end
+    ret
+  end
+  def executePostOrFail(actions : Linked__List[Post_Fail_action[t]], new_val : t) : unit
+    var current = Just(actions.first)
+    var old = Nothing : Maybe[Node[Post_Fail_action[t]]]
+    if current == Nothing then
+      ()
+    else
+      while current != Nothing do
+        var f = match current with
+                   case Just(thing) => thing.data
+                end
+        var keep = f(this.field, new_val)
+        if not(keep) then
+          if old == Nothing then
+            actions.first = old
+          else
+            match old with
+                case Just(a) => a.next = match current with
+                                             case Just(thing) => thing.next
+                                         end
+            end
+          end
+          current = match current with
+                     case Just(thing) => match thing with
+                                            case Just(thing2) =>thing2.next
+                                         end
+                    end
+        else
+          old = current
+          current = current.next
+        end
+      end
+    end
+  end
+  def write(new_val : t) : bool
+    if this.open then
+      this.executePreActions(new_val)
+    else
+      false
+    end
+    true
+  end
+  def read() : Maybe[t]
+    this.field
+  end
+end

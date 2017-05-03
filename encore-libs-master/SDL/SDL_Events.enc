@@ -1,0 +1,114 @@
+-- This file was automatically converted by encorec
+
+module SDL_Events
+import SDL.SDL_Types
+import SDL.Vat
+passive class SDL_MouseButtonEvent
+  var timestamp : uint
+  var windowID : uint
+  var which : uint
+  var button : uint
+  var state : uint
+  var clicks : uint
+  var x : int
+  var y : int
+  def init(event : SDL_Event) : unit
+    var timestamp = this.timestamp
+    var windowID = this.windowID
+    var which = this.which
+    var button = this.button
+    var state = this.state
+    var clicks = this.clicks
+    var x = this.x
+    var y = this.y
+    EMBED (unit)
+      SDL_MouseButtonEvent* mouse_event = (SDL_MouseButtonEvent*)#{event};
+      #{timestamp}=  mouse_event->timestamp;
+      #{windowID}=  mouse_event->windowID;
+      #{which}=  mouse_event->which;
+      #{button}=  mouse_event->button;
+      #{state}=  mouse_event->state;
+      #{clicks}=  mouse_event->clicks;
+      #{x}=  mouse_event->x;
+      #{y}=  mouse_event->y;
+
+    END
+    this.timestamp = timestamp
+    this.windowID = windowID
+    this.which = which
+    this.button = button
+    this.state = state
+    this.clicks = clicks
+    this.x = x
+    this.y = y
+  end
+end
+passive class SDL_MouseMotionEvent
+  var timestamp : uint
+  var windowID : uint
+  var which : uint
+  var state : uint
+  var x : int
+  var y : int
+  var xrel : int
+  var yrel : int
+  def init(event : SDL_Event) : unit
+    var timestamp = this.timestamp
+    var windowID = this.windowID
+    var which = this.which
+    var state = this.state
+    var x = this.x
+    var y = this.y
+    var xrel = this.xrel
+    var yrel = this.yrel
+    EMBED (unit)
+      SDL_MouseMotionEvent* mouse_event = (SDL_MouseMotionEvent*)#{event};
+      #{timestamp}= mouse_event->timestamp;
+      #{windowID}= mouse_event->windowID;
+      #{which}= mouse_event->which;
+      #{state}= mouse_event->state;
+      #{x}= mouse_event->x;
+      #{y}= mouse_event->y;
+      #{xrel}= mouse_event->xrel;
+      #{yrel}= mouse_event->yrel;
+
+
+    END
+    this.timestamp = timestamp
+    this.windowID = windowID
+    this.which = which
+    this.state = state
+    this.x = x
+    this.y = y
+    this.xrel = xrel
+    this.yrel = yrel
+  end
+end
+passive class SDL_KeyboardEvent
+  var timestamp : uint
+  var windowID : uint
+  var state : uint
+  var repeated : uint
+  var keycode : uint
+  def init(event : SDL_Event) : unit
+    var timestamp = this.timestamp
+    var windowID = this.windowID
+    var state = this.state
+    var repeated = this.repeated
+    var keycode = this.keycode
+    EMBED (unit)
+      SDL_KeyboardEvent* key_event = (SDL_KeyboardEvent*)#{event};
+        #{timestamp}= key_event->timestamp;
+        #{windowID}= key_event->windowID;
+        #{state}= key_event->state;
+        #{repeated}= key_event->repeat;
+        #{keycode}= key_event->keysym.sym;
+
+    END
+    this.timestamp = timestamp
+    this.windowID = windowID
+    this.state = state
+    this.repeated = repeated
+    this.keycode = keycode
+  end
+end

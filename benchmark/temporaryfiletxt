@@ -1,21 +1,21 @@
-1 warning generated.
-32159,375975-all-cpus-all-cpustask-clock-all-cpus32159375975-all-cpus100,00
-1515035-all-cpus-all-cpuscontext-switches-all-cpus32159375975-all-cpus100,00
-76-all-cpus-all-cpuscpu-migrations-all-cpus32159375975-all-cpus100,00
-14113-all-cpus-all-cpuspage-faults-all-cpus32159375975-all-cpus100,00
-81644799529-all-cpus-all-cpuscycles-all-cpus10632691754-all-cpus30,37
+./demo: Interrupt
+39,027062-all-cpus-all-cpustask-clock-all-cpus39027062-all-cpus100,00
+8-all-cpus-all-cpuscontext-switches-all-cpus39027062-all-cpus100,00
+1-all-cpus-all-cpuscpu-migrations-all-cpus39027062-all-cpus100,00
+4224-all-cpus-all-cpuspage-faults-all-cpus39027062-all-cpus100,00
+40856187-all-cpus-all-cpuscycles-all-cpus6424369-all-cpus16,45
 <not supported>-all-cpus-all-cpusstalled-cycles-frontend-all-cpus0-all-cpus100,00
 <not supported>-all-cpus-all-cpusstalled-cycles-backend-all-cpus0-all-cpus100,00
-58929290063-all-cpus-all-cpusinstructions-all-cpus13285113024-all-cpus37,93
-14112725927-all-cpus-all-cpusbranches-all-cpus13269992802-all-cpus37,88
-131415899-all-cpus-all-cpusbranch-misses-all-cpus13398978665-all-cpus38,23
-15583425168-all-cpus-all-cpusL1-dcache-loads-all-cpus11669842934-all-cpus33,29
-1071120507-all-cpus-all-cpusL1-dcache-load-misses-all-cpus5546673666-all-cpus15,83
-440967170-all-cpus-all-cpusLLC-loads-all-cpus5415554401-all-cpus15,48
-3729934-all-cpus-all-cpusLLC-load-misses-all-cpus7956538874-all-cpus22,74
+56403044-all-cpus-all-cpusinstructions-all-cpus10418565-all-cpus26,67
+14553470-all-cpus-all-cpusbranches-all-cpus11304004-all-cpus31,46
+68993-all-cpus-all-cpusbranch-misses-all-cpus15281048-all-cpus100,00
+13989890-all-cpus-all-cpusL1-dcache-loads-all-cpus7943426-all-cpus41,27
+1493452-all-cpus-all-cpusL1-dcache-load-misses-all-cpus7956082-all-cpus34,24
+276714-all-cpus-all-cpusLLC-loads-all-cpus7969796-all-cpus29,28
+100837-all-cpus-all-cpusLLC-load-misses-all-cpus11967583-all-cpus38,34
 <not supported>-all-cpus-all-cpusL1-icache-loads-all-cpus0-all-cpus100,00
-135253345-all-cpus-all-cpusL1-icache-load-misses-all-cpus10652066807-all-cpus30,43
-15965219853-all-cpus-all-cpusdTLB-loads-all-cpus9032494235-all-cpus25,80
-7887321-all-cpus-all-cpusdTLB-load-misses-all-cpus7874310045-all-cpus22,50
-12450339-all-cpus-all-cpusiTLB-loads-all-cpus5449969324-all-cpus15,57
-1009207-all-cpus-all-cpusiTLB-load-misses-all-cpus7992673893-all-cpus22,85
+10522-all-cpus-all-cpusL1-icache-load-misses-all-cpus15966725-all-cpus45,34
+14251118-all-cpus-all-cpusdTLB-loads-all-cpus4719675-all-cpus13,13
+18625-all-cpus-all-cpusdTLB-load-misses-all-cpus3843850-all-cpus9,84
+413-all-cpus-all-cpusiTLB-loads-all-cpus3123317-all-cpus8,00
+0-all-cpus-all-cpusiTLB-load-misses-all-cpus3123317-all-cpus8,00

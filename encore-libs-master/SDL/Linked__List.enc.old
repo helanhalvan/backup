@@ -1,0 +1,87 @@
+module Linked__List
+
+passive class Linked__List<t>
+    first : Node<t>
+
+    def preppend(data : t) : void {
+        if(this.first == null) then{
+            this.first = new Node<t>(data);
+        }else{
+            this.first.preppend(data);
+        }
+    }
+
+    def append(data : t) : void {
+        if(this.first == null) then{
+            this.first = new Node<t>(data);
+        }else{
+            this.first.append(data);
+        }
+    }
+
+    def length() : int{
+        var
+            counter = 0;
+            var next = null : Node<t>;
+        {
+            if (this.first != null) then {
+                counter = 1;
+                next = this.first.next;
+                while(next != null){
+                    counter = counter + 1 ;
+                    next = next.next;
+                }
+            };
+            counter
+        }
+    }
+
+passive class Node<t>
+    next : Node<t>
+    data : t
+
+
+    def init(data : t) : void{
+        this.next = null;
+        this.data = data
+    }
+
+    def preppend(data : t) : void{
+        var
+            node = new Node<t>(data);
+            var temp = null : Node<t>;
+
+        {
+            temp = this.next;
+            this.next = node;
+            node.next = temp
+        }
+    }
+
+    def append(data : t) : void{
+        var
+            new_node = new Node<t>(data);
+            var temp = this.next;
+        {
+
+            if (temp == null) then{
+                this.next = new_node
+            }else{
+
+
+            while (temp.next != null){
+                temp = temp.next;
+            };
+            temp.next = new_node
+            }
+        }
+
+    }
+
+    def getSucc() : Node<t>{
+        this.next
+    }
+
+    def getData() : t {
+        this.data
+    }

@@ -2,11 +2,15 @@ module Regions
 import Agent_passive
 import Global_funs
 import Quad_tree
---import UI
-fun regions(agents : [Agent], ui : bool, boxes : int) : unit
+import UI
+fun regions(var agents : [Agent], ui : bool, boxes : int) : unit
   var box = new Tiling_box(agents, boxes)
-  println(("Encore regions", |agents|))
-  box!move(10000, clock(), ui) --0000
+  if ui then
+     print("{}\n",|agents|)
+  else
+     println(("Encore regions", |agents|))
+  end
+  box!move(10000, clock(), ui)
 end
 fun link(a : Box, b : Box) : bool
   val aa = a!link(b)
@@ -18,7 +22,7 @@ fun link(a : Box, b : Box) : bool
   end
   aaa
 end
-class Tiling_box
+active class Tiling_box
   var boxes : [Box]
   var futures : [Fut[bool]]
   var futs_left : int
@@ -28,55 +32,56 @@ class Tiling_box
         val dx = (xmax - xmin) / n
         this.boxes = new [Box](n * n)
         this.futures = new [Fut[bool]](|this.boxes|)
-        var x = xmin
-        var y = ymin
-        var i = 0
-        var win = true
-        val dy = (ymax - ymin) / n
-        for xindex <- [0..n - 1] do
-          for yindex <- [0..n - 2] do
-            (this.boxes)(i) = new Box((x + dx - 1, y + dy - 1), (x, y))
-            if yindex != 0 then
+        if(n>1) then
+            var x = xmin
+            var y = ymin
+            var i = 0
+            var win = true
+            val dy = (ymax - ymin) / n
+            for xindex <- [0..n - 1] do
+              for yindex <- [0..n - 2] do
+                (this.boxes)(i) = new Box((x + dx - 1, y + dy - 1), (x, y))
+                if yindex != 0 then
+                  win = win && link((this.boxes)(i), (this.boxes)(i - 1))
+                end
+                if xindex != 0 then
+                  win = win && link((this.boxes)(i), (this.boxes)(i - n))
+                end
+                if xindex != 0 && yindex != 0 then
+                  win = win && link((this.boxes)(i), (this.boxes)(i - n + 1))
+                  win = win && link((this.boxes)(i), (this.boxes)(i - n - 1))
+                  ()
+                end
+                i = i + 1
+                y = y + dy
+              end
+              (this.boxes)(i) = new Box((x + dx - 1, ymax), (x, y))
+              if xindex != 0 then
+                win = win && link((this.boxes)(i), (this.boxes)(i - n))
+                win = win && link((this.boxes)(i), (this.boxes)(i - n - 1))
+              end
               win = win && link((this.boxes)(i), (this.boxes)(i - 1))
+              i = i + 1
+              x = x + dx
+              y = ymin
             end
-            if xindex != 0 then
-              win = win && link((this.boxes)(i), (this.boxes)(i - n))
-            end
-            if xindex != 0 && yindex != 0 then
+            for yindex <- [0..n - 2] do
+              (this.boxes)(i) = new Box((xmax, y + dy - 1), (x, y))
+              if yindex != 0 then
+                win = win && link((this.boxes)(i), (this.boxes)(i - 1))
+                win = win && link((this.boxes)(i), (this.boxes)(i - n - 1))
+              end
               win = win && link((this.boxes)(i), (this.boxes)(i - n + 1))
-              win = win && link((this.boxes)(i), (this.boxes)(i - n - 1))
-              ()
+              win = win && link((this.boxes)(i), (this.boxes)(i - n))
+              i = i + 1
+              y = y + dy
             end
-            i = i + 1
-            y = y + dy
-          end
-          (this.boxes)(i) = new Box((x + dx - 1, ymax), (x, y))
-          if xindex != 0 then
+            (this.boxes)(i) = new Box((xmax, ymax), (x, y))
             win = win && link((this.boxes)(i), (this.boxes)(i - n))
-            win = win && link((this.boxes)(i), (this.boxes)(i - n - 1))
-          end
-          win = win && link((this.boxes)(i), (this.boxes)(i - 1))
-          i = i + 1
-          x = x + dx
-          y = ymin
-        end
-        for yindex <- [0..n - 2] do
-          (this.boxes)(i) = new Box((xmax, y + dy - 1), (x, y))
-          if yindex != 0 then
             win = win && link((this.boxes)(i), (this.boxes)(i - 1))
             win = win && link((this.boxes)(i), (this.boxes)(i - n - 1))
-          end
-          win = win && link((this.boxes)(i), (this.boxes)(i - n + 1))
-          win = win && link((this.boxes)(i), (this.boxes)(i - n))
-          i = i + 1
-          y = y + dy
-        end
-        (this.boxes)(i) = new Box((xmax, ymax), (x, y))
-        win = win && link((this.boxes)(i), (this.boxes)(i - n))
-        win = win && link((this.boxes)(i), (this.boxes)(i - 1))
-        win = win && link((this.boxes)(i), (this.boxes)(i - n - 1))
-        unless win then
-          print("WIN IS BAD!\n")
+        else
+            this.boxes(0) = new Box((xmax,ymax), (xmin,ymin))
         end
         for a <- agents do
           for b <- this.boxes do
@@ -89,6 +94,7 @@ class Tiling_box
 
     end
   end
+
   def move(i : int, start_time : int, ui : bool) : unit --,sdl : SDL_Main
     --print("move\n")
     for id <- [0..|this.boxes| - 1] do
@@ -98,11 +104,9 @@ class Tiling_box
     for f <- this.futures do
       get(f)
     end
-    {--
     if ui then
-        show(this.agents,sdl)
+        show(this.agents())
     end
-    --}
     if i > 1 then
       this!move(i - 1, start_time, ui)
     else
@@ -112,12 +116,15 @@ class Tiling_box
   def agents() : [(int, int)]
     val temp = new [[(int, int)]](|this.boxes|)
     for i <- [0..|this.boxes| - 1] do
-      temp(i) = get(((this.boxes)(i)) ! agents())
+      temp(i) = get((this.boxes(i)) ! agents())
     end
-    flatten(temp)
+    --print("FLATTENING!\n")
+    var a= flatten(temp)
+    --print("FLAT\n")
+    a
   end
 end
-class Box
+active class Box
   var xmax : int
   var ymax : int
   var xmin : int
@@ -155,7 +162,6 @@ class Box
         this.xmax = x
         this.ymax = y
       end
-
     end
     match in_min with
       case (x, y) =>
@@ -181,6 +187,7 @@ class Box
         case thing =>
               var cur=thing
               var i = 0
+              --print("asd\n")
               while cur != Nothing do
                 i = i + 1
                 match cur with
@@ -191,14 +198,17 @@ class Box
               cur = this.agents
               i = 0
               while cur != Nothing do
-                i = i + 1
                 match cur with
                     case Just(thing) =>
                      cur=thing.next
-                     ret(i) = thing.a.pos()
+                     ret(i) = match thing.a?.pos() with
+                                case Just(something) => something
+                              end
                     end
                 end
+                i = i + 1
               end
+              --print("bas\n")
               ret
         end
     end
@@ -207,30 +217,31 @@ class Box
     if a.x > this.xmax || a.x < this.xmin || a.y > this.ymax || a.y < this.ymin then
       false
     else
-      this.add_internal(a)
+      this.add_internal(Just(a),a.x,a.y)
     end
   end
-  def external_move(a : Agent, x : int, y : int) : bool
+  def external_move(var a : Maybe[Agent], x : int, y : int) : Maybe[Agent]
     if x > this.xmax || x < this.xmin || y > this.ymax || y < this.ymin then
-      false
+      a--consume(a)
     else
       if this.matrix.get_val(x, y) == true then
-        false
+        a --consume(a)
       else
-        a.move_int(x, y)
-        this.add_internal(a)
+        a?.move_int(x, y)
+        this.add_internal(a,x,y)
+        Nothing
       end
     end
   end
-  def add_internal(a : Agent) : bool
-    if this.matrix.get_val(a.x, a.y) == true then
+  def add_internal(a : Maybe[Agent], x : int, y : int) : bool
+    if this.matrix.get_val(x,y) == true then
       print("AGENTS IN TOP OF eachother\n")
       while true do
         ()
       end
       true
     else
-      this.matrix.set(a.x, a.y)
+      this.matrix.set(x,y)
       if this.newcommers == Nothing then
         this.newcommers = Just(new Item(a))
       else
@@ -317,7 +328,6 @@ class Box
           true
         end
       end
-
     end
   end
   def merge() : unit
@@ -342,6 +352,7 @@ class Box
         case unused  => true
      end
   end
+    -- ?. operator call fun on maybe type
   def move() : bool
     --print("{}\n",this.ttl)
     this.ttl = this.ttl - 1
@@ -353,10 +364,12 @@ class Box
       var a = match wrapped_a with
                 case Just(value) => value
               end
-      --print("{} {}\n",a.a.x, this.xmax)
-      if a.a.ttl == this.ttl then
-        a.a.ttl = a.a.ttl - 1
-        a.a.next(desired)
+      var attl = match a.a?.ttl with
+                    case Just(temp) => temp
+                 end
+      if attl == this.ttl then
+        a.a?.ttldec() --= a.a.ttl - 1
+        a.a?.next(desired)
         var i = 0
         var moved = false
         var x2 = 0
@@ -403,28 +416,38 @@ class Box
                        end
                      end
           in
+              var ax = match a.a?.x with
+                        case Just(temp) => temp
+                       end
+              var ay = match a.a?.y with
+                        case Just(temp) => temp
+                       end
               match border with
                 case Nothing =>
                   if not(y > this.ymax || y < this.ymin || x > this.xmax || x < this.xmin) && this.matrix.get_val(x, y) == false then
-                    this.matrix.remove(a.a.x, a.a.y)
+                    this.matrix.remove(ax, ay)
                     this.matrix.set(x, y)
-                    a.a.move_int(x, y)
+                    a.a?.move_int(x, y)
                     moved = true
                   end
                 end
                 case Just(real_thing) =>
-                    x2 = a.a.x
-                    y2 = a.a.y
-                    var nejbor = real_thing ! external_move(a.a, x, y)
+                    x2 = ax
+                    y2 = ay
+                    val first= (wrapped_a == this.agents)
+                    var nejbor = real_thing ! external_move( a.a, x, y) --consume(
                     await(nejbor)
-                    if get(nejbor) then
-                      this.size = this.size - 1
-                      this.matrix.remove(x2, y2)
-                      moved = true
-                      if wrapped_a == this.agents then
-                         this.agents = a.next
-                      end
-                      a.delete()
+                    val futurefilled = get(nejbor)
+                    match futurefilled with
+                        case Just(useless) => a.a=futurefilled
+                        case Nothing =>
+                              this.size = this.size - 1
+                              this.matrix.remove(x2, y2)
+                              moved = true
+                              if first then
+                                 this.agents = a.next
+                              end
+                        end
                     end
                 end
               end
@@ -438,12 +461,12 @@ class Box
     true
   end
 end
-passive class Item : Id
-  var a : Agent
+local class Item : Id
+  var a : Maybe[Agent]
   var next : Maybe[Item]
   var prev : Maybe[Item]
-  def init(a : Agent) : unit
-    this.a = a
+  def init(var a : Maybe[Agent]) : unit
+    this.a = a --consume(a)
     this.next=Nothing
     this.prev=Nothing
   end
@@ -457,7 +480,6 @@ passive class Item : Id
         case (Nothing,Just(prev)) => prev.next=Nothing
         case (Just(next),Nothing) => next.prev=Nothing
     end
-    this.a = null -- this passed type checking???
   end
   def append(next : Maybe[Item]) : unit
     this.next = next

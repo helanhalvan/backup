@@ -2,7 +2,7 @@
 
 module Agent_passive
 import Ped_util.Global_funs
-passive class Agent
+unsafe class Agent
   var hash_code : uint
   var x : int
   var y : int
@@ -103,6 +103,10 @@ passive class Agent
   def pos() : (int, int)
     (this.x, this.y)
   end
+  def ttldec() : unit
+    this.ttl=this.ttl-1
+  end
+{--
   def copy() : Agent
     val q = (this.x, this.y)
     val qq = new [(int, int)](|this.targets_size|)
@@ -115,4 +119,5 @@ passive class Agent
     w.i = this.i
     w
   end
+--}
 end

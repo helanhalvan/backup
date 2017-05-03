@@ -1,0 +1,46 @@
+-- This file was automatically converted by encorec
+
+module SDL_Primitives
+import SDL.SDL_Types
+passive class Rectangle
+  var x : int
+  var y : int
+  var w : int
+  var h : int
+  def init(x : int, y : int, w : int, h : int) : unit
+    this.x = x
+    this.y = y
+    this.w = w
+    this.h = h
+  end
+end
+passive class Point2D
+  var x : int
+  var y : int
+  def init(x : int, y : int) : unit
+    this.x = x
+    this.y = y
+  end
+end
+passive class ColorRGBA
+  var r : int
+  var g : int
+  var b : int
+  var a : int
+  def init(r : int, g : int, b : int, a : int) : unit
+    this.r = r
+    this.g = g
+    this.b = b
+    this.a = a
+  end
+  def getCRepresentation() : SDL_Color
+    var r = this.r
+    var g = this.g
+    var b = this.b
+    var a = this.a
+    EMBED (SDL_Color)
+      (SDL_Color){#{r}, #{g}, #{b}, #{a}};
+
+    END
+  end
+end

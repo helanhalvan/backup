@@ -45,13 +45,13 @@ end
 fun clock() : int
   var x = 0
   EMBED (unit)
-    { #{x}=time(0); }
+    { #{x}=time(NULL); }
   END
   x
 end
 fun printtime(x : int) : unit
   EMBED (unit)
-    { printf("%i seconds\n", #{x}); }
+    { printf("TIME:%i\n", #{x}); }
   END
 end
 fun mk_Future(n : bool) : Fut[bool]
@@ -307,6 +307,7 @@ fun parse_file(fname : String) : [Agent]
             end
           end
         end
+        --consume
         agents
       end
     end

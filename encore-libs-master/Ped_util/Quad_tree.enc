@@ -1,6 +1,6 @@
 module Quad_tree
 import Global_funs
-passive class Quad
+local class Quad
   var agent : [int]
   var top_right : Maybe[Quad]
   var top_left : Maybe[Quad]
@@ -117,7 +117,7 @@ passive class Quad
     end
   end
 end
-passive class Quad_tree
+local class Quad_tree
   var tree : Quad
   var xmax : int
   var ymax : int

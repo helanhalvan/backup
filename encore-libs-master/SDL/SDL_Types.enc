@@ -1,0 +1,7 @@
+-- This file was automatically converted by encorec
+
+module SDL_Types
+typedef SDL_Color = EMBED SDL_Color END
+typedef SDL_Font = EMBED TTF_Font* END
+typedef SDL_Event = EMBED SDL_Event* END
+

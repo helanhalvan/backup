@@ -104,12 +104,12 @@ int main(int argc, char*argv[]) {
   model.setup(parser.getAgents(), implementation, num_threads, heatmap_mode);
 
   // GUI related set ups
-  QApplication app(argc, argv);
-  MainWindow mainwindow(model);
+  //QApplication app(argc, argv);
+  //MainWindow mainwindow(model);
 
   // Default number of steps to simulate
   const int maxNumberOfStepsToSimulate = 10000;
-  PedSimulation *simulation = new PedSimulation(model, mainwindow);
+  PedSimulation *simulation = new PedSimulation(model);
 
   cout << "OPENMP" << endl;
   int retval = 0;
@@ -125,9 +125,9 @@ int main(int argc, char*argv[]) {
   else
   {
     // Simulation mode to use when visualizing
-    mainwindow.show();
-    simulation->runSimulationWithQt(maxNumberOfStepsToSimulate);
-    retval = app.exec();
+    //mainwindow.show();
+    //simulation->runSimulationWithQt(maxNumberOfStepsToSimulate);
+    //retval = app.exec();
   }
 
   // End timing

@@ -1,0 +1,73 @@
+-- This file was automatically converted by encorec
+
+module Linked__List
+passive class Linked__List[t] : Id
+  var first : Maybe[Node[t]]
+  def init() : unit
+    this.first=Nothing
+  end
+  def preppend(data : t) : unit
+    match this.first with
+      case Nothing => this.first=Just(new Node[t](data))
+      case Just(first) => first.preppend(data)
+    end
+  end
+  def append(data : t) : unit
+    match this.first with
+      case Nothing => this.first=Just(new Node[t](data))
+      case Just(first) => first.append(data)
+    end
+  end
+  def length() : int
+    var counter = 0
+    var next = null : Node[t]
+    do
+      if this.first != Nothing then
+        counter = 1
+        next = match this.first with
+                case Just(thing) => thing
+               end
+        while next != null do
+          counter = counter + 1
+          next = next.next
+        end
+      end
+      counter
+    end
+  end
+end
+passive class Node[t] : Id
+  var next : Node[t]
+  var data : t
+  def init(data : t) : unit
+    this.next = null
+    this.data = data
+  end
+  def preppend(data : t) : unit
+    var node = new Node[t](data)
+    var temp = null : Node[t]
+    do
+      temp = this.next
+      this.next = node
+      node.next = temp
+    end
+  end
+  def append(data : t) : unit
+    var new_node = new Node[t](data)
+    var temp = this.next
+    if temp == null then
+      this.next = new_node
+    else
+      while temp.next != null do
+        temp = temp.next
+      end
+      temp.next = new_node
+    end
+  end
+  def getSucc() : Node[t]
+    this.next
+  end
+  def getData() : t
+    this.data
+  end
+end

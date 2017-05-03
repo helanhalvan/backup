@@ -4,21 +4,23 @@
 
 #echo $w;
 rm cores.txt
-for i in {1,2,3,4} # {10,20,40,80,400,800,2000,4000}
-
+for i in {1..64} # {10,20,40,80,400,800,2000,4000}
 do
 echo $i
+bb="$(./main.enc.run 4000_scenario.xml 0 16 --ponythreads $i | egrep -o 'TIME:[0-9]+' | egrep -o '[0-9]+')"
+aa="$(./demo 4000_scenario.xml --timing-mode --implementation=parallel --collision --heatmap=disabled --nthreads ${i} | egrep -o 'TIME:[0-9]+' | egrep -o '[0-9]+')"
+for j in {1..10}
+do
+b="$(./main.enc.run 4000_scenario.xml 0 16 --ponythreads $i | egrep -o 'TIME:[0-9]+' | egrep -o '[0-9]+')"
+a="$(./demo 4000_scenario.xml --timing-mode --implementation=parallel --collision --heatmap=disabled --nthreads ${i} | egrep -o 'TIME:[0-9]+' | egrep -o '[0-9]+')"
 
-#l="$(./benchmark_encore.sh 2000 ${i})"
-#echo $l
-a="$( ./benchmark_encore.sh 4000 ${i} | egrep -o '[0-9]+[[:space:]]seconds' | egrep -o '[0-9]+' ; )"
-
-
-#echo $l | egrep -o '[0-9]+[[:space:]]seconds'
-b="$( ./benchmark_openmp.sh 4000 ${i} | egrep -o '[0-9]+[[:space:]]seconds' | egrep -o '[0-9]+' ; )"
-
-#echo $l | egrep -o '[0-9]+[[:space:]]seconds' | egrep -o '[0-9]+'
-
-echo "$a $b" >> "cores.txt"
-
+echo "$i $j $a $aa $b $bb"
+if (( "$bb" > "$b" )) ; then
+bb=$b
+fi
+if (( "$aa" > "$a" )) ; then
+aa=$a
+fi
+done
+echo "$i & $aa & $bb \\" >> "cores.txt"
 done
